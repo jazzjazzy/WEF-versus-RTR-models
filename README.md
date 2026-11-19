@@ -95,6 +95,8 @@ was begun are run again and must match.
 
 The rules were set by Jason in conversation. The model, the tests and this text
 were written by Claude (an AI) under his direction.
+[docs/how-this-was-built.md](docs/how-this-was-built.md) says who did what, the
+method, what was built when, and what went wrong along the way.
 
 ## Licence
 
