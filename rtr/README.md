@@ -554,7 +554,7 @@ in this code, the count was held to those who would take the firm's wage: the
 wage then held in two of the four towns ($881 and $769 at year 60), settled
 near $560 in a third, and still slid in the fourth. Four towns, no tests
 behind it. Whether a maker who would refuse the job is part of "the queue" is
-Jason's to rule on.
+Jason's to rule on. (He ruled on it the next day: see 19 November, below.)
 
 **A maker buys their goods in town first** (built). His words: "they can only
 buy outside the town if they can't get it inside town at a reasonable price
@@ -646,3 +646,157 @@ makers buy in town first (the builder's own count, after the reviewer's):
 
 One town and one switch. It is not yet known how far this holds in the other
 thirty-nine, or what the whole price and the rule on jobs add.
+
+## Jason's rulings of 19 November 2026
+
+One rule this world took from the WEF world was put to Jason: a firm short of
+profit, with no job going, cuts its wage by a fiftieth when more than a
+twentieth of the town has no job. That count took in people living on a side
+hustle who would turn the job down. The ledger is
+[docs/build-ledger-rtr-rulings-2026-11-19.md](../docs/build-ledger-rtr-rulings-2026-11-19.md).
+
+It was put to him as a shop paying its staff $800 a week that wants to pay
+$784, in a town where sixty people have no job and all sixty make more than
+that from side hustles. His words: "if people have a side hustle that pays
+more than a wage for a job, then why would they get into the queue? ... I
+would assume they wouldn't even apply for the job. Unless they're unhappy. and
+wanted to get out of this hard hustle ... If the queue is long, then the
+employer can ask for pay less wages to the newcomers. Old staff members still
+stay on the same pay rate."
+
+He asked first whether someone on a firm's staff can ever get a rise: "If not,
+then I don't think it's fair that employers can actually reduce wages." They
+can. A firm that cannot fill a job for two weeks bids its wage up a fiftieth
+and its staff get it; staff move to a firm that pays a twentieth more; and
+someone can be made an executive.
+
+**Who is in the line** (built). The line that lets a firm cut is now the
+people out of work who would take the job at the lower wage, by the same test
+as when a job is offered. Someone happy on a side hustle that brings in as
+much is not in it. Someone unhappy on a side hustle is: they take a job as
+anyone out of work does, and keep the side hustle for their spare hours. Dials:
+`line_is_who_would_take`, `unhappy_makers_apply`.
+
+The builder's, not his: the line is counted at the lower wage the firm would
+move to; it takes in anyone out of work who would take the job, not only
+people with side hustles; "long" is still more than a twentieth of the town;
+and "unhappy" is the model's own measure, the one the 90% failure line counts.
+His ruling of the day before stands: someone happy on a side hustle still
+takes a job that pays more than it.
+
+**Staff keep their pay through a cut** (built). A firm's wage is now the rate
+for those it takes on. Each person on its staff keeps the rate they were hired
+on or last lifted to. A cut touches nobody already there. A rise lifts anyone
+under the new rate to it. His example: staff on $800, the firm drops its rate,
+the next person hired starts on $784, everyone hired before stays on $800.
+Dial: `staff_keep_pay`.
+
+What follows from it, each a call of the builder's and each in the ledger:
+
+- What a firm pays follows each person's own rate: its wage bill, pay day, the
+  building work it books. Its executives are paid their multiple of what its
+  staff are paid on average.
+- What a firm reckons ahead is at the rate it offers: what one more unit would
+  cost to make or build, and so whether to sell outside, whether to make or
+  import, and the price it asks makers in town. The going wage in town is also
+  the rate on offer: it is what a new firm starts on and what a small business
+  pays someone new.
+- An executive put back on the staff goes back on the staff rate they had.
+- A small business keeps its staff on what they are on when the going wage
+  falls, and lifts them when it rises. When it becomes a company they keep
+  their rate.
+- Staff taken over with a failed firm start on the buyer's rate. Someone who
+  leaves and comes back starts on the rate for new hires. A firm that must let
+  people go still lets go the last hired first, who are now its cheapest.
+
+All three rules are this world's alone. The WEF world keeps the rule as it
+was.
+
+**The first build was wrong, and a fresh review caught it.** As first built, a
+firm reckoned what a unit costs it to make at the average of what its staff
+keep. After a boom, with wages bid up past what selling outside pays, a firm
+stops and lets most of its staff go. A cut for newcomers could not move the
+average of the few who were left, so the firm never started again and never
+took a newcomer on. The rule exists so that an employer can take people on for
+less, and the costing cancelled it. Twenty towns of 200 people, fourteen
+years, the builder's own count after the reviewer's:
+
+| | reached the 90% line | mean share with no job |
+|---|---|---|
+| the three dials off | 0 of 20 | 7.8% on the map, 6.6% with no map |
+| as first built | 8 of 20 | 31.1% and 49.4% |
+| after the fix | 0 of 20 | 7.4% and 8.5% |
+
+Eighty small towns of that first build had passed every weekly check. The
+checks prove the accounts and the places. They cannot see a town that has
+stopped. The whole-town test now also asks how its towns fare: none may have
+more than half its people out of work for more than three of its fourteen
+years.
+
+**Two wages in the record.** Since staff keep their own rates, "the wage" of a
+town is two numbers. The record's `wage`, shown on the pages as the staff
+wage, is what staff are paid on average. A second weekly measure, `wage_offer`,
+is the going wage: what a job pays someone taken on now. The pages show only
+the first. In the WEF world the two are one number, as before.
+
+**How it was checked.** 1,130 tests, 43 of them new, each seen to fail first
+where it could. The rules broken on purpose, with every earlier ruling's
+breaks run again: 196 breaks, all caught (four slipped through at first and
+each got a test). Four checks were added to the weekly checks, one of them his
+rule stated directly: nobody who stayed on the same staff since last week is
+paid less than they were. With the three dials off, four small towns are the
+towns of the day before, event for event. The old WEF town is the town it was.
+Eighty small towns exactly as the world now ships were run for fourteen years
+under the weekly checks, all clean; in all eighty a firm cut its rate and its
+staff kept theirs.
+
+**Three full towns as shipped**, 60 years, under the weekly checks: every
+check clean. None reached the failure line. At year 60:
+
+| | seed 1 | seed 2 | seed 3 |
+|---|---|---|---|
+| people | 893 | 940 | 872 |
+| with no job | 0% | 0% | 0% |
+| staff paid, on average | $622 | $740 | $720 |
+| the rate offered to someone new | $469 | $593 | $545 |
+| unhappy | 66% | 62% | 72% |
+| the day before, with the home loan ruling | never reached the line; $67 a week, 46% with no job | never reached the line; $52, 47% | failed in year 50.25 |
+
+Three towns, nothing tuned, not a finding, and why is not traced. The share
+unhappy still climbs through all sixty years in all three.
+
+**Forty full towns, stopped at twenty-seven.** The run was stopped part way to
+rest the machine it was on. Twenty-seven towns had finished (seeds 1 to 26 and
+28), with no weekly checks: none crashed. One reached the failure line (seed
+9, in year 56.8). The other twenty-six ended sixty years with staff paid $670
+to $964 a week on average (middle $796), 0% with no job in the middle town and
+11% at most, and 50% to 85% unhappy (middle 65%). The day before, on all forty
+seeds, 28 reached the line and none ended on a working wage. Twenty-seven is
+not forty, nothing here is traced, and "never reached the line" is not "works".
+The run is owed in full.
+
+**What the fix did not cure, for Jason to rule on.** In small towns with a cap
+on people, wages are bid up in the boom past what the work brings. Under his
+rule a firm cannot bring its wage bill down except by letting people go, and
+it lets go the last hired, who are its cheapest. Of eighty small towns after
+the fix, two (both with no map) reached the failure line; with the three dials
+off, none did. One was traced: in year 6 its staff were paid $1,127 against
+$1,058 on offer, in year 7 its last three firms failed on their wages, and
+with nobody earning nobody founded another. Two questions follow, both his:
+may a firm let go staff on the old rate to take on newcomers on the new one,
+and does it let go its dearest or its newest first? A town with no cap, as the
+world ships, has outside workers to hire at $1,000 and does not bid up as far;
+whether this bites there is what the forty towns are for.
+
+Also his to rule on, when he chooses: whether "long" should stay at a
+twentieth, now that the line is a smaller count (in four small towns the
+reviewer counted the line keeping a firm's rate 25 times against 370 cuts,
+because someone long out of work will take any wage); whether someone unhappy
+on a side hustle should take any wage at all, as anyone out of work for twenty
+weeks does, when the example put to him was $600 against $700; and whether the
+WEF world's employers should follow the third rule.
+
+**Left as they are**, and listed in the ledger: the pages do not show the
+going wage; the line itself is recorded nowhere, and the share with no job
+still counts everyone; a firm's decision to sell outside can be a few weeks
+stale between its quarterly reviews.

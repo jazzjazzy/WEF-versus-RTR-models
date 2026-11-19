@@ -186,3 +186,10 @@ The scratch scripts and outputs this ledger names (the break script, the scans, 
 ## Still to do
 
 Nothing is committed. Waiting on Jason: the commit. Owed after the machine has rested: the forty full towns in full, run on fewer processors at a time; then the RTR README's section for 19 November (the README has today's dial count and one corrected line, and no account of the day yet). Two questions for him, one at a time: may a firm let go staff on the old rate to take on newcomers on the new one; and does it let go its dearest or its newest first.
+
+## Since then (added 19 November, afternoon)
+
+- The three rulings were committed that morning on Jason's word, in the working repository (`4039ae9` there), with 1,130 tests passing on the exact tree.
+- The model was published the same day as a public repository with a fresh history: one snapshot commit, on `develop`. The IDs and branch names above are the working repository's.
+- The RTR world README's section for 19 November is written (`rtr/README.md`, "Jason's rulings of 19 November 2026").
+- Still owed: the forty full towns in full, and Jason's rulings on the two questions above.
