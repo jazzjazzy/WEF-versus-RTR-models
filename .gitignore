@@ -1,0 +1,10 @@
+runs/
+batches/
+__pycache__/
+*.pyc
+.pytest_cache/
+.superpowers/
+
+# Working notes for the build sessions: kept on the machine, not published (19 November 2026)
+CLAUDE.md
+HANDOFF.md

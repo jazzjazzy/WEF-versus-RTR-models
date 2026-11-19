@@ -1,0 +1,12 @@
+[project]
+name = "wef-versus-rtr-models"
+version = "0.1.0"
+description = "One town economy run as two worlds: WEF, where everything is rented, and RTR (Right to Repair), where people may also own, build and let."
+requires-python = ">=3.12"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+markers = [
+    "fifth_in_cash: the test's towns are run where the bank lends four fifths of a home's price (mortgage_ltv=0.8), the number these tests were written for; since Jason's ruling of 18 November 2026 the RTR world lends the whole price",
+]

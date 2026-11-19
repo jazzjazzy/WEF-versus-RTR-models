@@ -1,0 +1,9 @@
+{
+  "population_cap": 1000,
+  "habit_weeks": 0,
+  "transport_can_close": true,
+  "fare_first_for_work": false,
+  "shops_near_unserved": false,
+  "well_off_income": 0,
+  "needs": {"housing": {"initial_units": 120}}
+}

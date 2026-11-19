@@ -1,0 +1,8 @@
+{
+  "export_price_drop": 0.2,
+  "needs": {
+    "food":       {"export_price": 19650, "import_price": 21000},
+    "housing":    {"export_price": 11250, "import_price": 12000},
+    "appliances": {"export_price": 14050, "import_price": 15000}
+  }
+}
