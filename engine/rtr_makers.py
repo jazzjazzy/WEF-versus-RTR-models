@@ -12,7 +12,7 @@ docs/superpowers/plans/2026-11-18-rtr-stage2-makers.md.
 from __future__ import annotations
 
 from .entities import Hustle
-from .labour import can_get_to, hire, reservation_wage, separate
+from .labour import can_get_to, first_to_go, hire, reservation_wage, separate
 from .firmops import set_price
 from .ledger import OUTSIDE
 from .places import home_spot
@@ -733,7 +733,8 @@ def staff_wanted(town, hustle, wage: int, price=None, waiting=None) -> int:
 
 def hire_staff(town) -> None:
     """Each small business takes on the staff its customers need beyond its owner's own
-    hours, at the going wage, and lets go those it no longer needs (last hired first).
+    hours, at the going wage, and lets go those it no longer needs (the longest-serving first
+    since Jason's ruling of 19/11/2026; the last hired where that dial is off).
     It hires residents with no job, after the firms have hired; it brings nobody to town."""
     cfg = town.cfg
     businesses = [h for h in town.hustles if h.business]
@@ -747,7 +748,7 @@ def hire_staff(town) -> None:
                 agent.wage = wage
         want = staff_wanted(town, hustle, wage)
         while len(hustle.staff) > want:
-            separate(town, hustle.staff[-1], "laid_off")
+            separate(town, first_to_go(cfg, hustle.staff), "laid_off")
         if len(hustle.staff) < want:
             # the first week of someone new brings in nothing until the customers have signed up:
             # they are taken on only with a week of their wage in hand (the bank's loan is for this)
@@ -776,14 +777,15 @@ def pay_staff(town) -> None:
     paid and the goods are bought: a firm pays wages before it is paid and borrows if short;
     someone working from home cannot, and the takings are not theirs to live on until the
     people who earned them are paid. If the till is short its owner makes it up from their
-    own cash; while till and owner together cannot pay them all, the last hired is let go."""
+    own cash; while till and owner together cannot pay them all, someone is let go (the
+    longest-serving first since 19/11/2026; the last hired where that dial is off)."""
     cfg = town.cfg
     for hustle in town.hustles:
         if not hustle.staff:
             continue
         owner = hustle.owner
         while hustle.staff and hustle.cash + owner.cash < wages_due(cfg, hustle):
-            separate(town, hustle.staff[-1], "unpaid")
+            separate(town, first_to_go(cfg, hustle.staff), "unpaid")
         short = wages_due(cfg, hustle) - hustle.cash
         if short > 0:
             town.ledger.pay(owner, hustle, short, "maker_capital")

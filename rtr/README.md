@@ -29,9 +29,9 @@ folder under `runs/` here, with the same record, dashboard and town view as a
 WEF run; what each holds is described in [../wef/README.md](../wef/README.md).
 
 **The settings** of this world are in [settings.json](settings.json): every dial
-the WEF world has, at the same values, and thirty-three more that only this
+the WEF world has, at the same values, and thirty-five more that only this
 world reads (spare hours, the loan against a home, foreclosure, letting,
-seventeen for makers, six for Jason's rulings of 18 November 2026 and three
+seventeen for makers, six for Jason's rulings of 18 November 2026 and five
 for those of 19 November). `--set` changes
 one dial for one run; `--config` takes a settings file of your own. Whatever you
 give it, a town run from this folder is an RTR town: asking for the other world
@@ -800,3 +800,58 @@ WEF world's employers should follow the third rule.
 going wage; the line itself is recorded nowhere, and the share with no job
 still counts everyone; a firm's decision to sell outside can be a few weeks
 stale between its quarterly reviews.
+
+**The same afternoon: a firm in debt that is losing money lets its
+longest-serving staff go** (built). The ledger is
+[docs/build-ledger-rtr-shedding-2026-11-19.md](../docs/build-ledger-rtr-shedding-2026-11-19.md).
+What the morning's rule did not cure was put to Jason as two questions: may a
+firm whose staff are on $1,127 let them go to take on people who would work
+for $1,058, and when some must go, who goes first? He answered with a rule of
+his own: "if we have five staff members in a business and we have debts of
+Say $2,000, we will sack the oldest staff member until the value of the total
+wages is less than the debt. Before we hire new staff". And later, asked
+whether a firm with cash and no debts that loses a little lets anyone go: "No,
+only if in debt".
+
+So a firm that owes the bank and lost money over the quarter lets its
+longest-serving staff go, one at a time, until what they were paid a week
+covers a week's share of the loss. His example: five staff on $1,127, losing
+$2,000 a week; two go. It never lets the last of its staff go, nor its
+executives. The letting go is the first thing in the next week's hiring; then
+it takes people on as it needs them, at its rate for new hires. Dial:
+`loss_sheds_staff`.
+
+And whoever an employer has to let go, the longest-serving goes first: for
+want of work and when it cannot pay as well, at firms and at small
+businesses. Before, the last hired went first. That reach is the builder's
+reading of his rule, and his to narrow. Dial: `longest_serving_first`.
+
+**It took three builds, and each fault was found by counting.** Eighty small
+towns, fourteen years, the mean share of people with no job:
+
+| | on the map | no map | reached the 90% line |
+|---|---|---|---|
+| before this rule | 8.6% | 12.3% | 2 of 80 |
+| first build: any firm with a loss, and held from hiring until a quarter without one | 20.1% | 23.6% | 3 of 80 |
+| second build: any firm with a loss, no hold | 8.6% | 8.7% | 0 of 80 |
+| as it stands: only a firm in debt | 9.5% | 12.4% | 1 of 80 |
+
+- The hold on hiring was the builder's reading of "before we hire new staff".
+  A firm held from hiring serves fewer customers, loses money again and is
+  held again. His words say the letting go comes first, not that hiring stops.
+- Without the hold the towns did well, and a fresh reviewer showed why not to
+  trust it. In this model a firm makes a small loss in more than half its
+  quarters, usually with cash in hand and no loan. So firms let people go at
+  more than half of all quarterly reviews, and half of those let go were back
+  at the same firm within four weeks. In two towns: 1,027 people let go. It
+  worked as a pay cut for the old hands, at the price of half as many layoffs
+  again and loans called on people who were back at work in days.
+- His word had been "debts". With only a firm in debt letting people go, the
+  same two towns let go 307, and 36% were back within four weeks.
+
+As it stands the rule leaves small towns about where they were before it.
+What it does in full towns is not yet known.
+
+The reviewer also found that an executive put back on the staff was being
+treated as the firm's newest hand, so the true longest-serving was often
+passed over. Fixed: they go back in their place by when they joined.

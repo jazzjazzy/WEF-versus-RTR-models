@@ -9,7 +9,7 @@ from . import rtr_owning
 from .config import NeedSpec
 from .entities import Project
 from .firmops import appoint_ceo, set_price, set_wage, sync_pay
-from .labour import in_the_line, separate
+from .labour import first_to_go, in_the_line, separate
 from .ledger import OUTSIDE
 from .places import dist, give_up_spots, hand_back_leased_blocks, home_spot, reach, reserve_home, take_spot
 from .production import best_condition, choose_make_mode, export_target, project_cost, unit_cost
@@ -106,6 +106,13 @@ def review_firm(town, firm) -> None:
             lower = int(firm.wage * (1.0 - cfg.wage_step_down))
             if line_share(town, lower) > cfg.wage_cut_unemployment:
                 set_wage(town, firm, lower, "queue")
+
+        if cfg.rtr and cfg.loss_sheds_staff:
+            # RTR (Jason, 19/11/2026): a firm in debt that lost money over the quarter lets its
+            # longest-serving staff go until their pay covers a week's share of the loss. Here the
+            # week's share is noted (rounded up); the letting go is the first thing in the next
+            # week's hiring (`labour.let_go_for_loss`). "In debt" is owing the bank anything.
+            firm.loss_to_cover = -(profit // cfg.quarter_weeks) if profit < 0 and firm.loan > 0 else 0
 
     if firm.spec.kind == "asset" and not shortfall:
         _plan_rebuilds(town, firm)
@@ -710,10 +717,11 @@ def _fund_payroll(town, firm) -> bool:
 
 
 def _shed_unpaid(town, firm) -> None:
-    """Let go the people the firm cannot pay this week, last hired first."""
+    """Let go the people the firm cannot pay this week, last hired first (in the RTR world the
+    longest-serving first: Jason, 19/11/2026)."""
     cfg = town.cfg
     while firm.cash < firm.payroll(cfg) and (firm.staff or firm.execs):
-        separate(town, firm.staff[-1] if firm.staff else firm.execs[-1], "unpaid")
+        separate(town, first_to_go(cfg, firm.staff) if firm.staff else firm.execs[-1], "unpaid")
         sync_pay(town, firm)
 
 

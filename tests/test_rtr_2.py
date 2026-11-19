@@ -1682,8 +1682,10 @@ def test_staff_are_paid_the_going_wage_and_a_fall_in_it_is_for_those_taken_on_af
 
 
 def test_a_small_business_that_cannot_pay_everyone_lets_the_last_hired_go():
+    """As built on 18 November. Since Jason's ruling of 19 November the longest-serving goes first;
+    this is the rule with that dial off (the ruling's own tests hold it on)."""
     from engine.rtr_makers import pay_staff
-    town = quiet_town()
+    town = quiet_town("longest_serving_first=false")
     a, h = maker(town, cash=150_000)
     h.business, h.wage = True, 100_000
     first, last = jobless(town), jobless(town)
@@ -1947,8 +1949,9 @@ def test_a_maker_of_a_need_is_left_to_the_makers_rule_by_the_wef_founders_rule()
 
 # --- found by breaking Part B's rules on purpose (18/11) -----------------------------------------------
 def test_the_last_hired_is_the_first_let_go_when_a_business_needs_fewer():
+    """As built on 18 November; with the dial of 19 November off (see the test above)."""
     from engine import rtr_makers
-    town = quiet_town()
+    town = quiet_town("longest_serving_first=false")
     a, h = maker(town)
     make_business(town, h)
     first, last = jobless(town), jobless(town)

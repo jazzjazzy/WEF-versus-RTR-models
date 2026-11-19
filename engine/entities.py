@@ -280,6 +280,7 @@ class Firm:
         self.price = spec.initial_price
         self.wage = 0                 # the rate it pays: everyone on its staff, or (own_rates) those it hires from now
         self.own_rates = False        # RTR (Jason, 19/11/2026): its staff each keep the rate they were hired or last lifted to
+        self.loss_to_cover = 0        # RTR (Jason, 19/11/2026): a week's share of last quarter's loss, if it is in debt: staff are let go for it at the next hiring
 
         self.shares_out = 0
         self.holders = {}             # agent id -> shares

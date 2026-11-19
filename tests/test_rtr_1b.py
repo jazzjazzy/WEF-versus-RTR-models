@@ -1,7 +1,7 @@
 """The Right to Repair world, stage 1b: buying, selling and letting."""
 
 import pytest
-from conftest import BEFORE_THE_LINE, FIFTH_IN_CASH, what_happened  # noqa: F401
+from conftest import BEFORE_THE_LINE, BEFORE_THE_SHEDDING, FIFTH_IN_CASH, what_happened  # noqa: F401
 from test_rtr import _buyer, _foreclosed, _owner, _renter_of_a_set, _tenant_with_a_job
 
 from engine.config import load_config
@@ -488,7 +488,7 @@ def test_a_real_town_with_people_letting_homes_keeps_its_weekly_checks():
     from test_town_invariants import run_checked
     from engine.rtr_owning import going_rent, letting_of, owns, put_to_let
     town = Town(load_config(None, ["world=rtr", "population_cap=150", "stop_on_failure=false", "seed=1",
-                                   "map_width=7", "map_height=7", *FIFTH_IN_CASH]))   # the town this was written for
+                                   "map_width=7", "map_height=7", *FIFTH_IN_CASH, *BEFORE_THE_SHEDDING]))   # the town this was written for
     assert run_checked(town, 4 * 52) == []
     owners = [a for a in town.agents if owns(a, "housing")][:5]
     assert len(owners) == 5
