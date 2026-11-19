@@ -52,6 +52,12 @@ def separate(town, agent, reason: str) -> None:
             agent.shock(cfg, cfg.shock_loan_called)
 
 
+def first_to_go(cfg, staff):
+    """Whoever an employer has to let go: the last hired; in the RTR world the longest-serving
+    (Jason, 19/11/2026: "we will sack the oldest staff member"). Staff are kept in order of hiring."""
+    return staff[0] if cfg.rtr and cfg.longest_serving_first else staff[-1]
+
+
 def promote(town, firm, agent) -> None:
     firm.staff.remove(agent)
     firm.execs.append(agent)
@@ -64,7 +70,15 @@ def promote(town, firm, agent) -> None:
 
 def demote(town, firm, agent) -> None:
     firm.execs.remove(agent)
-    firm.staff.append(agent)
+    cfg = town.cfg
+    if cfg.rtr and cfg.longest_serving_first:
+        # Where the longest-serving goes first the list is read as the order people joined, so
+        # someone put back takes their place by when they joined, not the newest's (the fresh
+        # review, 19/11/2026: added at the end, the oldest hand was passed over as the newest).
+        place = next((i for i, a in enumerate(firm.staff) if a.hired_week > agent.hired_week), len(firm.staff))
+        firm.staff.insert(place, agent)
+    else:
+        firm.staff.append(agent)
     agent.role = "staff"
     agent.wage = firm.wage
     if firm.own_rates and agent.staff_wage > firm.wage:
@@ -102,7 +116,7 @@ def in_the_line(town, wage: int) -> int:
 import math
 
 from . import rtr_owning
-from .firmops import set_wage
+from .firmops import set_wage, sync_pay
 from .places import (dist, find_home, home_cost, home_spot, note_stranded, reach, rides,
                      time_cost, transport_fare, travel_hours, unit_rent)
 from .production import upkeep_need
@@ -220,6 +234,32 @@ def new_worker(town, firm=None):
     return agent
 
 
+def let_go_for_loss(town, firm) -> None:
+    """RTR (Jason, 19/11/2026): "if we have five staff members in a business and we have debts
+    of Say $2,000, we will sack the oldest staff member until the value of the total wages is
+    less than the debt. Before we hire new staff". And, of a firm with cash and no debts that
+    loses a little: "No, only if in debt". A firm that owes the bank and lost money over the
+    quarter lets its longest-serving staff go, one at a time, until what they were paid a week
+    covers a week's share of the loss (never the last of them: a firm with nobody cannot
+    work). It is the first thing in the week's hiring; then the firm takes people on as it
+    needs them, at its wage.
+
+    Built first at the quarter's review for any firm with a loss, and with a hold on hiring
+    until a quarter without one. Counts overturned all three: the hold doubled the share of
+    people with no job; a loss alone is more than half of all reviews; and letting go in the
+    quarter's last week put everyone let go in that week's record as out of work."""
+    loss, firm.loss_to_cover = firm.loss_to_cover, 0
+    saved = gone = 0
+    while saved < loss and len(firm.staff) > 1:
+        who = firm.staff[0]                              # staff are kept in the order they joined
+        saved += who.wage
+        separate(town, who, "laid_off")
+        gone += 1
+    if gone:
+        sync_pay(town, firm)
+        town.event("staff_shed", firm=firm, amount=saved, qty=gone, loss=loss)
+
+
 def labour_market(town) -> None:
     cfg, rng = town.cfg, town.rng
     firms = town.alive_firms
@@ -228,6 +268,8 @@ def labour_market(town) -> None:
     for firm in firms:
         firm.waiting = len(firm.turned_away)
         firm.turned_away = {}
+        if firm.loss_to_cover:
+            let_go_for_loss(town, firm)
         need = labour_need(firm, cfg)
         desired = desired_staff(firm, cfg, town.week)
         keep = max(desired, math.ceil(need * (1.0 + cfg.staff_slack) - 1e-9))
@@ -235,7 +277,7 @@ def labour_market(town) -> None:
         if spare > 0:
             limit = max(cfg.layoff_min, math.ceil(cfg.layoff_rate * len(firm.staff)))
             for _ in range(min(spare, limit)):
-                separate(town, firm.staff[-1], "laid_off")
+                separate(town, first_to_go(cfg, firm.staff), "laid_off")
         adjust_executives(town, firm)
         firm.desired_staff = desired
         firm.vacancies = max(0, desired - len(firm.staff))

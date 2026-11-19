@@ -543,6 +543,7 @@ def run_as_shipped(seeds, place, years=14):
             assert cfg.mortgage_ltv == 1.0 and cfg.newcomers_buy and cfg.owners_pay_any_price
             assert cfg.makers_weigh_jobs and cfg.makers_buy_in_town and not cfg.home_loan_presses
             assert cfg.line_is_who_would_take and cfg.unhappy_makers_apply and cfg.staff_keep_pay
+            assert cfg.loss_sheds_staff and cfg.longest_serving_first
             hours_sold, wages_paid, idle = 0.0, 0, 0
             for _ in range(years * 52):
                 del weighed[:]
@@ -581,6 +582,7 @@ def run_as_shipped(seeds, place, years=14):
                     seen["a firm had staff on more than one rate"] += 1
                 if any(w.wage > h.wage for h in town.hustles for w in h.staff):
                     seen["a small business kept its staff on more than the going wage"] += 1
+                seen["a firm that lost money let its longest-serving staff go"] += sum(e["kind"] == "staff_shed" for e in week)
                 idle += town.jobless_share() > 0.5
                 if len(problems) > 20:
                     break
@@ -593,17 +595,17 @@ def run_as_shipped(seeds, place, years=14):
     return problems, seen
 
 
-SHIPPED = (("map", (38, 40), ["map_width=7", "map_height=7"]), ("no map", (10, 14), ["map_width=0"]))
+SHIPPED = (("map", (16, 30), ["map_width=7", "map_height=7"]), ("no map", (2, 29), ["map_width=0"]))
 
 
 @pytest.fixture(scope="module")
 def towns_of_today():
     """Towns of 200 run for fourteen years under the weekly checks exactly as the RTR world ships:
-    seeds 38 and 40 on a 7 by 7 map, seeds 10 and 14 with no map (picked on 19 November from forty of
-    each, all eighty clean under the checks, run with that day's rulings and the fresh review's fixes,
-    for reaching the rules of the stages before as well and for not being towns that stop; the seeds
-    of 18 November were picked the same way, twice). For each kind: (what the checks found, what was
-    reached)."""
+    seeds 16 and 30 on a 7 by 7 map, seeds 2 and 29 with no map (picked on the afternoon of 19 November
+    from thirty of each, all sixty clean under the checks, run with that day's rulings, for reaching
+    the rules of the stages before as well and for not being towns that stop; the seeds of that
+    morning and of 18 November were picked the same way). For each kind: (what the checks found, what
+    was reached)."""
     return {kind: run_as_shipped(seeds, place) for kind, seeds, place in SHIPPED}
 
 
@@ -617,7 +619,9 @@ TODAY = ["a home bought with the whole price lent", "a home being built with eve
          "a firm short of profit kept its rate: those with no job would not take less",
          "unhappy on a side hustle, a maker took a job that paid no more than it brought in",
          "a firm cut its rate and its staff kept theirs", "a firm bid its rate up while some of its staff were on more",
-         "a firm had staff on more than one rate", "a small business kept its staff on more than the going wage"]
+         "a firm had staff on more than one rate", "a small business kept its staff on more than the going wage",
+         # 19 November, afternoon
+         "a firm that lost money let its longest-serving staff go"]
 
 
 # Not asked of these towns: "a newcomer bought on arriving". No town run so far reaches it (three full
@@ -634,8 +638,10 @@ def test_towns_as_shipped_keep_their_accounts_and_places_and_reach_the_rulings(t
     # at what its staff keep, so a cut for newcomers brought no work), and every weekly check passed.
     # A small capped town can stop without any fault (of eighty before that day's rules the worst had
     # more than half its people out of work for 304 weeks of 728); these four were picked among those
-    # that do not (0 to 64 such weeks), so that a change which stops them is loud. With the fault the
-    # worst of twenty had 600.
+    # that do not (0 to 73 such weeks), so that a change which stops them is loud. With the fault the
+    # worst of twenty had 600. That afternoon the check earned its place the same day it was written:
+    # a hold on hiring of the builder's doubled the share out of work, and counting how towns fare
+    # is what showed it.
     assert seen[STRANDED] <= 156, f"one of these towns had more than half its people out of work for {seen[STRANDED]} weeks"
 
 
@@ -1469,7 +1475,9 @@ def test_the_review_that_cuts_the_rate_leaves_the_staff_on_theirs():
     from engine.corporate import review_firm
     from engine.labour import hire
     town = quiet_town()
+    from test_pricing import quarter
     firm = shop_short_of_profit(town, pays=80_000)
+    quarter(firm, 0)                                                         # short of its target, and not at a loss
     staff = [town.add_agent() for _ in range(3)]
     for a in staff:
         hire(town, firm, a)
@@ -1774,3 +1782,341 @@ def test_the_record_keeps_what_staff_are_paid_and_what_a_job_pays_someone_new():
         m = {metric: value for scope, metric, value in weekly_series(town) if scope == "town"}
         assert m["wage"] == paid and m["wage_index"] == paid / 100_000
         assert (m.get("wage_offer") == 60_000) is has_offer and ("wage_offer" in m) is has_offer
+
+
+# --- 19 November 2026, afternoon: a firm that is losing money lets its longest-serving staff go --------
+# Put to him as a firm whose staff are all on $1,127 a week while people in town would do the work for
+# $1,058: may it swap them, and who goes first? He answered with a rule of his own: "if we have five
+# staff members in a business and we have debts of Say $2,000, we will sack the oldest staff member
+# until the value of the total wages is less than the debt. Before we hire new staff". Played back as:
+# a firm losing money sheds its longest-serving staff until the wages fit what the work brings in, and
+# hires nobody new until then. His answer: "Yes, that rule" (the wording is the button's).
+# Built first for any firm that made a loss in the quarter. A count showed that is more than half of
+# all quarterly reviews, mostly firms with cash in hand and no loan, and that half of those let go
+# were back at the same firm within four weeks. His word had been "debts". Asked "A firm with cash
+# and no debts loses a little in a quarter. Does it let anyone go?", he said: "No, only if in debt".
+def firm_in_a_quarter(town, staff=5, pays=112_700, profit=-2_600_000, owes=5_000_000):
+    """His example: a firm with five staff on $1,127 a week that lost $2,000 a week over the quarter
+    (thirteen weeks: $26,000), and owes the bank $50,000. Its two shareholders are of the owner class.
+    Staff in order of hiring."""
+    from test_pricing import firm_with_holders, quarter
+    from engine.labour import hire
+    firm = firm_with_holders(town)
+    for a in town.agents:
+        a.klass = "owner"
+    firm.founded, firm.wage, firm.cash, firm.loan = -100, pays, 100_000_000, owes
+    people = [town.add_agent() for _ in range(staff)]
+    for a in people:
+        hire(town, firm, a)
+    quarter(firm, profit)
+    return firm, people
+
+
+def review_then_next_week(town, firm):
+    """The quarter's review, and then the start of the next week's hiring, which is when a firm in debt
+    that lost money lets people go."""
+    from engine.corporate import review_firm
+    from engine.labour import let_go_for_loss
+    review_firm(town, firm)
+    let_go_for_loss(town, firm)
+
+
+def shed(town):
+    return [(e["firm"], e["qty"], e["amount"], e["data"]["loss"]) for e in town.rec.events if e["kind"] == "staff_shed"]
+
+
+def let_go(town):
+    return [(e["agent"], e["data"]["reason"]) for e in town.rec.events if e["kind"] == "layoff"]
+
+
+def test_the_dials_for_shedding_staff_are_on_and_are_the_rtr_worlds_own():
+    from engine.config import RTR_ONLY, load_config
+    cfg = load_config(None, ["world=rtr"])
+    assert cfg.loss_sheds_staff is True and "loss_sheds_staff" in RTR_ONLY
+    assert cfg.longest_serving_first is True and "longest_serving_first" in RTR_ONLY
+
+
+def test_a_firm_that_lost_money_lets_its_longest_serving_go_until_their_pay_covers_the_loss():
+    from test_rtr_2 import quiet_town
+    from engine.corporate import review_firm
+    town = quiet_town()
+    firm, people = firm_in_a_quarter(town)                                   # his example: five staff, $2,000 a week lost
+    review_then_next_week(town, firm)
+    assert firm.staff == people[2:]                                          # the two taken on first are gone
+    assert let_go(town) == [(people[0].id, "laid_off"), (people[1].id, "laid_off")]
+    assert shed(town) == [(firm.id, 2, 225_400, 200_000)]                    # $2,254 of pay against $2,000 lost
+    assert firm.staff_bill() == 3 * 112_700
+
+
+def test_it_stops_as_soon_as_the_pay_let_go_covers_the_weeks_loss():
+    from test_rtr_2 import quiet_town
+    from engine.corporate import review_firm
+    for lost_a_week, gone in ((112_700, 1), (112_701, 2), (1, 1)):
+        town = quiet_town()
+        firm, people = firm_in_a_quarter(town, profit=-13 * lost_a_week)
+        review_then_next_week(town, firm)
+        assert len(firm.staff) == 5 - gone and firm.staff == people[gone:]
+    town = quiet_town()
+    firm, people = firm_in_a_quarter(town, profit=-(13 * 112_700 + 1))       # a cent over thirteen weeks of one wage:
+    review_then_next_week(town, firm)                                                  # the week's share is rounded up, and one wage
+    assert len(firm.staff) == 3 and shed(town) == [(firm.id, 2, 225_400, 112_701)]   # does not cover it
+
+
+def test_what_is_counted_is_what_those_let_go_were_paid_not_the_firms_rate_for_new_hires():
+    from test_pricing import quarter
+    from test_rtr_2 import quiet_town
+    from engine.corporate import review_firm
+    from engine.firmops import set_wage
+    town = quiet_town()
+    firm, people = firm_in_a_quarter(town)
+    set_wage(town, firm, 50_000, "queue")                                    # it offers $500 now; its five keep $1,127
+    quarter(firm, -13 * 112_700)                                             # and it lost one of their wages a week
+    review_then_next_week(town, firm)
+    assert firm.staff == people[1:] and shed(town) == [(firm.id, 1, 112_700, 112_700)]
+
+
+def test_the_last_of_its_staff_is_never_let_go_for_a_loss():
+    from test_rtr_2 import quiet_town
+    from engine.corporate import review_firm
+    town = quiet_town()
+    firm, people = firm_in_a_quarter(town, profit=-13 * 10_000_000)          # a loss no wage bill could cover
+    review_then_next_week(town, firm)
+    assert firm.staff == people[4:] and shed(town) == [(firm.id, 4, 450_800, 10_000_000)]
+    town = quiet_town()
+    firm, people = firm_in_a_quarter(town, staff=1)
+    review_then_next_week(town, firm)
+    assert firm.staff == people and shed(town) == []
+
+
+def test_a_quarter_without_a_loss_sheds_nobody():
+    from test_pricing import quarter
+    from test_rtr_2 import quiet_town
+    from engine.corporate import review_firm
+    town = quiet_town()
+    firm, people = firm_in_a_quarter(town, profit=0)                         # broke even: not a loss
+    review_then_next_week(town, firm)
+    assert firm.staff == people and shed(town) == []
+    quarter(firm, 1)
+    review_then_next_week(town, firm)
+    assert firm.staff == people and shed(town) == []
+    from engine.corporate import review_firm
+    quarter(firm, 130_000)                                                   # a good quarter, for a firm in debt:
+    review_firm(town, firm)
+    assert firm.loss_to_cover == 0                                           # nothing is noted to be covered
+
+
+def test_a_firm_that_has_never_had_a_customer_sheds_nobody():
+    from test_pricing import quarter
+    from test_rtr_2 import quiet_town
+    from engine.corporate import review_firm
+    town = quiet_town()
+    firm, people = firm_in_a_quarter(town)
+    quarter(firm, -2_600_000, revenue=0)                                     # a start-up paying wages before its first sale
+    review_then_next_week(town, firm)
+    assert firm.staff == people and shed(town) == []
+
+
+def test_executives_are_not_let_go_by_this_rule_and_their_pay_is_not_counted():
+    from test_rtr_2 import quiet_town
+    from engine.corporate import review_firm
+    from engine.labour import promote
+    town = quiet_town()
+    firm, people = firm_in_a_quarter(town)
+    promote(town, firm, people[0])                                           # the longest-serving is now a boss
+    review_then_next_week(town, firm)
+    assert firm.execs == [people[0]] and firm.staff == people[3:]            # the next two went
+
+
+def wants_staff(town, firm, customers=40):
+    """Give the firm customers enough to want more staff than it has, and people out of work to take."""
+    from engine.subscriptions import subscribe
+    for _ in range(customers):
+        a = town.add_agent()
+        a.klass = "owner"                                                    # customers who are not looking for work
+        subscribe(town, a, firm)
+    seekers = [out_of_work(town) for _ in range(6)]
+    return seekers
+
+
+def test_the_letting_go_is_the_first_thing_in_the_next_weeks_hiring_and_then_it_takes_people_on():
+    """"Before we hire new staff": the letting go comes first, and then it hires, in the same week's
+    hiring. As first built the letting go was at the review, in the last week of the quarter, and the
+    record showed everyone let go as out of work at every quarter's end though half were back within
+    days. (Before that it was held from hiring until a quarter without a loss; eighty small towns showed
+    that hold doubling the share of people with no job. See the ledger.)"""
+    from test_rtr_2 import quiet_town
+    from engine.corporate import review_firm
+    from engine.firmops import set_wage
+    from engine.labour import labour_market
+    town = quiet_town()
+    firm, people = firm_in_a_quarter(town)
+    seekers = wants_staff(town, firm, customers=80)                          # work for fifteen
+    review_firm(town, firm)
+    assert firm.staff == people and firm.loss_to_cover == 200_000 and shed(town) == []   # nobody goes at the review
+    set_wage(town, firm, 100_000, "queue")                                   # what it offers someone new: $1,000
+    labour_market(town)                                                      # the next week
+    assert shed(town) == [(firm.id, 2, 225_400, 200_000)] and firm.loss_to_cover == 0
+    assert firm.staff[:3] == people[2:] and [a.wage for a in people[2:]] == [112_700] * 3   # the three who stayed keep theirs
+    assert all(s_.employer is firm and s_.wage == 100_000 for s_ in seekers)                # and it takes on everyone looking
+    labour_market(town)                                                      # the week after: nothing more to cover
+    assert len(shed(town)) == 1
+
+
+def test_a_firm_with_cash_and_no_debts_that_loses_a_little_lets_nobody_go():
+    from test_rtr_2 import quiet_town
+    town = quiet_town()
+    firm, people = firm_in_a_quarter(town, profit=-300_000, owes=0)          # his case: $500,000 in the bank, owes nothing,
+    firm.cash = 50_000_000                                                   # lost $3,000 in the quarter
+    review_then_next_week(town, firm)
+    assert firm.staff == people and shed(town) == [] and firm.loss_to_cover == 0
+    town = quiet_town()
+    firm, people = firm_in_a_quarter(town, owes=1)                           # owing the bank anything at all is being in debt
+    review_then_next_week(town, firm)
+    assert len(firm.staff) == 3
+
+
+@pytest.mark.parametrize("dial", ["loss_sheds_staff=false", None])
+def test_with_that_dial_off_or_in_the_wef_world_a_loss_lets_nobody_go(dial):
+    from conftest import empty_town
+    from test_rtr_2 import quiet_town
+    from engine.corporate import review_firm
+    town = quiet_town(dial) if dial else empty_town("loss_sheds_staff=true")  # given to the WEF world, and not read
+    firm, people = firm_in_a_quarter(town)
+    review_then_next_week(town, firm)
+    assert firm.staff == people and shed(town) == []
+
+
+def firm_with_too_many(town, staff=4):
+    """A firm with no customers and no work, long past its start: it wants nobody, and lets go one a week."""
+    from engine.labour import hire
+    firm = town.add_firm("food")
+    firm.founded, firm.cash = -1000, 10_000_000
+    people = [town.add_agent() for _ in range(staff)]
+    for a in people:
+        a.klass = "owner"                                                    # they will not look for other work
+        hire(town, firm, a)
+    return firm, people
+
+
+@pytest.mark.parametrize("dial, first", [((), 0), (("longest_serving_first=false",), -1)])
+def test_for_want_of_work_the_longest_serving_goes_first(dial, first):
+    from test_rtr_2 import quiet_town
+    from engine.labour import labour_market
+    town = quiet_town(*dial)
+    firm, people = firm_with_too_many(town)
+    labour_market(town)
+    assert let_go(town) == [(people[first].id, "laid_off")]
+
+
+def test_in_the_wef_world_the_last_hired_still_goes_first():
+    from conftest import empty_town
+    from engine.corporate import _shed_unpaid
+    from engine.labour import labour_market
+    town = empty_town("longest_serving_first=true")                          # given, and not read
+    firm, people = firm_with_too_many(town)
+    labour_market(town)
+    assert let_go(town) == [(people[-1].id, "laid_off")]
+    firm.cash = 0
+    _shed_unpaid(town, firm)
+    assert [a for a, why in let_go(town) if why == "unpaid"] == [p.id for p in people[-2::-1]]
+
+
+@pytest.mark.parametrize("dial, order", [((), (0, 1)), (("longest_serving_first=false",), (2, 1))])
+def test_a_firm_that_cannot_pay_lets_the_longest_serving_go_first(dial, order):
+    from test_rtr_2 import quiet_town
+    from engine.corporate import _shed_unpaid
+    town = quiet_town(*dial)
+    firm, people = firm_with_too_many(town, staff=3)
+    firm.cash = 100_000                                                      # enough for one of the three on $1,000
+    _shed_unpaid(town, firm)
+    assert let_go(town) == [(people[i].id, "unpaid") for i in order] and len(firm.staff) == 1
+
+
+@pytest.mark.parametrize("dial, first", [((), 0), (("longest_serving_first=false",), -1)])
+def test_a_small_business_lets_its_longest_serving_go_first_too(dial, first):
+    from test_rtr_2 import jobless, on_the_staff
+    from engine import rtr_makers
+    town, h, hand = business_with_a_worker(*dial)
+    newer = jobless(town)
+    on_the_staff(h, newer)                                                   # two on the staff, and work for one
+    rtr_makers.hire_staff(town)
+    assert let_go(town) == [([hand, newer][first].id, "laid_off")]
+    h.owner.cash = 0                                                         # and now it cannot pay the one it kept
+    rtr_makers.pay_staff(town)
+    assert h.staff == [] and let_go(town)[-1][1] == "unpaid"
+
+
+
+@pytest.mark.parametrize("dial, kept", [((), 1), (("longest_serving_first=false",), 0)])
+def test_a_small_business_that_can_pay_only_one_of_two_lets_the_longest_serving_go(dial, kept):
+    from test_rtr_2 import jobless, maker, on_the_staff, quiet_town
+    from engine.rtr_makers import pay_staff
+    town = quiet_town(*dial)
+    a, h = maker(town, cash=150_000)                                         # enough for one wage of $1,000, not two
+    h.business, h.wage = True, 100_000
+    two = [jobless(town), jobless(town)]
+    on_the_staff(h, *two)
+    pay_staff(town)
+    assert h.staff == [two[kept]] and two[1 - kept].role is None
+    assert let_go(town) == [(two[1 - kept].id, "unpaid")]
+
+
+def test_an_executive_put_back_on_the_staff_takes_their_place_by_when_they_joined():
+    """The fresh review, 19 November: someone put back on the staff was added at the end of the list,
+    so the longest-serving hand in the firm was treated as its newest, and passed over."""
+    from test_rtr_2 import quiet_town
+    from engine.labour import demote, first_to_go, hire, promote
+    town = quiet_town()
+    firm = town.add_firm("food")
+    firm.founded = -100
+    people = [town.add_agent() for _ in range(4)]
+    for week, a in enumerate(people):
+        town.week = week
+        hire(town, firm, a)
+    promote(town, firm, people[0])
+    demote(town, firm, people[0])                                            # the first to join comes back to the staff
+    assert firm.staff == people and first_to_go(town.cfg, firm.staff) is people[0]
+    promote(town, firm, people[2])
+    demote(town, firm, people[2])                                            # and one from the middle goes back to the middle
+    assert firm.staff == people
+
+
+@pytest.mark.parametrize("town_of", ["dial off", "wef"])
+def test_where_the_last_hired_goes_first_someone_put_back_is_still_added_at_the_end(town_of):
+    from conftest import empty_town
+    from test_rtr_2 import quiet_town
+    from engine.labour import demote, hire, promote
+    town = quiet_town("longest_serving_first=false") if town_of == "dial off" else empty_town()
+    firm = town.add_firm("food")
+    firm.founded = -100
+    people = [town.add_agent() for _ in range(3)]
+    for week, a in enumerate(people):
+        town.week = week
+        hire(town, firm, a)
+    promote(town, firm, people[0])
+    demote(town, firm, people[0])
+    assert firm.staff == [people[1], people[2], people[0]]                   # as it always was: the record must not change
+
+
+def test_after_letting_people_go_the_bosses_pay_is_worked_out_again():
+    from test_rtr_2 import quiet_town
+    from engine.corporate import review_firm
+    from engine.firmops import appoint_ceo
+    town = quiet_town()
+    cfg = town.cfg
+    firm, people = firm_in_a_quarter(town)
+    boss = town.add_agent()
+    appoint_ceo(town, firm, boss)                                            # their multiple grows with the staff: five of them
+    assert boss.wage == int(112_700 * (cfg.ceo_pay_base + 5 * cfg.ceo_pay_per_staff))
+    review_then_next_week(town, firm)                                                  # two are let go
+    assert boss.wage == int(112_700 * (cfg.ceo_pay_base + 3 * cfg.ceo_pay_per_staff))
+
+
+def test_for_a_loss_the_longest_serving_go_even_where_the_last_hired_goes_first_otherwise():
+    from test_rtr_2 import quiet_town
+    from engine.corporate import review_firm
+    town = quiet_town("longest_serving_first=false")
+    firm, people = firm_in_a_quarter(town)
+    review_then_next_week(town, firm)
+    assert firm.staff == people[2:]                                          # his rule names who goes: "the oldest staff member"
+

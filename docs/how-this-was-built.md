@@ -89,6 +89,7 @@ Test counts are the size of the test suite at the end of each stage.
 | 18 Nov | The RTR world, stage 2: side hustles, ideas, small businesses, companies | 1,012 | Whole towns showed five things wrong with the builder's own design that every test had passed. The review then changed five more of the builder's rules, with figures for each |
 | 18 Nov | Jason's rulings on six of the builder's calls in the RTR world | 1,087 | The review found that an old saved settings file would quietly run some of the new rules. Such a file is now refused |
 | 19 Nov | Jason's rulings on who is in the line for a job, and on staff keeping their pay | 1,130 | The builder's first version stopped small towns. The review caught it. See below |
+| 19 Nov | Jason's ruling that a firm in debt and losing money lets its longest-serving staff go | 1,156 | It took three builds. Counting how towns fare, and then a reviewer, overturned the builder's reading twice. See below |
 
 The engine is about 12,700 lines of Python and the tests about 15,800. The
 RTR world's stage 3 (its measures on the pages, and both worlds side by side
@@ -115,6 +116,16 @@ model may still be wrong.
   their people out of work on average, and that with the new rules switched
   off none did. The weekly checks prove the books. They cannot see whether a town is working. The tests now also ask
   how their towns fare.
+- **The builder reads more into a rule than it says.** The same afternoon
+  Jason ruled that a firm losing money lets its longest-serving staff go
+  "before we hire new staff". The builder turned that into a freeze on hiring
+  until the firm had a quarter without a loss. Across eighty small towns the
+  share of people with no job doubled. The freeze was taken out. A reviewer
+  then showed the builder had also read "debts" as "any loss in a quarter",
+  which in this model is more than half of all quarters: firms were letting
+  people go and taking the same people back within days. Jason ruled "only
+  if in debt". Each fault was found by counting what happened in towns, not
+  by a test.
 - **A reviewer finds what the builder cannot.** In every stage that was
   reviewed, the reviewer found at least one fault that mattered, in a place
   the builder had not looked. Each is in its ledger.

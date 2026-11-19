@@ -436,6 +436,17 @@ WEF world keeps the rule as it was.
   rate; what it reckons ahead (one more unit made or built, selling outside, the going wage)
   is at the rate it offers. `staff_keep_pay`. The first build reckoned ahead at what the
   staff keep, and a fresh review showed that stopped small towns: the ledger has the count.
+- Built, the same afternoon (`docs/build-ledger-rtr-shedding-2026-11-19.md`): **a firm in debt
+  that lost money over the quarter lets its longest-serving staff go** until what they were paid
+  a week covers a week's share of the loss, never the last of them ("we will sack the oldest
+  staff member until the value of the total wages is less than the debt. Before we hire new
+  staff"; and of a firm with cash and no debts: "No, only if in debt"). It is the first thing in
+  the next week's hiring; then the firm takes people on as it needs them, at its rate for new
+  hires. `loss_sheds_staff`. And **whoever an employer has to let go, the longest-serving goes
+  first**, for want of work or of cash as well, at firms and small businesses (the builder's
+  reading of how far his rule reaches). `longest_serving_first`. Two earlier builds were
+  overturned by counts the same day (a hold on hiring; any firm with a loss): the ledger has
+  them.
 
 Stage 3 is not built.
 

@@ -16,7 +16,10 @@ FIFTH_IN_CASH = ["mortgage_ltv=0.8"]
 # rate was everyone with no job. Jason ruled that staff already there keep their pay and that only
 # those who would take the job are in the line. Whole towns whose seeds were picked before that
 # hold these dials.
-BEFORE_THE_LINE = ["staff_keep_pay=false", "line_is_who_would_take=false", "unhappy_makers_apply=false"]
+# That afternoon he ruled that a firm losing money lets its longest-serving staff go. Before it, a firm
+# let nobody go for a loss, and the last hired went first.
+BEFORE_THE_SHEDDING = ["loss_sheds_staff=false", "longest_serving_first=false"]
+BEFORE_THE_LINE = ["staff_keep_pay=false", "line_is_who_would_take=false", "unhappy_makers_apply=false"] + BEFORE_THE_SHEDDING
 # The RTR world as stage 2 was merged, before any of Jason's rulings of 18 and 19 November: for whole
 # towns whose seeds were picked then. Towns as the world now ships are run in test_rtr_rulings.py.
 BEFORE_THE_RULINGS = FIFTH_IN_CASH + ["newcomers_buy=false", "owners_pay_any_price=false", "makers_weigh_jobs=false",

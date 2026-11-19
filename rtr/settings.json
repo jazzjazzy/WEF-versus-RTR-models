@@ -209,6 +209,8 @@
   "town_goods_premium": 0.1,
   "line_is_who_would_take": true,
   "staff_keep_pay": true,
+  "loss_sheds_staff": true,
+  "longest_serving_first": true,
   "unhappy_makers_apply": true,
   "maker_margin": 0.1,
   "hustle_min_hours": 10.0,
