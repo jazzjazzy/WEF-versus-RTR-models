@@ -1,5 +1,9 @@
 # The build records
 
+**Start with [how-this-was-built.md](how-this-was-built.md):** who did what, the method, what
+was built when, and what went wrong along the way. The rest of this folder is the detail
+behind it.
+
 These are the design notes, plans and ledgers written while the two worlds were built. They
 are kept as they were written, so they are a true record of what was decided and when.
 

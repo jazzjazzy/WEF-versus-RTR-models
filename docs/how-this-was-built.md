@@ -1,0 +1,144 @@
+# How this model was built
+
+This model was built in eight days, from 12 to 19 November 2026, by a person
+and an AI working together. This page says who did what, the method that was
+followed, what was built when, and what went wrong along the way. It is
+written so that someone who downloads the model can judge how far to trust
+it, and can check the work for themselves.
+
+Everything said here can be traced to the records in this folder. Where a
+figure is given, the record it comes from is named.
+
+## Who did what
+
+**Jason** asked the question, set the rules, and ruled on every design
+decision that was put to him. His question, on 12 November 2026: if companies
+keep moving toward "you will own nothing", does that world hold together, or
+does it collapse in on itself? And what happens in the opposite world, where
+people may own, repair and build? Nothing was committed, merged or published
+without his word.
+
+**Claude**, an AI model made by Anthropic and working as a coding agent,
+designed the machinery under those rules, wrote all of the code, the tests
+and the documents, ran the towns, and kept the record.
+
+The two are kept apart everywhere. In the settings
+([engine/config.py](../engine/config.py)) and in the designs, a rule that is
+his is marked **(J)** and a number or a gap the builder filled is marked
+**(C)**. His rulings are quoted in his own words in the ledgers. Most of the
+starting numbers are the builder's, which is one reason nothing here is yet a
+finding.
+
+Before the first run, each wrote down what they expected to happen
+([predictions.md](predictions.md)), so that neither could tune the model
+toward what they already believed. Jason expected the rent-everything world
+to collapse in on itself. Claude expected neither world to collapse by
+itself.
+
+## The method
+
+The same steps were followed for every part of the model.
+
+1. **Talk first.** Each world began as a conversation about how its people
+   and firms behave. That became a written design
+   ([superpowers/specs/](superpowers/specs/)), which Jason approved before
+   anything was built. His briefs, in his words, are in
+   [design-notes/](design-notes/).
+2. **A plan**, task by task ([superpowers/plans/](superpowers/plans/)).
+3. **Tests first.** A test was written for each rule and seen to fail before
+   the rule was built to make it pass.
+4. **A ledger.** Every decision the builder made alone was written down as it
+   was made, with the reason and what it would cost if it was wrong (the
+   `build-ledger-*.md` files here). The ledgers were kept as written.
+5. **Whole towns under weekly checks.** Tests of single rules are not enough,
+   so whole towns are run for years with a set of checks made every week: all
+   money moves through one function and must add up, every person and firm
+   must be where the record says, and so on.
+6. **Runs must repeat exactly.** The same settings and seed give the same
+   record, event for event. Towns of the WEF world recorded early on are run
+   again by the tests and must still match, so work on one world cannot
+   quietly change the other.
+7. **Deliberate breaks.** Each rule was broken on purpose in a scratch copy,
+   one break at a time. A break that no test caught meant a test was missing,
+   and one was written.
+8. **A fresh reviewer.** At the end of each stage a second instance of the AI,
+   with no part in the build, was given the code and the records and asked to
+   find faults. It ran its own towns. Its findings were graded by what a
+   person using the model would get, fixed with a failing test first, and
+   listed in the ledger, including the ones that were left.
+9. **Many towns, not one.** One town can mislead. Results are read across
+   batches of towns that differ only in their seed.
+10. **Plain reporting.** A town that did not reach the failure line is not
+    called a town that works. Good news was checked as hard as bad.
+
+## What was built, and when
+
+Test counts are the size of the test suite at the end of each stage.
+
+| When | What | Tests | What checking found |
+|---|---|---|---|
+| 12 Nov | The design conversation, and both predictions | | |
+| 12 Nov | Stage 1: the economy, no map. People, firms, a bank, a share market, renting everything | 201 | The reviewer ran 21 small towns through about 1,800 firm failures with no fault in the accounts. It found two critical faults (income wrongly recorded for each person, and a mistyped setting accepted without complaint) and several rules that misbehaved; fixed |
+| 12 Nov | Stage 2: the map. Distance, land, rent by location, transport | 333 | Comparing records showed the new code, with the map switched off, no longer gave the stage 1 town. The cause was the order in which a founder settled and opened a firm; fixed. The review found one critical fault (a pulled-down home went on being rebuilt) |
+| 12 to 13 Nov | Stage 3: the town view, a page that plays a run back week by week | 512 | The review found 1 critical, 9 important and 15 minor faults in the page, and that the page's own code had no tests. It is now tested by loading the built page and driving it |
+| 13 Nov | Stage 5, first part: running many towns at once and comparing them | 660 | The first batch: all 100 WEF towns failed, the middle one in year 16.5. The review found the yearly charts were counting towns that had failed in a year's last week; fixed |
+| 13 and 16 Nov | Stage 4: tracing. Why the wage falls on the map, and where the money goes | | Two written traces: [wage](stage4-wage-trace-2026-11-13.md), [money](stage4-money-trace-2026-11-16.md) |
+| 16 Nov | Jason's rulings on the sixteen open decisions of the WEF world, and no cap on people | 712 | Seven rulings differed from what had been built, and were built. The second batch: all 100 towns still failed, the middle one in year 18.75 |
+| 16 to 17 Nov | The RTR world, stage 1: owning, building, buying, selling and letting | 861 | The review found that the quarterly home sales crashed about one full town in ten; fixed |
+| 17 Nov | The two worlds given a folder each over one shared engine | | |
+| 18 Nov | The RTR world, stage 2: side hustles, ideas, small businesses, companies | 1,012 | Whole towns showed five things wrong with the builder's own design that every test had passed. The review then changed five more of the builder's rules, with figures for each |
+| 18 Nov | Jason's rulings on six of the builder's calls in the RTR world | 1,087 | The review found that an old saved settings file would quietly run some of the new rules. Such a file is now refused |
+| 19 Nov | Jason's rulings on who is in the line for a job, and on staff keeping their pay | 1,130 | The builder's first version stopped small towns. The review caught it. See below |
+
+The engine is about 12,700 lines of Python and the tests about 15,800. The
+RTR world's stage 3 (its measures on the pages, and both worlds side by side
+on the same hundred towns) is not built.
+
+## What went wrong, and what it taught
+
+These are kept on the record because they are the best guide to where the
+model may still be wrong.
+
+- **The first batch failed everywhere.** All 100 towns of the WEF world
+  failed within 21 years. That is a result of the rules and the untested
+  starting numbers together, and it has not been separated into which is
+  which.
+- **A rule that works in a test can do nothing in a town.** On 18 November a
+  rule of Jason's (a newcomer may buy a home) was built and passed sixteen
+  tests. Counting showed that no newcomer used it in any town that was run,
+  because of when newcomers arrive and when the bank holds homes. The count,
+  not the tests, showed this.
+- **The accounts can balance in a town that has stopped.** On 19 November the
+  builder made firms work out their costs from the average pay of their
+  staff. Eighty small towns passed every weekly check. A reviewer then showed
+  that 8 of 20 such towns reached the failure line, with a third to a half of
+  their people out of work on average, and that with the new rules switched
+  off none did. The weekly checks prove the books. They cannot see whether a town is working. The tests now also ask
+  how their towns fare.
+- **A reviewer finds what the builder cannot.** In every stage that was
+  reviewed, the reviewer found at least one fault that mattered, in a place
+  the builder had not looked. Each is in its ledger.
+- **The builder's numbers are everywhere.** His rules often left a number
+  open ("long", "reasonable", "a large loan"), and the builder chose one.
+  Each choice is marked and listed for him to overrule. Several have already
+  been overruled.
+
+## Checking this for yourself
+
+- Run the tests from the top folder: `python3 -m pytest`. They take about
+  five minutes and need Python 3.12 or later and `pytest`, nothing else.
+- Run a town: see the README in [wef/](../wef/README.md) or
+  [rtr/](../rtr/README.md). The same seed and settings give the same town.
+- Read a ledger beside the code it describes. Each ruling says what was
+  decided, why, and what it costs if wrong.
+- The ledgers quote commit IDs and branch names from the private working
+  repository the model was built in. This public repository starts from one
+  snapshot of 19 November 2026, so those IDs are not in its history. The
+  recorded towns the figures come from are large and are not in the
+  repository either. Running the same settings and seeds makes them again.
+
+## What this is not
+
+It is not tuned, and it is not finished. The starting numbers have not been
+tested against anything. No result here is a finding yet. The report on what
+the two worlds do, set against the two predictions, has not been written.
