@@ -306,6 +306,47 @@ def _charts(shape: _Shaper, cfg: dict, places: dict | None = None) -> list[dict]
            {"name": "Condition of appliance sets in use", "color": 3,
             "values": shape.quarters(town("appl_cond"))}],
           ymax=1, section="town")
+    # --- owning, letting and side hustles (only the RTR world records them) -----------------
+    has = lambda metric: ("town", metric) in shape.series   # noqa: E731  an older record may lack one
+    if has("homes_owned"):
+        owned, let = town("homes_owned"), town("homes_let_private")
+        lines("Who holds the homes",
+              "Homes standing, and of them: lived in by the person who owns them, let by a person "
+              "who owns them (a small landlord), and taken back by the bank and not yet sold. The "
+              "rest are held by landlord firms.", "count",
+              [{"name": "Homes standing", "color": "ink", "values": shape.quarters(town("homes"))},
+               {"name": "Lived in by their owner", "color": 1,
+                "values": shape.quarters({w: v - let.get(w, 0.0) for w, v in owned.items()})},
+               {"name": "Let by a small landlord", "color": 2, "values": shape.quarters(let)},
+               {"name": "Taken back by the bank", "color": 3, "values": shape.quarters(town("homes_foreclosed"))}],
+              section="owning")
+    if has("wage_offer"):
+        lines("What staff are paid and what a newcomer is offered",
+              "The average weekly pay of staff, and the rate a firm offers someone it takes on now. "
+              "Staff keep the pay they were taken on at, so the two can part.", "money",
+              [{"name": "Staff paid, on average", "color": 1, "values": shape.quarters(town("wage"), 0.01)},
+               {"name": "The rate for someone taken on now", "color": 2,
+                "values": shape.quarters(town("wage_offer"), 0.01)}],
+              section="owning")
+    if has("makers"):
+        lines("Side hustles",
+              "People selling their own work or making things on the side, the customers they serve, "
+              "and how many have grown into small businesses with staff.", "count",
+              [{"name": "People with a side hustle", "color": 1, "values": shape.quarters(town("makers"))},
+               {"name": "Their customers", "color": 2, "values": shape.quarters(town("maker_customers"))},
+               {"name": "Grown into small businesses", "color": 3,
+                "values": shape.quarters(town("small_businesses"))}],
+              section="owning")
+    if has("sets_owned"):
+        lines("Owning",
+              "Appliance sets people own rather than rent, and people letting out a home they own.", "count",
+              [{"name": "Appliance sets owned", "color": 1, "values": shape.quarters(town("sets_owned"))},
+               {"name": "Small landlords", "color": 2, "values": shape.quarters(town("small_landlords"))}],
+              section="owning")
+    if has("home_loans"):
+        lines("Loans against homes", "What people owe the bank on the homes they have bought or built.", "money",
+              [{"name": "Owed on homes", "color": 1, "values": shape.quarters(town("home_loans"), 0.01)}],
+              section="owning")
     # --- the map (only for a town that has one) --------------------------------------------
     if ("town", "spots_empty") in shape.series:
         if places is not None:
@@ -411,6 +452,14 @@ def _header(meta: dict, shape: _Shaper, cfg: dict, marks: dict, events: int, tow
              f"people hold {_money(shape.end('town', 'money_people'))}, "
              f"firms {_money(shape.end('town', 'money_firms'))}"),
     ]
+    if ("town", "homes_owned") in shape.series:              # the RTR world: owning and side hustles
+        owned, let = shape.end("town", "homes_owned"), shape.end("town", "homes_let_private")
+        tiles.append(tile("Homes lived in by their owner", f"{int(owned - let):,}",
+                          f"of {int(shape.end('town', 'homes')):,} homes standing; "
+                          f"{int(let):,} more let by a small landlord"))
+    if ("town", "makers") in shape.series:
+        tiles.append(tile("People with a side hustle", f"{int(shape.end('town', 'makers')):,}",
+                          f"{int(shape.end('town', 'small_businesses')):,} grown into small businesses"))
     width, height = cfg.get("map_width", 0), cfg.get("map_height", 0)
     world = f"The town on a {width} by {height} map." if width else "The economy without the map."
     watch = ' <a href="town.html">Watch this town, week by week</a>' if town_view else ""
@@ -470,10 +519,25 @@ def build_dashboard(run_dir) -> pathlib.Path:
                                            town_view=(run_dir / "town.html").exists())
                      .replace("__WORLD__", world))
             .replace("__DATA__", payload))
+    if any(c.get("section") == "owning" for c in data["charts"]):   # only the RTR world has this section
+        for before, after in OWNING_SECTION:
+            assert page.count(before) == 1, before
+            page = page.replace(before, after)
     out = run_dir / "dashboard.html"
     out.write_text(page, encoding="utf-8")
     return out
 
+
+# The RTR world's section, put into the page only for a run that has it, so that a WEF run's page is
+# the page it was before stage 3 of the RTR world (20 November 2026), byte for byte.
+OWNING_SECTION = (
+    ('<section id="mapsec">',
+     '<section id="ownsec"><h2>Owning, letting and side hustles</h2><div class="grid" id="owning"></div></section>\n'
+     '<section id="mapsec">'),
+    ('var host = chart.section === "classes" ? "classes" : chart.section === "map" ? "map" : "town";',
+     'var host = chart.section === "classes" ? "classes" : chart.section === "map" ? "map" : '
+     'chart.section === "owning" ? "owning" : "town";'),
+)
 
 TEMPLATE = r"""<!doctype html>
 <html lang="en">

@@ -426,6 +426,11 @@ MEASURES = (
         "homes_vacant", "money", "loans_firms", "loans_people"))
     + (("all", "homeless"),)
 )
+# The RTR world's own, kept as well (stage 3, 20/11/2026). A WEF town records none of them, so keeps none.
+# `homes_lived_in_by_owner` is worked out: the homes a person owns (`homes_owned`) less those they let.
+RTR_MEASURES = tuple(("town", metric) for metric in (
+    "wage_offer", "homes_lived_in_by_owner", "homes_let_private", "homes_foreclosed", "sets_owned",
+    "home_loans", "makers", "small_businesses"))
 
 TABLES = """
 CREATE TABLE batch (key TEXT PRIMARY KEY, value TEXT);
@@ -481,10 +486,18 @@ def _town_rows(folder: pathlib.Path) -> tuple[tuple, list, list, dict]:
         config = json.loads(meta["config"])
         year_weeks = config["weeks_per_year"]
         moments = [(mark["kind"], mark["week"]) for mark in _marks(con)]
-        wanted = set(MEASURES)
+        wanted = set(MEASURES + RTR_MEASURES)
         yearly = [(week // year_weeks, scope, metric, value) for week, scope, metric, value in con.execute(
             "SELECT week, scope, metric, value FROM series WHERE week > 0 AND week % ? = 0 "
             "ORDER BY week, scope, metric", (year_weeks,)) if (scope, metric) in wanted]
+        owned = {week // year_weeks: value for week, value in con.execute(    # RTR: a home a person owns and
+            "SELECT week, value FROM series WHERE scope = 'town' AND metric = 'homes_owned' "   # does not let
+            "AND week > 0 AND week % ? = 0", (year_weeks,))}
+        let = {week // year_weeks: value for week, value in con.execute(
+            "SELECT week, value FROM series WHERE scope = 'town' AND metric = 'homes_let_private' "
+            "AND week > 0 AND week % ? = 0", (year_weeks,))}
+        yearly += [(year, "town", "homes_lived_in_by_owner", value - let.get(year, 0.0))
+                   for year, value in sorted(owned.items())]
     finally:
         con.close()
     row = (meta["outcome"], summary["weeks"], summary["failed_week"], summary["full_week"], year_weeks,

@@ -1,0 +1,1284 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>WEF world town wef-seed9</title>
+<style>
+.viz-root {
+  color-scheme: light;
+  --page: #f9f9f7; --surface-1: #fcfcfb; --text-primary: #0b0b0b; --text-secondary: #52514e;
+  --muted: #898781; --grid: #e1e0d9; --axis: #c3c2b7; --border: rgba(11,11,11,0.10);
+  --wash: rgba(11,11,11,0.05); --ink-series: #52514e; --warning: #fab219;
+  --series-1: #2a78d6; --series-2: #eb6834; --series-3: #1baf7a;
+  --home: #efeee9; --premises: #d6d5cc; --block-line: #cfcec4;
+  --mood-0: #9e3432; --mood-1: #dd716a; --mood-2: #5598e7; --mood-3: #1c5cab;
+}
+@media (prefers-color-scheme: dark) {
+  :root:where(:not([data-theme="light"])) .viz-root {
+    color-scheme: dark;
+    --page: #0d0d0d; --surface-1: #1a1a19; --text-primary: #f0efec; --text-secondary: #c3c2b7;
+    --muted: #898781; --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+    --wash: rgba(255,255,255,0.06); --ink-series: #c3c2b7; --warning: #fab219;
+    --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
+    --home: #262624; --premises: #3e3e3b; --block-line: #474743;
+    --mood-0: #e4857e; --mood-1: #b13f3c; --mood-2: #256abf; --mood-3: #6da7ec;
+  }
+}
+:root[data-theme="dark"] .viz-root {
+  color-scheme: dark;
+  --page: #0d0d0d; --surface-1: #1a1a19; --text-primary: #f0efec; --text-secondary: #c3c2b7;
+  --muted: #898781; --grid: #2c2c2a; --axis: #383835; --border: rgba(255,255,255,0.10);
+  --wash: rgba(255,255,255,0.06); --ink-series: #c3c2b7; --warning: #fab219;
+  --series-1: #3987e5; --series-2: #d95926; --series-3: #199e70;
+  --home: #262624; --premises: #3e3e3b; --block-line: #474743;
+  --mood-0: #e4857e; --mood-1: #b13f3c; --mood-2: #256abf; --mood-3: #6da7ec;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--text-primary);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", sans-serif; }
+main { max-width: 1320px; margin: 0 auto; padding: 20px 16px 56px; }
+h1 { font-size: 20px; font-weight: 600; margin: 0 0 4px; }
+h2 { font-size: 17px; font-weight: 600; margin: 32px 0 12px; }
+a { color: inherit; }
+.sub { color: var(--text-secondary); font-size: 14px; }
+.notice { display: flex; gap: 10px; align-items: flex-start; margin: 12px 0 0; padding: 8px 14px;
+  background: var(--surface-1); border: 1px solid var(--border); border-left: 4px solid var(--warning);
+  border-radius: 8px; font-size: 13.5px; color: var(--text-secondary); }
+.notice strong { color: var(--text-primary); }
+.icon { width: 16px; height: 16px; flex: none; margin-top: 2px; color: var(--text-primary); }
+.stage { display: grid; grid-template-columns: minmax(0, 1fr) 356px; gap: 14px; align-items: start; margin-top: 16px; }
+.mapcol { min-width: 0; }
+.mapwrap { display: flex; justify-content: center; background: var(--surface-1); border: 1px solid var(--border);
+  border-radius: 10px; padding: 10px; }
+canvas { display: block; touch-action: manipulation; }
+canvas:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
+.controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 12px 0 2px; }
+.controls .label { font-size: 13px; color: var(--text-secondary); margin-left: 10px; }
+#speeds { display: flex; flex-wrap: wrap; gap: 8px; }
+.speednote { font-size: 13px; color: var(--text-secondary); min-height: 20px; margin: 4px 0 10px; }
+button { font: inherit; font-size: 13px; color: var(--text-primary); background: var(--surface-1);
+  border: 1px solid var(--border); border-radius: 999px; padding: 5px 12px; cursor: pointer; }
+button:hover { background: var(--wash); }
+button[aria-pressed="true"], button.primary { background: var(--text-primary); color: var(--surface-1);
+  border-color: var(--text-primary); }
+button.primary { min-width: 78px; font-weight: 600; }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--series-1); outline-offset: 2px; }
+.card { background: var(--surface-1); border: 1px solid var(--border); border-radius: 10px;
+  padding: 14px 16px 12px; margin: 0; min-width: 0; }
+.card-title { font-size: 15px; font-weight: 600; }
+.card-note { font-size: 13px; color: var(--text-secondary); margin: 2px 0 6px; }
+.plot svg { display: block; max-width: 100%; overflow: visible; cursor: pointer; touch-action: none; }
+.plot text { font: 11.5px system-ui, -apple-system, "Segoe UI", sans-serif; fill: var(--muted);
+  font-variant-numeric: tabular-nums; }
+.plot text.label { fill: var(--text-secondary); font-size: 12px; paint-order: stroke; stroke: var(--surface-1);
+  stroke-width: 4px; stroke-linejoin: round; }
+input[type="range"] { display: block; width: 100%; margin: 4px 0 0; accent-color: var(--text-primary); }
+.side { display: grid; gap: 14px; min-width: 0; }
+.when { font-size: 26px; font-weight: 600; line-height: 1.15; }
+.whensub { font-size: 13px; color: var(--text-secondary); margin-bottom: 10px; }
+table.cover { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+table.cover th { text-align: right; font-weight: 400; font-size: 12px; color: var(--muted); padding: 0 0 4px 8px; }
+table.cover th:first-child, table.cover td:first-child { text-align: left; padding-left: 0; }
+table.cover td { padding: 4px 0 4px 8px; text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.cover td.pc { font-weight: 600; width: 58px; }
+table.cover td.barcell { width: 34%; }
+.bar { position: relative; height: 8px; background: var(--wash); border-radius: 4px; }
+.bar i { position: absolute; left: 0; top: 0; bottom: 0; width: 0; background: var(--ink-series); border-radius: 4px; }
+.bar b { position: absolute; top: -3px; bottom: -3px; width: 2px; margin-left: -1px; background: var(--text-primary); }
+dl.facts { display: grid; grid-template-columns: 1fr auto; gap: 3px 12px; font-size: 13.5px; margin: 12px 0 0;
+  padding-top: 10px; border-top: 1px solid var(--grid); }
+dl.facts dt { color: var(--text-secondary); }
+dl.facts dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.filters { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin: 0 0 10px; }
+.filters span { font-size: 13px; color: var(--text-secondary); margin-right: 4px; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 12.5px; color: var(--text-secondary);
+  margin: 0; padding: 0; list-style: none; }
+.legend li { display: flex; align-items: center; gap: 6px; }
+.legend li.note { flex-basis: 100%; color: var(--muted); }
+.key-dot { width: 10px; height: 10px; border-radius: 50%; flex: none; }
+.key-shape { width: 10px; height: 10px; background: var(--muted); flex: none; }
+.key-shape.owner { width: 9px; height: 9px; }
+.key-shape.working { border-radius: 50%; }
+.key-shape.out { width: 11px; height: 11px; clip-path: polygon(50% 0, 100% 100%, 0 100%); }
+.key-ride { width: 10px; height: 10px; border-radius: 50%; flex: none; box-sizing: border-box;
+  border: 1.5px solid var(--text-primary); background: var(--muted); }
+.mapkey { margin-top: 10px; padding-top: 10px; border-top: 1px solid var(--grid); }
+.key-block { width: 12px; height: 12px; border-radius: 3px; flex: none; border: 1px solid var(--block-line); }
+.key-home { background: var(--home); }
+.key-firm { background: var(--premises); }
+.key-service { background: var(--surface-1); border: 1.5px solid var(--muted); }
+.key-empty { border-color: var(--grid); }
+.key-strip { border: 1px dashed var(--muted); }
+.pickrow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; margin-top: 8px;
+  color: var(--text-secondary); }
+.pickrow input { width: 78px; font: inherit; font-size: 13px; padding: 4px 8px; border: 1px solid var(--border);
+  border-radius: 8px; background: var(--surface-1); color: var(--text-primary); }
+#detail { margin-top: 10px; font-size: 13.5px; }
+#detail .hint, #detail .fine { color: var(--muted); font-size: 12.5px; margin: 6px 0; }
+.who { display: flex; justify-content: space-between; align-items: center; gap: 8px; font-size: 16px; font-weight: 600; }
+.nowline { color: var(--text-secondary); margin: 4px 0; }
+.nowline.now { color: var(--text-primary); margin-bottom: 10px; }
+.spark { display: grid; grid-template-columns: 11ch minmax(0, 1fr) 9ch; gap: 6px; align-items: center;
+  font-size: 12.5px; color: var(--text-secondary); }
+.spark svg { display: block; width: 100%; height: 34px; overflow: visible; }
+.spark b { text-align: right; color: var(--text-primary); font-variant-numeric: tabular-nums; }
+#detail .card-title { margin-top: 12px; }
+ol.life { list-style: none; margin: 6px 0 0; padding: 0; max-height: 320px; overflow: auto;
+  border-top: 1px solid var(--grid); position: relative; }
+ol.life button { display: grid; grid-template-columns: 18ch minmax(0, 1fr); gap: 8px; width: 100%; text-align: left;
+  border: 0; border-bottom: 1px solid var(--grid); border-radius: 0; background: none; padding: 5px 4px;
+  font-size: 12.5px; }
+ol.life button:hover { background: var(--wash); }
+ol.life .date { color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+ol.life li.later button, ol.life li.later .date { color: var(--muted); }
+ol.life li.latest button { background: var(--wash); font-weight: 600; }
+#tip { position: fixed; z-index: 10; pointer-events: none; display: none; min-width: 150px; max-width: 320px;
+  background: var(--surface-1); color: var(--text-primary); border: 1px solid var(--border);
+  border-radius: 8px; padding: 8px 10px; font-size: 12.5px; box-shadow: 0 6px 24px rgba(0,0,0,0.14); }
+#tip .when { font-size: 13px; font-weight: 600; line-height: 1.3; margin-bottom: 4px; }
+footer p { font-size: 14px; color: var(--text-secondary); max-width: 82ch; margin: 6px 0; }
+footer strong { color: var(--text-primary); }
+footer .fine { font-size: 12.5px; color: var(--muted); }
+@media (max-width: 940px) { .stage { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body class="viz-root">
+<main>
+
+<header>
+  <h1>The WEF world: the town, week by week</h1>
+  <div class="sub">Run wef-seed9. Seed 9. Survived 3 years.
+  The town on a 13 by 13 map.
+  <a href="dashboard.html">The dashboard for this run</a></div>
+  <div class="notice" role="note">
+    <svg class="icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M8 1.5 15 14H1z" fill="none"
+      stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 6v4M8 11.6v.6"
+      stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <span><strong>Untuned.</strong> The build so far proves the machinery: the accounts balance and every
+    week is recorded. The starting values have not been tested, so watch this as a first look, not a
+    finding.</span>
+  </div>
+</header>
+
+<div class="stage">
+  <div class="mapcol">
+    <div class="mapwrap" id="mapwrap">
+      <canvas id="town" tabindex="0" role="img"
+        aria-label="The town on its map. Every person is a dot. The numbers for the week shown are in the panel beside it."></canvas>
+    </div>
+    <div class="controls" role="group" aria-label="Replay">
+      <button id="play" class="primary" aria-pressed="false">Play</button>
+      <button id="back">Back</button>
+      <button id="fwd">Forward</button>
+      <span class="label">Speed</span>
+      <span id="speeds" role="group" aria-label="Speed"></span>
+    </div>
+    <div class="speednote" id="speednote"></div>
+    <figure class="card">
+      <div class="card-title">Share of everyone who is unhappy</div>
+      <div class="card-note">Click or drag on the chart, or use the slider, to go to any week.</div>
+      <div class="plot" id="line"></div>
+      <div id="seekwrap"><input type="range" id="seek" min="0" max="0" step="1" value="0" aria-label="Week shown"></div>
+    </figure>
+  </div>
+  <aside class="side" aria-label="The week shown">
+    <div class="card">
+      <div class="when" id="when" aria-live="off"></div>
+      <div class="whensub" id="whensub"></div>
+      <table class="cover">
+        <thead><tr><th scope="col">Who</th><th scope="col">People</th><th scope="col" colspan="2">Unhappy</th></tr></thead>
+        <tbody>
+          <tr><td>Everyone</td><td id="n-all"></td>
+            <td class="barcell"><div class="bar"><i id="bar-all"></i><b style="left:90%" title="The town fails here"></b></div></td>
+            <td class="pc" id="u-all"></td></tr>
+          <tr><td>Owner class</td><td id="n-owner"></td>
+            <td class="barcell"><div class="bar"><i id="bar-owner"></i></div></td><td class="pc" id="u-owner"></td></tr>
+          <tr><td>Working class</td><td id="n-working"></td>
+            <td class="barcell"><div class="bar"><i id="bar-working"></i></div></td><td class="pc" id="u-working"></td></tr>
+          <tr><td>Out of work</td><td id="n-out"></td>
+            <td class="barcell"><div class="bar"><i id="bar-out"></i></div></td><td class="pc" id="u-out"></td></tr>
+        </tbody>
+      </table>
+      <dl class="facts">
+        <dt>People with no home</dt><dd id="f-homeless"></dd>
+        <dt>Destitute</dt><dd id="f-destitute"></dd>
+        <dt>Paying for a ride</dt><dd id="f-riders"></dd>
+        <dt>Jobless rate</dt><dd id="f-jobless"></dd>
+        <dt>Staff wage</dt><dd id="f-wage"></dd>
+        <dt>Weekly basket</dt><dd id="f-basket"></dd>
+        <dt>Firms</dt><dd id="f-firms"></dd>
+      </dl>
+    </div>
+    <div class="card">
+      <div class="filters" role="group" aria-label="Colour people by"><span>Colour people by</span>
+        <button data-mode="mood" aria-pressed="true">Wellbeing</button>
+        <button data-mode="klass" aria-pressed="false">Class</button></div>
+      <ul class="legend" id="legend"></ul>
+      <ul class="legend mapkey" aria-label="On the map">
+        <li><span class="key-block key-home"></span>Homes</li>
+        <li><span class="key-block key-firm"></span>A firm, bigger with more staff</li>
+        <li><span class="key-block key-service"></span>Bank, broker</li>
+        <li><span class="key-block key-empty"></span>Empty land</li>
+        <li><span class="key-block key-strip"></span>People with no home</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-title">Follow one person</div>
+      <div class="pickrow"><label for="who">Person number</label>
+        <input id="who" type="number" min="1" step="1" inputmode="numeric">
+        <button id="go">Show</button><button id="any">Someone at random</button></div>
+      <div id="detail"></div>
+    </div>
+  </aside>
+</div>
+
+<footer>
+  <h2>How to read this</h2>
+  <p><strong>Recorded, every week.</strong> Where each person lives and works, which food firm and which
+  entertainment firm they pay, their class, their wellbeing, their cash and their pay, and whether they pay
+  for a ride. Each firm's spot, staff, customers and price. The numbers in the panel.</p>
+  <p><strong>Recorded, once a quarter.</strong> What stands on each spot. Between those records a firm is drawn from the week it has its spot, and homes from the week someone lives there.</p>
+  <p><strong>Drawn, not recorded.</strong> The journeys. The model works in whole weeks and has no days, so
+  each week is drawn as one round: home, work, the food shop, the entertainment firm, home. Journeys are
+  drawn slower than they would be so that they can be seen. A person who pays for a ride moves
+  4 times as fast as a walker, as in the model. A round too long to fit in the
+  week is hurried so that it does. Where a dot sits inside a block is also drawn: it is that person's own
+  place, the same every week.</p>
+  <p><strong>No home.</strong> The model gives a person with no home no place on the map. They are drawn in
+  the strip under the map, and their round starts and ends there.</p>
+  <p><strong>One person.</strong> The lines beside a person have one point a quarter. The number beside
+  each line is its latest point, and the page says which week that point is. What happened to them is
+  from the record. Something that happened several times in one quarter is told once, with how many
+  times.</p>
+  <p><strong>The card.</strong> Point at a person to see their card. Under their class it gives their cash
+  and their pay. Cash is what they hold at the end of the week shown, after pay and bills. Pay is what
+  their job pays a week. Dividends are not pay and are not on the card. Both numbers are for the week
+  shown, so the cash can differ from the line beside a person, which has one point a quarter.</p>
+  <p><strong>Class is by role.</strong> Owner class: founders, anyone who controls a firm, chief executives,
+  executives, and people living on dividends alone. Working class: staff drawing a wage, with or without
+  shares. Out of work: everyone else. <strong>Unhappy</strong> means wellbeing below 0.5.
+  The town fails when 90% of everyone is unhappy.</p>
+  <p><strong>Keys.</strong> Space plays and pauses. The left and right arrows step back and forward.</p>
+  <p class="fine">Built only from run.sqlite. 1,197 events recorded.
+  Record fingerprint 5b676c8d8596b86d.
+  Code fingerprint 9054fe6e1714181a.</p>
+</footer>
+
+</main>
+<div id="tip" role="status" aria-live="polite"></div>
+<script id="data" type="application/json">{"run":{"id":"wef-seed9","seed":9,"outcome":"survived","cutoff":0.5,"fail":0.9,"ride":4.0,"year":52,"quarter":13,"step":1,"places":13},"map":{"w":13,"h":13},"weeks":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156],"people":[{"id":1,"arrived":0,"h":[0,70,86,45],"j":[0,1],"o":[0,3],"k":[0,0],"m":[0,2,1,3],"r":[0,0],"f":[0,2],"e":[0,4],"w":[0,1500,1,1650,2,1800,3,1950,4,2100,5,2142,7,2185,9,2229,11,2273,12,2165,13,2111,14,2057,15,2002,16,1948,26,1909,27,2015,28,2056,29,2002,30,1948,32,1987,34,2026,36,2182,38,2342,39,2459,41,2342,42,2284,43,2225,44,2167,45,2108,53,2329,54,2449,55,2681,57,2796,58,2983,59,3045,60,2921,61,2796,62,2672,63,2548,64,2424,65,2361,66,2299,67,2237,80,2424,81,2662,82,2789,83,2845,84,2909,85,3231,87,3099,88,2968,89,2836,90,2704,91,2572,92,2506,93,2440,94,2374,95,2308,96,2242,105,2176,118,2242],"c0":0,"c":[50000,50770,51195,51770,52495,53262,54029,54839,55649,56502,57356,58254,59044,93429,94071,94659,95193,95726,96260,96794,97327,97861,98394,98928,99462,99995,120719,121270,121861,122398,122881,123364,123886,124408,124970,125531,126248,126966,127843,175948,176928,177791,178596,179342,180029,180658,181287,181915,182544,183173,183802,184430,211979,212791,213722,214884,216047,217326,218791,220531,221934,223213,224367,225397,226302,227146,227913,228618,229322,230027,230732,231437,232142,232846,233551,234256,234961,235665,270020,270714,271594,272712,273957,275258,276624,278312,280000,281366,282828,284158,285129,285969,286684,287334,287918,288436,288888,289340,289792,290244,290696,291148,291601,292053,305965,306280,306596,306911,307227,307542,307858,308173,308489,308804,309120,309435,309751,370636,370965,371293,371622,371950,372278,372607,372935,373264,373592,373921,374249,374577,422016,422339,422663,422986,423310,423633,423956,424280,424603,424927,425250,425573,425897,466600,466907,467215,467522,467829,468136,468443,468750,469057,469364,469672,469979,470286,504243],"life":{"q0":0,"cash":[93429,120719,175948,211979,227146,270020,285969,305965,370636,422016,466600,504243],"pay":[2111,1909,2459,2108,2361,2237,2572,2242,2176,2242,2242,2242],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[6730000,6730000,6730000,6730000,6730000,6730000,6730000,6730000,6730000,6730000,6730000,6730000],"well":[91,93,96,96,97,97,97,96,96,96,95,95],"sec":[82,87,92,94,96,97,97,97,97,98,99,99],"events":[[0,0,-1,2580000,4,-1],[0,7,1,1500,-1,-1],[0,8,1,2530000,0,-1],[0,12,-1,0,5,-1],[86,13,1,0,19,-1]]}},{"id":2,"arrived":0,"h":[0,70,40,45],"j":[0,2],"o":[0,3],"k":[0,0],"m":[0,2,1,3],"r":[0,0],"f":[0,2],"e":[0,4],"w":[0,1500,1,1650,2,1800,3,1950,4,2100,5,2142,7,2185,9,2229,11,2273,12,2381,13,2435,25,2381,26,2334,30,2387,36,2281,38,2228,40,2272,41,2326,42,2373,43,2428,44,2483,55,2428,58,2373,60,2428,63,2483,80,2318,82,2251,84,2296,85,2124,86,2167,87,2459,88,2635],"c0":0,"c":[50000,50770,51195,51770,52495,53262,54029,54839,55649,56502,57356,58254,59260,60321,61341,62362,63383,64404,65424,66445,67466,68486,69507,70528,71548,72515,73482,74351,75220,76089,77011,77933,78856,79778,80700,81622,82438,83254,84017,84780,85573,86260,86993,87781,88625,89468,90312,91155,91999,92842,93686,94529,95373,96165,96957,97693,98430,99167,99848,100743,101480,102217,102953,103745,104537,109109,109872,110636,111399,112162,112925,113689,114452,115215,115979,116742,117505,118269,121552,122302,122887,123472,123991,124510,125074,125465,125899,126626,127756,128885,129788,130690,131535,132380,133225,134070,134915,135760,136605,137450,138295,139140,139985,140830,141675,142450,143224,143999,144773,145548,146322,147096,147871,148645,149420,150194,150969,151743,152464,153186,153907,154629,155350,156071,156793,157514,158236,158957,159678,160400,164901,165618,166334,167050,167767,168483,169200,169916,170632,171349,172065,172781,173498,183034,183734,184434,185135,185835,186535,187235,187935,188635,189335,190035,190735,191435,200955],"life":{"q0":0,"cash":[60321,73482,84780,95373,109109,121552,130690,141675,151743,164901,183034,200955],"pay":[2435,2334,2228,2483,2483,2483,2635,2635,2635,2635,2635,2635],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[630000,630000,630000,630000,630000,630000,630000,630000,630000,630000,630000,630000],"well":[91,93,96,96,97,97,96,96,95,95,95,95],"sec":[82,88,92,94,95,97,96,96,97,98,98,99],"events":[[0,0,-1,680000,4,-1],[0,7,2,1500,-1,-1],[0,8,2,630000,1,-1],[0,12,-1,0,5,-1],[40,13,1,0,19,-1]]}},{"id":3,"arrived":0,"h":[0,96,51,110,65,45],"j":[0,3],"o":[0,3],"k":[0,0],"m":[0,2,1,3],"r":[0,0],"f":[0,2],"e":[0,4],"w":[0,1500,1,1650,2,1800,3,1950,4,2000,5,2040,7,2081,9,2122,11,2165,12,2111,13,2057,14,2002,15,1948,16,1894,17,1840,18,1786,19,1732,26,1697,27,2228,39,2175,45,2228,53,2069,54,2015,55,1962,57,1909,58,1803,61,1909,62,1962,64,2069,65,2122,66,2175,67,2228,81,2122,84,2069,87,1909,89,2015,90,2069,91,2122,92,2175,93,2228,94,2281,96,2334,105,2387,132,2434,133,2326,134,2218,135,2110,136,2056,137,2002,138,1948,139,1894,140,1839,141,1785,142,1731,143,1697,144,2333],"c0":0,"c":[50000,50770,51195,51770,52395,53060,53725,54431,55137,55884,56631,57421,58157,58839,59433,59973,60459,60891,61269,61593,61917,62241,62564,62888,63212,63536,63859,64636,65413,66190,66967,67744,68521,69297,70074,70851,71628,72405,73182,73906,74622,75338,76054,76770,77486,78256,79025,79794,80563,81333,82102,82871,83660,84252,84792,85278,85764,86197,86524,87065,87392,87825,88311,88797,89389,90035,90489,90997,91505,92012,92520,93028,93536,94043,94551,95059,95567,96074,96582,97077,97572,97961,98350,98739,99075,99411,99747,99923,100327,100837,101173,101562,101946,102383,102874,103365,103908,104452,104995,105539,106082,106626,107170,107713,108257,108783,109309,109835,110361,110887,111413,111939,112465,112991,113517,114043,114569,115095,115568,116041,116514,116987,117460,117933,118406,118879,119352,119825,120298,120771,121244,121712,122228,122635,122935,123126,123263,123346,123375,123349,123270,123137,122949,122762,123159,123557,123955,124352,124750,125148,125546,125943,126341,126739,127137,127534,127932],"life":{"q0":0,"cash":[58839,63859,73906,83660,90035,96582,101562,108257,115095,121244,122762,127932],"pay":[2057,1697,2175,2228,2122,2228,2122,2334,2387,2387,1697,2333],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[1070000,1070000,1070000,1070000,1070000,1070000,1070000,1070000,1070000,1070000,1070000,1070000],"well":[90,92,95,95,95,96,95,94,94,94,94,94],"sec":[81,85,90,91,93,95,93,93,94,96,97,98],"events":[[0,0,-1,580000,4,-1],[0,7,3,1500,-1,-1],[0,8,3,530000,2,-1],[0,12,-1,0,5,-1],[51,13,1,0,17,-1],[65,13,1,0,19,-1]]}},{"id":4,"arrived":0,"h":[0,45],"j":[0,4],"o":[0,3],"k":[0,0],"m":[0,2,1,3],"r":[0,0],"f":[0,2],"e":[0,4],"w":[0,1500,1,1550,2,1600,6,1632,8,1665,10,1698,12,1751,20,1698,26,1664,29,1716,38,1664,39,1612,41,1664,42,1716,54,1664,55,1612,59,1560,60,1612,62,1664,63,1716,81,1664,85,1612,88,1560,90,1612,91,1664,95,1716,118,1664,132,1697,133,1750,143,1715],"c0":0,"c":[50000,50670,50990,51310,51630,51950,52302,52654,53039,53328,53651,53974,54350,54726,55069,55412,55755,56098,56440,56783,57073,57363,57653,57943,58232,58522,58812,59018,59225,59483,59741,60000,60258,60517,60775,61033,61292,61550,61756,61911,62057,62256,62507,62757,63008,63259,63510,63760,64011,64262,64512,64763,65014,65219,65372,65473,65574,65675,65776,66039,66140,66242,66395,66600,66805,67010,67193,67377,67560,67743,67926,68110,68293,68476,68660,68843,69026,69210,69393,69565,69737,69857,69977,70097,70217,70285,70353,70421,70663,70906,70974,71094,71164,71234,71304,71426,71548,71670,71792,71914,72036,72158,72280,72402,72524,72587,72650,72712,72775,72838,72901,72964,73027,73090,73153,73216,73278,73341,73305,73268,73231,73194,73157,73120,73083,73047,73010,72973,72936,72899,72862,72822,72815,72862,72908,72954,73000,73046,73092,73138,73185,73231,73277,73323,73320,73317,73314,73311,73308,73305,73303,73300,73297,73294,73291,73288,73285],"life":{"q0":0,"cash":[54726,58812,61911,65014,67010,69393,71094,72524,73341,72862,73323,73285],"pay":[1751,1664,1612,1716,1716,1716,1664,1716,1716,1664,1715,1715],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[430000,430000,430000,430000,430000,430000,430000,430000,430000,430000,430000,430000],"well":[91,93,95,95,96,96,95,94,94,95,95,94],"sec":[81,86,92,92,94,96,95,94,94,97,98,98],"events":[[0,0,-1,480000,4,-1],[0,7,4,1500,-1,-1],[0,8,4,430000,3,-1],[0,12,-1,0,5,-1]]}},{"id":5,"arrived":1,"h":[1,70,51,72],"j":[1,1],"o":[1,1],"k":[1,1],"m":[1,3],"r":[1,0],"f":[1,2],"e":[1,4],"w":[1,1000,5,1020,7,1040,9,1061,11,1082,26,1061,28,1082,32,1104,34,1126,36,1148,38,1171,53,1195,55,1218,57,1243,81,1268,83,1293,85,1319],"c0":1,"c":[1353,1423,1493,1563,1652,1741,1850,1958,2086,2214,2363,2511,2663,2786,2910,3033,3156,3280,3403,3527,3650,3773,3897,4020,4144,4271,4339,4428,4516,4605,4693,4802,4911,5041,5171,5323,5474,5647,5835,5997,6158,6320,6481,6642,6804,6965,7127,7288,7450,7611,7773,7966,8142,8317,8514,8712,8933,9154,9482,9703,9924,10145,10366,10587,10808,11003,11198,11393,11589,11784,11979,12175,12370,12565,12760,12956,13151,13369,13556,13743,13954,14165,14400,14635,14894,15154,15413,15786,16159,16419,16678,16904,17130,17356,17582,17808,18034,18260,18486,18713,18939,19165,19391,19629,19821,20013,20205,20397,20590,20782,20974,21166,21358,21550,21742,21934,22190,22368,22547,22725,22904,23082,23260,23439,23617,23796,23974,24153,24331,24565,24748,24932,25115,25299,25482,25666,25849,26032,26216,26399,26583,26766,27002,27183,27365,27546,27728,27909,28090,28272,28453,28635,28816,28998,29179,29408],"life":{"q0":0,"cash":[2663,4271,5835,7966,10808,13369,16678,19629,22190,24565,27002,29408],"pay":[1082,1061,1171,1171,1243,1243,1319,1319,1319,1319,1319,1319],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[670,1370,2100,2860,3660,4470,5310,6170,7020,7880,8740,9590],"well":[84,81,83,82,83,85,85,84,86,89,90,92],"sec":[68,63,67,65,68,74,73,74,78,85,89,93],"events":[[1,0,-1,1283,6,-1],[1,1,1,1000,7,-1],[1,12,-1,0,9,-1],[51,13,1,0,17,-1]]}},{"id":6,"arrived":1,"h":[1,70,47,72],"j":[1,1],"o":[1,1],"k":[1,1],"m":[1,2,2,3],"r":[1,0],"f":[1,2],"e":[1,4],"w":[1,1000,5,1020,7,1040,9,1061,11,1082,26,1061,28,1082,32,1104,34,1126,36,1148,38,1171,53,1195,55,1218,57,1243,81,1268,83,1293,85,1319],"c0":1,"c":[1635,1705,1775,1845,1934,2023,2131,2239,2367,2496,2644,2792,2944,3067,3191,3314,3438,3561,3684,3808,3931,4055,4178,4301,4425,4552,4621,4709,4798,4886,4975,5084,5193,5323,5453,5604,5755,5929,6116,6278,6439,6601,6762,6924,7085,7247,7408,7590,7773,7955,8138,8331,8506,8682,8879,9077,9298,9519,9847,10068,10289,10510,10731,10952,11173,11368,11563,11758,11954,12149,12344,12539,12735,12930,13125,13321,13516,13734,13921,14108,14319,14530,14765,15000,15259,15519,15778,16151,16524,16784,17043,17269,17495,17721,17947,18173,18399,18625,18851,19077,19303,19529,19756,19994,20186,20378,20570,20762,20954,21147,21339,21531,21723,21915,22107,22299,22554,22733,22911,23090,23268,23447,23625,23804,23982,24161,24339,24518,24696,24930,25113,25297,25480,25664,25847,26030,26214,26397,26581,26764,26948,27131,27367,27548,27730,27911,28093,28274,28455,28637,28818,29000,29181,29363,29544,29773],"life":{"q0":0,"cash":[2944,4552,6116,8331,11173,13734,17043,19994,22554,24930,27367,29773],"pay":[1082,1061,1171,1171,1243,1243,1319,1319,1319,1319,1319,1319],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[670,1370,2100,2860,3660,4470,5310,6170,7020,7880,8740,9590],"well":[85,83,84,83,85,86,86,86,87,90,91,92],"sec":[70,67,69,68,71,76,76,78,81,87,91,94],"events":[[1,0,-1,1070,6,-1],[1,1,1,1000,7,-1],[1,14,2,400,1,8],[1,14,4,95,3,8],[1,12,-1,0,9,-1],[47,13,1,0,17,-1]]}},{"id":7,"arrived":1,"h":[1,70],"j":[1,1],"o":[1,1],"k":[1,1],"m":[1,2,2,3],"r":[1,0],"f":[1,2],"e":[1,4],"w":[1,1000,5,1020,7,1040,9,1061,11,1082,26,1061,28,1082,32,1104,34,1126,36,1148,38,1171,53,1195,55,1218,57,1243,81,1268,83,1293,85,1319],"c0":1,"c":[2129,2199,2269,2339,2428,2517,2625,2733,2862,2990,3138,3286,3438,3561,3685,3808,3932,4055,4178,4302,4425,4549,4672,4795,4919,5046,5115,5203,5292,5380,5469,5578,5687,5817,5947,6098,6249,6423,6610,6772,6933,7095,7256,7418,7579,7741,7902,8064,8225,8386,8548,8721,8882,9043,9226,9410,9617,9824,10137,10344,10551,10758,10964,11171,11378,11574,11769,11965,12160,12356,12551,12747,12943,13138,13334,13529,13725,13943,14130,14318,14529,14740,14976,15211,15471,15730,15990,16364,16737,16997,17256,17491,17725,17959,18193,18427,18662,18896,19130,19364,19598,19832,20067,20313,20522,20730,20939,21147,21356,21565,21773,21982,22190,22399,22607,22816,23088,23282,23477,23672,23866,24061,24256,24450,24645,24840,25034,25229,25424,25674,25873,26072,26272,26471,26671,26870,27069,27269,27468,27668,27867,28067,28318,28508,28698,28887,29077,29266,29456,29646,29835,30025,30214,30404,30594,30831],"life":{"q0":0,"cash":[3438,5046,6610,8721,11378,13943,17256,20313,23088,25674,28318,30831],"pay":[1082,1061,1171,1171,1243,1243,1319,1319,1319,1319,1319,1319],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[670,1370,2100,2860,3660,4470,5310,6170,7020,7880,8740,9590],"well":[84,81,83,82,83,85,85,84,86,89,91,92],"sec":[68,63,67,65,68,74,73,74,78,86,90,93],"events":[[1,0,-1,1564,6,-1],[1,1,1,1000,7,-1],[1,14,2,400,1,8],[1,14,4,95,3,8],[1,12,-1,0,9,-1]]}},{"id":8,"arrived":1,"h":[1,45],"j":[1,4,39,1,41,4,59,1,60,4,81,1,91,4,118,1],"o":[1,1],"k":[1,1],"m":[1,2,2,3],"r":[1,0],"f":[1,-1,2,2],"e":[1,4],"w":[1,1000,6,1020,8,1040,10,1061,26,1040,39,1171,41,1040,59,1243,60,1040,81,1268,83,1293,85,1319,91,1040,118,1319],"c0":1,"c":[3365,3885,4005,4125,4245,4385,4525,4686,4846,5027,5208,5390,5571,5734,5897,6060,6223,6386,6549,6711,6874,7037,7200,7363,7526,7689,7797,7904,8012,8119,8227,8334,8442,8549,8657,8764,8872,8979,9160,9336,9506,9608,9711,9814,9917,10020,10123,10226,10329,10432,10534,10638,10711,10784,10857,10930,11003,11076,11397,11532,11605,11679,11752,11825,11898,11953,12007,12062,12116,12171,12225,12280,12334,12389,12443,12498,12552,12607,12654,12700,12911,13122,13357,13592,13851,14111,14370,14743,15116,15376,16074,16087,16100,16113,16126,16139,16152,16165,16178,16191,16204,16217,16230,16243,16214,16185,16156,16127,16098,16069,16040,16011,15982,15953,15924,15895,15866,16020,16174,16328,16481,16635,16789,16943,17096,17250,17404,17558,17711,17871,18022,18172,18323,18473,18623,18774,18924,19075,19225,19376,19526,19676,19837,19977,20117,20258,20398,20538,20678,20818,20958,21098,21238,21378,21518,21671],"life":{"q0":0,"cash":[5571,7689,9160,10638,11898,12607,16074,16243,15866,17871,19837,21671],"pay":[1061,1040,1171,1040,1040,1040,1040,1040,1040,1319,1319,1319],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[0,0,50,50,50,50,50,50,50,900,1760,2620],"well":[86,85,90,83,83,84,82,80,79,86,87,88],"sec":[73,70,81,69,69,70,68,66,65,80,83,86],"events":[[1,0,-1,2750,6,-1],[1,1,4,1000,7,-1],[1,14,4,95,3,8],[1,12,-1,0,9,-1],[2,14,2,400,1,8],[39,3,4,1040,18,-1],[39,1,1,1171,18,-1],[41,2,1,1171,10,-1],[41,1,4,1040,11,-1],[59,3,4,1040,18,-1],[59,1,1,1243,18,-1],[60,2,1,1243,10,-1],[60,1,4,1040,11,-1],[81,3,4,1040,18,-1],[81,1,1,1243,18,-1],[91,2,1,1319,10,-1],[91,1,4,1040,11,-1],[118,3,4,1040,18,-1],[118,1,1,1319,18,-1]]}},{"id":9,"arrived":1,"h":[1,70,81,110,118,86],"j":[1,2,36,1,45,3,54,1,64,3,87,2],"o":[1,1],"k":[1,1],"m":[1,3],"r":[1,0],"f":[1,-1,2,2],"e":[1,4],"w":[1,1000,5,1020,7,1040,9,1061,11,1082,26,1061,36,1148,38,1171,45,1061,54,1195,55,1218,57,1243,64,1061,87,1171],"c0":1,"c":[3442,3912,3982,4052,4141,4230,4338,4447,4575,4703,4851,4999,5148,5271,5395,5518,5641,5765,5888,6012,6135,6258,6382,6505,6629,6752,6820,6889,6957,7025,7094,7162,7230,7299,7367,8004,8155,8328,8503,8665,8826,8987,9149,9310,9715,9824,9934,10043,10153,10263,10372,10483,10570,10731,10914,11098,11305,11511,11825,12032,12239,12445,12652,13356,13451,13526,13602,13678,13753,13829,13905,13980,14056,14131,14207,14283,14358,14441,14508,14576,14643,14760,14877,14994,15111,15228,15397,15679,15961,16130,16299,16436,16573,16711,16848,16985,17123,17260,17397,17534,17672,17809,17946,18084,18189,18294,18400,18505,18610,18716,18821,18926,19032,19137,19242,19347,19455,19532,19636,19741,19846,19950,20055,20160,20264,20369,20474,20578,20683,20813,20915,21017,21119,21221,21323,21425,21527,21630,21732,21834,21936,22038,22207,22300,22392,22485,22578,22670,22763,22856,22948,23041,23134,23226,23319,23489],"life":{"q0":0,"cash":[5148,6752,8503,10483,13451,14441,16299,18084,19455,20813,22207,23489],"pay":[1082,1061,1171,1061,1061,1061,1171,1171,1171,1171,1171,1171],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[670,1370,1600,1600,1600,1600,1890,2650,3410,4170,4930,5690],"well":[87,86,90,87,89,88,91,90,89,90,90,90],"sec":[75,73,82,75,80,78,86,85,85,87,88,90],"events":[[1,0,-1,2972,6,-1],[1,1,2,1000,7,-1],[1,12,-1,0,9,-1],[2,14,2,400,1,8],[36,3,2,1061,18,-1],[36,1,1,1126,18,-1],[45,2,1,1171,10,-1],[45,1,3,1061,11,-1],[54,3,3,1061,18,-1],[54,1,1,1195,18,-1],[64,2,1,1243,10,-1],[64,1,3,1061,11,-1],[81,13,1,0,17,-1],[87,3,3,1061,18,-1],[87,1,2,1171,18,-1],[118,13,1,0,17,-1]]}},{"id":10,"arrived":1,"h":[1,70],"j":[1,2,38,1,43,2],"o":[1,1],"k":[1,1],"m":[1,3],"r":[1,0],"f":[1,2],"e":[1,4],"w":[1,1000,5,1020,7,1040,9,1061,11,1082,26,1061,38,1171,43,1104,82,1126,84,1148,86,1171],"c0":1,"c":[3764,3834,3904,3974,4063,4152,4260,4368,4497,4625,4773,4921,5070,5193,5316,5440,5563,5687,5810,5933,6057,6180,6304,6427,6551,6674,6742,6811,6879,6947,7016,7084,7152,7220,7289,7357,7425,8190,8364,8525,8687,8848,9128,9226,9323,9420,9518,9615,9712,9809,9907,10004,10079,10153,10228,10302,10377,10452,10633,10708,10782,10857,10931,11006,11096,11159,11223,11286,11349,11413,11476,11539,11603,11666,11729,11792,11856,11933,11988,12044,12099,12175,12251,12349,12447,12566,12686,12919,13151,13271,13390,13484,13578,13672,13766,13860,13953,14047,14141,14235,14329,14422,14516,14610,14679,14747,14815,14883,14951,15020,15088,15156,15224,15292,15360,15429,15498,15552,15606,15661,15715,15769,15824,15878,15932,15987,16041,16095,16150,16243,16302,16361,16420,16479,16538,16597,16656,16716,16775,16834,16893,16952,17111,17161,17210,17259,17308,17358,17407,17456,17505,17555,17604,17653,17702,17863],"life":{"q0":0,"cash":[5070,6674,8364,10004,11096,11933,13390,14610,15498,16243,17111,17863],"pay":[1082,1061,1171,1104,1104,1104,1171,1171,1171,1171,1171,1171],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[670,1370,1480,2030,2740,3460,4210,4970,5730,6490,7250,8010],"well":[85,83,89,80,82,83,82,81,82,83,84,84],"sec":[71,68,79,63,66,70,68,68,69,74,76,78],"events":[[1,0,-1,3694,6,-1],[1,1,2,1000,7,-1],[1,12,-1,0,9,-1],[38,3,2,1061,18,-1],[38,1,1,1148,18,-1],[43,2,1,1171,10,-1],[43,1,2,1104,11,-1]]}},{"id":11,"arrived":1,"h":[1,70,43,72,73,45],"j":[1,2,36,1,44,2,55,1,63,4,88,2],"o":[1,1],"k":[1,1],"m":[1,3],"r":[1,0],"f":[1,2],"e":[1,4],"w":[1,1000,5,1020,7,1040,9,1061,11,1082,26,1061,36,1148,38,1171,44,1104,55,1218,57,1243,63,1040,88,1171],"c0":1,"c":[3696,3766,3836,3906,3995,4084,4192,4301,4429,4557,4705,4853,5002,5125,5249,5372,5495,5619,5742,5866,5989,6112,6236,6359,6483,6606,6674,6743,6811,6879,6948,7016,7084,7153,7221,7858,8009,8182,8357,8519,8680,8841,9003,9357,9475,9594,9712,9830,9948,10067,10185,10304,10393,10481,10796,10994,11215,11436,11764,11984,12205,12426,13001,13081,13173,13227,13282,13336,13391,13445,13500,13555,13609,13664,13718,13773,13827,13890,13937,13983,14030,14076,14123,14169,14216,14262,14309,14542,14774,14893,15012,15098,15184,15269,15355,15441,15526,15612,15698,15784,15869,15955,16041,16127,16170,16214,16257,16301,16345,16388,16432,16475,16519,16563,16606,16650,16696,16709,16722,16736,16749,16762,16776,16789,16803,16816,16829,16843,16856,16897,16907,16918,16928,16938,16948,16958,16968,16978,16988,16998,17008,17018,17101,17101,17101,17101,17100,17100,17100,17099,17099,17099,17098,17098,17098,17181],"life":{"q0":0,"cash":[5002,6606,8357,10304,13173,13890,15012,16127,16696,16897,17101,17181],"pay":[1082,1061,1171,1104,1040,1040,1171,1171,1171,1171,1171,1171],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[670,1370,1600,2090,2090,2090,2320,3080,3840,4600,5360,6120],"well":[87,86,90,87,88,87,89,87,86,85,85,84],"sec":[74,72,81,76,79,77,83,80,78,78,78,77],"events":[[1,0,-1,3626,6,-1],[1,1,2,1000,7,-1],[1,12,-1,0,9,-1],[36,3,2,1061,18,-1],[36,1,1,1126,18,-1],[43,13,1,0,17,-1],[44,2,1,1171,10,-1],[44,1,2,1104,11,-1],[55,3,2,1104,18,-1],[55,1,1,1195,18,-1],[63,2,1,1243,10,-1],[63,1,4,1040,11,-1],[73,13,1,0,17,-1],[88,3,4,1040,18,-1],[88,1,2,1171,18,-1]]}},{"id":12,"arrived":1,"h":[1,96,130,70],"j":[1,3,39,1,41,2],"o":[1,1],"k":[1,1],"m":[1,3],"r":[1,0],"f":[1,2],"e":[1,4],"w":[1,1000,5,1020,7,1040,9,1061,11,1082,26,1061,39,1171,41,1082,42,1104,82,1126,84,1148,86,1171],"c0":1,"c":[6627,6747,6867,6987,7127,7267,7427,7587,7769,7950,8152,8355,8557,8741,8925,9110,9294,9478,9662,9846,10030,10214,10399,10583,10767,10951,11086,11221,11357,11492,11627,11762,11897,12032,12168,12303,12438,12573,12761,12943,13108,13226,13344,13462,13580,13699,13817,13935,14053,14172,14290,14408,14497,14586,14674,14763,14852,14940,15136,15225,15313,15402,15491,15579,15676,15746,15817,15887,15958,16028,16098,16169,16239,16309,16380,16450,16520,16599,16662,16724,16787,16870,16953,17058,17163,17289,17416,17656,17896,18022,18149,18242,18336,18429,18522,18616,18709,18802,18896,18989,19083,19176,19269,19363,19423,19482,19542,19602,19661,19721,19781,19841,19900,19960,20020,20080,20140,20178,20216,20254,20292,20330,20367,20405,20443,20481,20519,20557,20595,20664,20723,20782,20841,20901,20960,21019,21078,21137,21196,21255,21314,21373,21515,21564,21613,21662,21712,21761,21810,21859,21909,21958,22007,22056,22105,22248],"life":{"q0":0,"cash":[8557,10951,12761,14408,15676,16599,18149,19363,20140,20664,21515,22248],"pay":[1082,1061,1171,1104,1104,1104,1171,1171,1171,1171,1171,1171],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[0,0,50,710,1420,2140,2880,3650,4410,5170,5930,6690],"well":[87,86,92,86,87,88,87,86,85,86,87,87],"sec":[75,73,86,74,76,78,77,77,77,80,82,84],"events":[[1,0,-1,6507,6,-1],[1,1,3,1000,7,-1],[1,12,-1,0,9,-1],[39,3,3,1061,18,-1],[39,1,1,1171,18,-1],[41,2,1,1171,10,-1],[41,1,2,1082,11,-1],[130,13,1,0,17,-1]]}},{"id":13,"arrived":1,"h":[1,96,55,110],"j":[1,3],"o":[1,1],"k":[1,1],"m":[1,3],"r":[1,0],"f":[1,2],"e":[1,4],"w":[1,1000,5,1020,7,1040,9,1061,11,1082,26,1061,132,1082,143,1060],"c0":1,"c":[3434,3554,3674,3794,3934,4074,4235,4395,4576,4758,4960,5163,5365,5549,5733,5917,6102,6286,6470,6654,6838,7022,7207,7391,7575,7759,7894,8029,8165,8300,8435,8570,8705,8840,8976,9111,9246,9381,9516,9647,9777,9908,10038,10169,10299,10430,10561,10691,10822,10952,11083,11213,11314,11415,11516,11645,11773,11902,12137,12265,12394,12522,12651,12779,12908,13026,13144,13262,13380,13498,13615,13733,13851,13969,14087,14205,14323,14441,14558,14675,14792,14909,15026,15143,15260,15377,15494,15724,15954,16071,16188,16274,16359,16444,16530,16615,16701,16786,16871,16957,17042,17128,17213,17299,17352,17405,17459,17512,17566,17619,17673,17726,17780,17833,17886,17940,17993,18018,18043,18068,18093,18118,18142,18167,18192,18217,18242,18266,18291,18316,18338,18381,18424,18468,18511,18554,18597,18640,18684,18727,18770,18813,18856,18868,18880,18892,18904,18916,18928,18940,18951,18963,18975,18987,18999,19011],"life":{"q0":0,"cash":[5365,7759,9516,11213,12908,14441,16188,17299,17993,18316,18856,19011],"pay":[1082,1061,1061,1061,1061,1061,1061,1061,1061,1061,1060,1060],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[0,0,0,0,0,0,0,0,0,0,0,0],"well":[87,86,86,85,86,87,86,85,84,84,84,84],"sec":[74,72,74,72,74,76,75,74,74,76,77,77],"events":[[1,0,-1,3314,6,-1],[1,1,3,1000,7,-1],[1,12,-1,0,9,-1],[55,13,1,0,17,-1]]}},{"id":14,"arrived":1,"h":[1,96,52,110],"j":[1,3,19,-1,27,3],"o":[1,1,19,0,27,1],"k":[1,1,19,2,27,1],"m":[1,3,19,2,26,1,27,2,63,3,65,2,68,3],"r":[1,0],"f":[1,2],"e":[1,4],"w":[1,1000,5,1020,7,1040,9,1061,11,1082,19,0,27,1061,132,1082,143,1060],"c0":1,"c":[3281,3401,3521,3641,3781,3921,4081,4242,4423,4604,4807,5009,5211,5396,5580,5764,5948,6132,5234,4336,3437,2539,1641,743,176,22,157,292,427,562,697,833,968,1103,1238,1373,1508,1644,1779,1909,2040,2170,2301,2431,2562,2693,2823,2954,3084,3215,3345,3476,3604,3733,3861,3990,4118,4247,4482,4610,4739,4867,4996,5124,5253,5371,5489,5607,5725,5842,5960,6078,6196,6314,6432,6550,6668,6786,6903,7020,7137,7254,7371,7488,7605,7722,7838,8069,8299,8416,8533,8618,8704,8789,8875,8960,9046,9131,9216,9302,9387,9473,9558,9643,9697,9750,9804,9857,9911,9964,10018,10071,10125,10178,10231,10285,10338,10363,10388,10413,10438,10462,10487,10512,10537,10562,10587,10611,10636,10661,10683,10726,10769,10813,10856,10899,10942,10985,11029,11072,11115,11158,11201,11213,11225,11237,11249,11261,11273,11285,11296,11308,11320,11332,11344,11356],"life":{"q0":0,"cash":[5211,22,1779,3476,5253,6786,8533,9643,10338,10661,11201,11356],"pay":[1082,0,1061,1061,1061,1061,1061,1061,1061,1061,1060,1060],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[0,0,0,0,0,0,0,0,0,0,0,0],"well":[86,38,66,70,74,78,77,77,77,78,79,79],"sec":[71,0,33,42,51,59,59,58,60,64,66,67],"events":[[1,0,-1,3161,6,-1],[1,1,3,1000,7,-1],[1,12,-1,0,9,-1],[19,2,3,1082,10,-1],[19,12,-1,0,13,-1],[25,16,1,664,0,-1,2],[26,16,2,412,1,-1],[27,1,3,1061,11,-1],[27,12,-1,0,9,-1],[52,13,1,0,17,-1]]}},{"id":15,"arrived":2,"h":[2,96,151,82],"j":[2,3,18,-1,27,3,55,1,63,2],"o":[2,1,18,0,27,1],"k":[2,1,18,2,27,1],"m":[2,3,18,2,23,1,26,0,27,1,28,2,57,3],"r":[2,0],"f":[2,2],"e":[2,4,18,-1,27,4],"w":[2,1000,5,1020,7,1040,9,1061,11,1082,18,0,27,1061,55,1218,57,1243,63,1104,82,1126,84,1148,86,1171],"c0":2,"c":[2133,2253,2373,2513,2653,2813,2974,3155,3336,3539,3741,3944,4128,4312,4496,4680,3936,3193,2449,1705,961,218,218,218,218,512,647,782,917,1053,1188,1323,1458,1593,1728,1864,1999,2235,2469,2600,2730,2861,2991,3122,3252,3383,3513,3644,3774,3905,4035,4136,4237,4542,4847,5175,5503,5830,6158,6486,6707,7290,7379,7469,7539,7609,7680,7750,7821,7891,7961,8032,8102,8172,8243,8313,8387,8449,8512,8574,8657,8741,8846,9064,9304,9544,9784,10024,10264,10390,10483,10577,10670,10764,10857,10950,11044,11137,11230,11324,11417,11511,11604,11664,11723,11783,11843,11903,11962,12022,12082,12141,12201,12261,12321,12380,12418,12456,12494,12532,12570,12608,12646,12684,12722,12760,12798,12836,12897,12932,12967,13002,13037,13071,13106,13141,13176,13211,13246,13280,13315,13415,13448,13481,13514,13547,13580,13613,13646,13679,13736,13792,13849,13906,14039],"life":{"q0":0,"cash":[3944,218,2235,4035,7469,8387,10390,11604,12380,12897,13415,14039],"pay":[1082,0,1061,1061,1104,1104,1171,1171,1171,1171,1171,1171],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[0,0,0,0,160,880,1620,2380,3140,3910,4670,5430],"well":[86,20,63,71,77,80,81,81,81,82,82,83],"sec":[73,0,33,44,56,63,65,67,69,72,73,75],"events":[[2,0,-1,1613,6,-1],[2,1,3,1000,7,-1],[2,14,2,400,1,8],[2,12,-1,0,9,-1],[18,2,3,1082,10,-1],[18,15,4,0,3,12],[18,15,3,0,2,12],[18,12,-1,0,13,-1],[24,16,2,1236,1,-1,3],[24,16,1,995,0,-1,3],[27,1,3,1061,11,-1],[27,14,3,58,2,8],[27,14,4,101,3,8],[27,12,-1,0,9,-1],[55,3,3,1061,18,-1],[55,1,1,1195,18,-1],[63,2,1,1243,10,-1],[63,1,2,1104,11,-1],[151,13,1,0,17,-1]]}},{"id":16,"arrived":2,"h":[2,96,26,-1,27,98,97,110],"j":[2,3,17,-1,27,3,141,-1,144,3],"o":[2,1,17,0,27,1,141,0,144,1],"k":[2,1,17,2,27,1,141,2,144,1],"m":[2,3,17,2,21,1,25,0,27,1,28,2,62,3,85,2,87,3,141,2],"r":[2,0],"f":[2,2,26,-1,27,2],"e":[2,4,17,-1,27,4,141,-1],"w":[2,1000,5,1020,7,1040,9,1061,11,1082,17,0,27,1061,132,1082,141,0,144,1060],"c0":2,"c":[2399,2519,2639,2779,2919,3079,3240,3421,3602,3804,4007,4209,4393,4578,4762,4018,3274,2530,1787,1043,299,299,299,299,299,1360,1509,1657,1806,1955,2103,2252,2401,2550,2698,2847,2996,3245,3493,3637,3781,3925,4069,4214,4358,4502,4646,4790,4934,5078,5222,5337,5452,5674,5896,6118,6340,6562,6784,7006,7121,7236,7351,7466,7563,7660,7757,7855,7952,8049,8146,8243,8341,8438,8535,8632,8730,8819,8908,8998,9087,9176,9266,9906,10545,10748,10951,11154,11357,11446,11510,11574,11638,11702,11767,11831,11916,12002,12087,12172,12258,12343,12429,12482,12536,12589,12642,12696,12749,12803,12856,12910,12963,13017,13070,13123,13148,13173,13198,13223,13248,13272,13297,13322,13347,13372,13396,13421,13446,13468,13511,13555,13598,13641,13684,13727,13771,13814,13857,13014,12171,11328,11541,11681,11820,11960,12099,12239,12378,12518,12657,12797,12936,13076,13216],"life":{"q0":0,"cash":[4209,299,3245,5222,7466,8730,11446,12429,13123,13446,11328,13216],"pay":[1082,0,1061,1061,1061,1061,1061,1061,1061,1061,0,1060],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[0,0,0,0,0,0,0,0,0,0,0,0],"well":[86,0,63,72,76,79,79,79,79,80,54,73],"sec":[73,0,34,46,55,61,63,64,65,68,43,61],"events":[[2,0,-1,1879,6,-1],[2,1,3,1000,7,-1],[2,14,2,400,1,8],[2,12,-1,0,9,-1],[17,2,3,1082,10,-1],[17,15,4,0,3,12],[17,15,3,0,2,12],[17,12,-1,0,13,-1],[23,16,2,1648,1,-1,4],[23,16,1,1327,0,-1,4],[26,15,2,0,1,15],[26,15,1,0,0,14],[27,1,3,1061,11,-1],[27,14,2,424,1,8],[27,14,1,340,0,8],[27,14,3,58,2,8],[27,14,4,101,3,8],[27,12,-1,0,9,-1],[97,13,1,0,17,-1],[141,2,3,1082,10,-1],[141,15,4,0,3,12],[141,15,3,0,2,12],[141,12,-1,0,13,-1],[144,1,3,1060,11,-1],[144,14,3,74,2,8],[144,12,-1,0,9,-1]]}},{"id":17,"arrived":2,"h":[2,96,76,110],"j":[2,3,16,-1,27,3,53,1,67,3,87,2],"o":[2,1,16,0,27,1],"k":[2,1,16,2,27,1],"m":[2,3,16,2,20,1,28,2,53,3,55,2,58,3],"r":[2,0],"f":[2,-1,3,2],"e":[2,4,16,-1,27,4],"w":[2,1000,5,1020,7,1040,9,1061,11,1082,16,0,27,1061,53,1195,55,1218,57,1243,67,1061,87,1171],"c0":2,"c":[6090,6610,6730,6870,7010,7171,7331,7512,7693,7896,8098,8301,8485,8669,7925,7181,6438,5694,4950,4206,3463,2719,1975,1231,487,782,917,1052,1187,1322,1458,1593,1728,1863,1998,2133,2269,2505,2739,2869,3000,3131,3261,3392,3522,3653,3783,3914,4044,4175,4305,4480,4655,4960,5265,5593,5921,6248,6576,6904,7125,7346,7567,7788,7991,8136,8219,8301,8384,8467,8549,8632,8715,8797,8880,8998,9120,9237,9354,9471,9588,9705,9822,10052,10282,10564,10847,11129,11411,11580,11717,11854,11992,12129,12266,12404,12541,12678,12815,12953,13090,13227,13366,13471,13577,13682,13787,13893,13998,14103,14208,14314,14419,14524,14630,14742,14819,14895,14972,15049,15125,15202,15279,15355,15432,15509,15585,15662,15760,15834,15908,15981,16055,16129,16203,16277,16350,16424,16498,16572,16646,16771,16835,16899,16964,17028,17092,17156,17220,17284,17348,17413,17477,17541,17666],"life":{"q0":0,"cash":[8301,487,2505,4305,7788,9120,11580,13366,14742,15760,16771,17666],"pay":[1082,0,1061,1061,1243,1061,1171,1171,1171,1171,1171,1171],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[0,0,0,0,800,800,1090,1850,2610,3370,4130,4890],"well":[88,32,63,71,79,78,84,83,84,85,85,85],"sec":[75,0,33,44,61,59,71,72,74,77,79,80],"events":[[2,0,-1,5570,6,-1],[2,1,3,1000,7,-1],[2,12,-1,0,9,-1],[3,14,2,400,1,8],[16,2,3,1082,10,-1],[16,15,4,0,3,12],[16,15,3,0,2,12],[16,12,-1,0,13,-1],[27,1,3,1061,11,-1],[27,14,3,58,2,8],[27,14,4,101,3,8],[27,12,-1,0,9,-1],[53,3,3,1061,18,-1],[53,1,1,1171,18,-1],[67,2,1,1243,10,-1],[67,1,3,1061,11,-1],[76,13,1,0,17,-1],[87,3,3,1061,18,-1],[87,1,2,1171,18,-1]]}},{"id":18,"arrived":2,"h":[2,82],"j":[2,2,80,1,94,3,134,-1,144,3],"o":[2,1,134,0,144,1],"k":[2,1,134,2,144,1],"m":[2,3,134,2,135,1,144,2],"r":[2,0],"f":[2,-1,3,2],"e":[2,4,134,-1],"w":[2,1000,5,1020,7,1040,9,1061,11,1082,26,1061,40,1082,42,1104,80,1243,81,1268,83,1293,85,1319,94,1061,132,1082,134,0,144,1060],"c0":2,"c":[4974,5444,5514,5603,5692,5801,5909,6037,6165,6314,6462,6610,6740,6870,7000,7130,7260,7390,7520,7651,7781,7911,8041,8171,8301,8376,8451,8527,8602,8677,8753,8828,8903,8978,9054,9129,9204,9280,9363,9447,9552,9656,9760,9865,9969,10074,10178,10282,10387,10491,10596,10663,10730,10797,10864,10931,10998,11172,11239,11306,11373,11440,11507,11594,11650,11706,11761,11817,11873,11928,11984,12040,12096,12151,12207,12263,12335,12390,12640,12851,13063,13298,13533,13793,14053,14313,14686,15059,15319,15579,15813,16047,16231,16273,16315,16357,16399,16441,16483,16525,16567,16609,16652,16668,16685,16701,16717,16734,16750,16766,16783,16799,16815,16832,16848,16871,16874,16876,16879,16881,16884,16886,16889,16891,16894,16896,16899,16901,16934,16941,16969,16998,16140,15282,14424,13566,12709,11851,10993,10135,9277,8482,8688,8821,8953,9085,9217,9350,9482,9614,9747,9879,10011,10144,10338],"life":{"q0":0,"cash":[6610,8301,9280,10596,11594,12335,15579,16652,16871,16934,8482,10338],"pay":[1082,1061,1061,1104,1104,1104,1319,1061,1061,1061,0,1060],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[620,1320,2010,2730,3440,4160,4930,4930,4930,4930,4930,4930],"well":[86,84,85,83,83,84,87,78,78,80,41,65],"sec":[73,69,71,69,69,72,78,62,63,68,18,44],"events":[[2,0,-1,4504,6,-1],[2,1,2,1000,7,-1],[2,12,-1,0,9,-1],[3,14,2,400,1,8],[80,3,2,1104,18,-1],[80,1,1,1243,18,-1],[94,2,1,1319,10,-1],[94,1,3,1061,11,-1],[134,2,3,1082,10,-1],[134,15,4,0,3,12],[134,15,3,0,2,12],[134,12,-1,0,13,-1],[144,1,3,1060,11,-1],[144,14,3,74,2,8],[144,12,-1,0,9,-1]]}},{"id":19,"arrived":2,"h":[2,82,54,96],"j":[2,2],"o":[2,1],"k":[2,1],"m":[2,3],"r":[2,0],"f":[2,2],"e":[2,4],"w":[2,1000,5,1020,7,1040,9,1061,11,1082,26,1061,40,1082,42,1104,82,1126,84,1148,86,1171],"c0":2,"c":[4308,4378,4448,4537,4626,4735,4843,4971,5100,5248,5396,5544,5675,5805,5935,6065,6195,6325,6455,6585,6715,6845,6975,7105,7235,7310,7386,7461,7536,7611,7687,7762,7837,7913,7988,8063,8139,8214,8298,8382,8486,8590,8695,8799,8904,9008,9112,9217,9321,9425,9530,9597,9664,9753,9841,9930,10019,10214,10303,10392,10480,10569,10658,10767,10837,10908,10978,11048,11119,11189,11259,11330,11400,11471,11541,11611,11698,11761,11823,11885,11969,12052,12157,12262,12388,12515,12755,12995,13121,13248,13341,13434,13528,13621,13715,13808,13901,13995,14088,14181,14275,14368,14462,14521,14581,14641,14700,14760,14820,14880,14939,14999,15059,15119,15178,15238,15276,15314,15352,15390,15428,15466,15504,15542,15580,15618,15656,15694,15775,15809,15844,15879,15914,15949,15984,16018,16053,16088,16123,16158,16192,16339,16371,16404,16437,16470,16503,16536,16569,16602,16635,16668,16700,16733,16888],"life":{"q0":0,"cash":[5544,7235,8214,9530,10767,11698,13248,14462,15238,15775,16339,16888],"pay":[1082,1061,1061,1104,1104,1104,1171,1171,1171,1171,1171,1171],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[620,1320,2010,2730,3440,4160,4910,5670,6430,7190,7950,8710],"well":[86,84,85,83,83,84,83,82,82,83,83,84],"sec":[72,69,71,68,69,72,70,69,70,74,75,76],"events":[[2,0,-1,4238,6,-1],[2,1,2,1000,7,-1],[2,12,-1,0,9,-1],[54,13,1,0,17,-1]]}},{"id":20,"arrived":2,"h":[2,82,54,96],"j":[2,2],"o":[2,1],"k":[2,1],"m":[2,3],"r":[2,0],"f":[2,2],"e":[2,4],"w":[2,1000,5,1020,7,1040,9,1061,11,1082,26,1061,40,1082,42,1104,82,1126,84,1148,86,1171],"c0":2,"c":[1967,2037,2107,2196,2285,2394,2502,2630,2758,2907,3055,3203,3333,3463,3593,3723,3853,3983,4113,4244,4374,4504,4634,4764,4894,4969,5044,5120,5195,5270,5346,5421,5496,5571,5647,5722,5797,5973,6161,6245,6349,6454,6558,6662,6767,6871,6976,7080,7184,7289,7393,7460,7527,7723,7918,8114,8310,8505,8701,8896,8985,9074,9162,9272,9342,9412,9483,9553,9624,9694,9764,9835,9905,9975,10046,10116,10203,10265,10328,10390,10474,10557,10662,10880,11120,11360,11600,11840,12080,12206,12300,12393,12486,12580,12673,12766,12860,12953,13047,13140,13233,13327,13420,13480,13540,13599,13659,13719,13778,13838,13898,13958,14017,14077,14137,14197,14235,14272,14310,14348,14386,14424,14462,14500,14538,14576,14614,14652,14733,14768,14803,14838,14872,14907,14942,14977,15012,15047,15081,15116,15151,15297,15330,15363,15396,15429,15462,15495,15527,15560,15593,15626,15659,15692,15847],"life":{"q0":0,"cash":[3203,4894,5973,7393,9272,10203,12206,13420,14197,14733,15297,15847],"pay":[1082,1061,1061,1104,1104,1104,1171,1171,1171,1171,1171,1171],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[620,1320,2010,2730,3440,4160,4910,5670,6430,7190,7950,8710],"well":[86,84,81,83,84,84,84,83,83,83,84,84],"sec":[72,69,70,68,70,72,71,71,72,74,75,76],"events":[[2,0,-1,1897,6,-1],[2,1,2,1000,7,-1],[2,12,-1,0,9,-1],[54,13,1,0,17,-1]]}},{"id":21,"arrived":2,"h":[2,45,119,86],"j":[2,4,38,1,42,4,55,1,62,4,85,1,88,2],"o":[2,1],"k":[2,1],"m":[2,3],"r":[2,0],"f":[2,2],"e":[2,4],"w":[2,1000,6,1020,8,1040,10,1061,26,1040,38,1171,42,1040,55,1218,57,1243,62,1040,85,1319,88,1171],"c0":2,"c":[2910,3030,3150,3270,3410,3550,3710,3871,4052,4233,4414,4595,4758,4921,5084,5247,5410,5573,5736,5899,6062,6225,6388,6551,6714,6821,6929,7036,7144,7251,7359,7466,7574,7681,7789,7896,8077,8358,8638,8813,9040,9143,9246,9349,9452,9555,9658,9761,9863,9966,10070,10143,10216,10514,10811,11132,11453,11774,12094,12415,12921,12994,13067,13140,13195,13249,13304,13358,13413,13467,13522,13577,13631,13686,13740,13795,13850,13896,13943,13989,14036,14082,14129,14502,14875,15248,15678,15911,16143,16262,16348,16434,16519,16605,16691,16776,16862,16948,17033,17119,17205,17290,17376,17420,17464,17507,17551,17594,17638,17682,17725,17769,17812,17856,17900,17944,17958,17971,18076,18180,18285,18390,18494,18599,18704,18808,18913,19018,19138,19240,19342,19445,19547,19649,19751,19853,19955,20057,20159,20261,20363,20512,20604,20697,20790,20882,20975,21068,21160,21253,21346,21438,21531,21624,21773],"life":{"q0":0,"cash":[4595,6714,8358,10070,13140,13850,16262,17376,17944,19138,20512,21773],"pay":[1061,1040,1171,1040,1040,1040,1171,1171,1171,1171,1171,1171],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[0,0,110,110,110,110,340,1100,1860,2620,3380,4140],"well":[85,83,86,81,80,82,80,81,81,85,86,88],"sec":[71,67,79,63,62,67,64,67,69,77,81,84],"events":[[2,0,-1,2790,6,-1],[2,1,4,1000,7,-1],[2,12,-1,0,9,-1],[38,3,4,1040,18,-1],[38,1,1,1148,18,-1],[42,2,1,1171,10,-1],[42,1,4,1040,11,-1],[55,3,4,1040,18,-1],[55,1,1,1195,18,-1],[62,2,1,1243,10,-1],[62,1,4,1040,11,-1],[85,3,4,1040,18,-1],[85,1,1,1293,18,-1],[88,2,1,1319,10,-1],[88,1,2,1171,11,-1],[119,13,1,0,17,-1]]}},{"id":22,"arrived":2,"h":[2,72,113,98],"j":[2,1,105,3,133,-1,144,3],"o":[2,1,133,0,144,1],"k":[2,1,133,2,144,1],"m":[2,3,134,2,143,1,144,2],"r":[2,0],"f":[2,2],"e":[2,4],"w":[2,1000,5,1020,7,1040,9,1061,11,1082,26,1061,28,1082,32,1104,34,1126,36,1148,38,1171,53,1195,55,1218,57,1243,81,1268,83,1293,85,1319,105,1061,132,1082,133,0,144,1060],"c0":2,"c":[4711,4781,4851,4940,5029,5138,5246,5374,5503,5651,5799,5951,6081,6211,6341,6471,6601,6731,6861,6991,7121,7251,7381,7511,7645,7727,7829,7932,8034,8136,8259,8382,8526,8670,8835,9000,9187,9489,9775,9958,10140,10323,10505,10687,10870,11052,11234,11417,11599,11782,11975,12150,12325,12630,12935,13263,13591,13918,14246,14574,14795,15016,15237,15458,15653,15848,16044,16239,16434,16630,16825,17020,17215,17411,17606,17801,18019,18206,18393,18604,18815,19050,19285,19658,20031,20404,20777,21150,21522,21782,22008,22234,22460,22686,22912,23138,23364,23590,23816,24042,24268,24494,24733,24734,24733,24733,24733,24733,24733,24733,24733,24733,24772,24811,24849,24943,24961,24978,24995,25012,25030,25047,25064,25081,25099,25116,25133,25151,25211,25225,25261,24214,23168,22121,21075,20029,18982,17936,16889,15843,14797,13787,13799,13810,13822,13834,13846,13857,13869,13881,13892,13904,13916,13928,13970],"life":{"q0":0,"cash":[5951,7645,9489,11975,15458,18019,21782,24733,24943,25211,13787,13970],"pay":[1082,1061,1171,1171,1243,1243,1319,1319,1061,1061,0,1060],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[620,1320,2050,2810,3610,4420,5260,6120,6120,6120,6120,6120],"well":[87,85,84,86,87,89,89,90,85,86,46,63],"sec":[74,72,74,74,77,82,83,84,77,80,1,36],"events":[[2,0,-1,4641,6,-1],[2,1,1,1000,7,-1],[2,12,-1,0,9,-1],[105,2,1,1319,10,-1],[105,1,3,1061,11,-1],[113,13,1,0,17,-1],[133,2,3,1082,10,-1],[133,12,-1,0,13,-1],[144,1,3,1060,11,-1],[144,12,-1,0,9,-1]]}},{"id":23,"arrived":2,"h":[2,72],"j":[2,1,96,3,133,4],"o":[2,1],"k":[2,1],"m":[2,3],"r":[2,0],"f":[2,2],"e":[2,4,118,-1],"w":[2,1000,5,1020,7,1040,9,1061,11,1082,26,1061,28,1082,32,1104,34,1126,36,1148,38,1171,53,1195,55,1218,57,1243,81,1268,83,1293,85,1319,96,1061,132,1082,133,1061,143,1040],"c0":2,"c":[2231,2301,2371,2460,2549,2658,2766,2894,3022,3171,3319,3470,3601,3731,3861,3991,4121,4251,4381,4511,4641,4771,4901,5031,5165,5247,5349,5452,5554,5656,5779,5902,6046,6190,6355,6520,6707,7009,7295,7478,7660,7843,8025,8207,8390,8572,8754,8937,9119,9302,9495,9670,9845,10150,10455,10783,11110,11438,11766,12094,12315,12536,12757,12978,13173,13368,13564,13759,13954,14150,14345,14540,14735,14931,15126,15321,15539,15726,15913,16124,16335,16570,16805,17178,17551,17924,18297,18669,19042,19302,19528,19754,19980,20206,20507,20541,20575,20609,20643,20677,20710,20744,20789,20788,20788,20788,20788,20788,20788,20788,20788,20788,20788,20787,20787,20835,20945,21055,21165,21275,21386,21496,21606,21716,21826,21937,22047,22157,22304,22419,22556,22671,22786,22901,23016,23131,23247,23362,23477,23592,23707,23854,23950,24045,24141,24236,24332,24428,24523,24619,24715,24810,24906,25002,25124],"life":{"q0":0,"cash":[3470,5165,7009,9495,12978,15539,19302,20789,20835,22304,23854,25124],"pay":[1082,1061,1171,1171,1243,1243,1319,1061,1061,1061,1040,1040],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[620,1320,2050,2810,3610,4420,5260,5260,5260,5260,5260,5260],"well":[86,84,82,84,86,88,88,82,82,80,78,80],"sec":[72,68,71,71,74,78,79,70,70,74,71,75],"events":[[2,0,-1,2161,6,-1],[2,1,1,1000,7,-1],[2,12,-1,0,9,-1],[96,2,1,1319,10,-1],[96,1,3,1061,11,-1],[118,15,4,0,3,12],[133,2,3,1082,10,-1],[133,1,4,1061,11,-1]]}},{"id":24,"arrived":2,"h":[2,72],"j":[2,1,95,4],"o":[2,1],"k":[2,1],"m":[2,3],"r":[2,0],"f":[2,2],"e":[2,4],"w":[2,1000,5,1020,7,1040,9,1061,11,1082,26,1061,28,1082,32,1104,34,1126,36,1148,38,1171,53,1195,55,1218,57,1243,81,1268,83,1293,85,1319,95,1040,132,1061,143,1040],"c0":2,"c":[1772,1842,1912,2001,2090,2199,2307,2435,2563,2712,2860,3011,3141,3272,3402,3532,3662,3792,3922,4052,4182,4312,4442,4572,4706,4788,4890,4993,5095,5197,5320,5443,5587,5731,5896,6061,6248,6550,6836,7019,7201,7383,7566,7748,7931,8113,8295,8478,8660,8842,9036,9211,9386,9691,9996,10324,10651,10979,11307,11635,11856,12077,12298,12519,12714,12909,13105,13300,13495,13690,13886,14081,14276,14472,14667,14862,15080,15267,15454,15665,15876,16111,16346,16719,17092,17465,17837,18210,18583,18843,19069,19295,19521,19736,19749,19762,19775,19788,19801,19814,19827,19840,19863,19842,19822,19801,19780,19759,19738,19717,19696,19675,19654,19633,19613,19639,19604,19570,19535,19501,19466,19432,19397,19363,19328,19294,19259,19225,19227,19197,19188,19180,19171,19162,19153,19145,19136,19127,19118,19109,19101,19123,19091,19059,19027,18995,18963,18931,18899,18867,18835,18803,18771,18739,18734],"life":{"q0":0,"cash":[3011,4706,6550,9036,12519,15080,18843,19863,19639,19227,19123,18734],"pay":[1082,1061,1171,1171,1243,1243,1319,1040,1040,1040,1040,1040],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[620,1320,2050,2810,3610,4420,5260,5260,5260,5260,5260,5260],"well":[86,84,82,85,86,88,88,83,82,82,82,82],"sec":[72,69,71,71,74,78,79,71,70,72,73,73],"events":[[2,0,-1,1702,6,-1],[2,1,1,1000,7,-1],[2,12,-1,0,9,-1],[95,2,1,1319,10,-1],[95,1,4,1040,11,-1]]}},{"id":25,"arrived":3,"h":[3,72,70,70],"j":[3,1,16,-1,27,1,30,2,82,1,90,4],"o":[3,1,16,0,27,1],"k":[3,1,16,2,27,1],"m":[3,3,17,2,26,1,27,2,63,3,65,2,68,3],"r":[3,0],"f":[3,2],"e":[3,4],"w":[3,1000,5,1020,7,1040,9,1061,11,1082,16,0,27,1061,28,1082,30,1061,40,1082,42,1104,82,1268,83,1293,85,1319,90,1040,132,1061,143,1040],"c0":3,"c":[8622,8692,8781,8870,8979,9087,9215,9343,9492,9640,9791,9921,10051,9266,8367,7469,6571,5673,4774,3876,2978,2079,1181,285,367,469,571,815,897,979,1061,1143,1225,1308,1390,1472,1659,1860,1958,2076,2194,2313,2431,2549,2667,2785,2904,3022,3140,3260,3349,3438,3633,3829,4025,4220,4416,4611,4807,4896,4984,5073,5174,5237,5300,5363,5426,5489,5552,5615,5679,5742,5805,5869,5932,6009,6064,6119,6175,6551,6787,7022,7395,7768,8142,8515,8888,9571,9618,9639,9660,9681,9702,9724,9745,9766,9787,9808,9829,9851,9872,9894,9890,9885,9881,9876,9872,9867,9863,9858,9854,9850,9845,9841,9841,9823,9805,9786,9768,9750,9731,9713,9695,9676,9658,9640,9621,9623,9609,9617,9624,9631,9638,9646,9653,9660,9667,9674,9682,9689,9737,9713,9689,9665,9642,9618,9594,9570,9546,9522,9499,9475,9451,9467],"life":{"q0":0,"cash":[9791,285,1659,3260,5174,6009,9618,9894,9841,9623,9737,9467],"pay":[1082,0,1061,1104,1104,1104,1040,1040,1040,1040,1040,1040],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[570,570,1100,1810,2530,3250,3250,3250,3250,3250,3250,3250],"well":[88,50,61,70,74,78,76,75,75,76,77,77],"sec":[77,0,28,41,51,58,56,56,57,60,62,63],"events":[[3,0,-1,8152,6,-1],[3,1,1,1000,7,-1],[3,14,2,400,1,8],[3,12,-1,0,9,-1],[16,2,1,1082,10,-1],[16,12,-1,0,13,-1],[27,1,1,1061,11,-1],[27,12,-1,0,9,-1],[30,2,1,1082,10,-1],[30,1,2,1061,11,-1],[70,13,1,0,17,-1],[82,3,2,1104,18,-1],[82,1,1,1268,18,-1],[90,2,1,1319,10,-1],[90,1,4,1040,11,-1]]}},{"id":26,"arrived":3,"h":[3,72,23,-1,27,98,82,86],"j":[3,1,15,-1,27,3,57,1,62,3,81,1,91,3,135,-1,144,3],"o":[3,1,15,0,27,1,135,0,144,1],"k":[3,1,15,2,27,1,135,2,144,1],"m":[3,3,15,2,20,1,23,0,27,1,28,2,57,3,85,2,87,3,135,2],"r":[3,0],"f":[3,2,24,-1,27,2],"e":[3,4,15,-1,27,4,135,-1,144,4],"w":[3,1000,5,1020,7,1040,9,1061,11,1082,15,0,27,1061,57,1243,62,1061,81,1268,83,1293,85,1319,91,1061,132,1082,135,0,144,1060],"c0":3,"c":[2981,3051,3140,3229,3337,3445,3574,3702,3850,3998,4149,4279,3594,2851,2107,1363,619,207,207,207,207,207,207,209,1270,1418,1567,1716,1865,2013,2162,2311,2460,2608,2757,2906,3159,3407,3551,3695,3839,3983,4127,4271,4416,4560,4704,4848,4992,5138,5253,5368,5590,5812,6154,6496,6838,7180,7522,7947,8062,8177,8292,8390,8487,8584,8681,8778,8876,8973,9070,9167,9264,9362,9459,9559,9648,9738,9971,10204,10488,10773,11632,12492,12915,13337,13760,14182,14951,15043,15135,15228,15320,15412,15504,15596,15689,15781,15873,15965,16058,16151,16218,16286,16353,16421,16488,16556,16623,16691,16758,16826,16893,16961,17033,17086,17139,17192,17244,17297,17350,17403,17456,17509,17562,17614,17667,17724,17774,17846,17917,17989,17174,16359,15544,14729,13914,13099,12284,11470,10658,10900,10941,10981,11021,11062,11102,11143,11183,11223,11264,11304,11345,11388],"life":{"q0":0,"cash":[4149,209,3159,5138,8292,9559,14951,16151,17033,17724,10658,11388],"pay":[1082,0,1061,1061,1061,1061,1061,1061,1061,1061,0,1060],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[570,570,570,570,570,570,570,570,570,570,570,570],"well":[87,0,64,72,79,81,84,84,83,84,51,74],"sec":[74,0,34,47,61,66,72,72,73,76,38,57],"events":[[3,0,-1,2511,6,-1],[3,1,1,1000,7,-1],[3,14,2,400,1,8],[3,12,-1,0,9,-1],[15,2,1,1082,10,-1],[15,15,4,0,3,12],[15,15,3,0,2,12],[15,12,-1,0,13,-1],[20,16,1,1327,0,-1,4],[21,16,2,1648,1,-1,4],[23,15,1,0,0,14],[24,15,2,0,1,15],[27,1,3,1061,11,-1],[27,14,2,424,1,8],[27,14,1,340,0,8],[27,14,3,58,2,8],[27,14,4,101,3,8],[27,12,-1,0,9,-1],[57,3,3,1061,18,-1],[57,1,1,1218,18,-1],[62,2,1,1243,10,-1],[62,1,3,1061,11,-1],[81,3,3,1061,18,-1],[81,1,1,1243,18,-1],[82,13,1,0,17,-1],[91,2,1,1319,10,-1],[91,1,3,1061,11,-1],[135,2,3,1082,10,-1],[135,15,4,0,3,12],[135,15,3,0,2,12],[135,12,-1,0,13,-1],[144,1,3,1060,11,-1],[144,14,3,74,2,8],[144,14,4,128,3,8],[144,12,-1,0,9,-1]]}},{"id":27,"arrived":3,"h":[3,72,19,-1,27,98,138,86],"j":[3,1,14,-1,27,3,53,1,66,3,84,1,89,3,138,-1,144,3],"o":[3,1,14,0,27,1,138,0,144,1],"k":[3,1,14,2,27,1,138,2,144,1],"m":[3,3,15,2,17,1,19,0,27,1,28,2,53,3,85,2,87,3,138,2,143,1,144,2],"r":[3,0],"f":[3,2,20,-1,27,2],"e":[3,4,19,-1,27,4],"w":[3,1000,5,1020,7,1040,9,1061,11,1082,14,0,27,1061,53,1195,55,1218,57,1243,66,1061,84,1293,85,1319,89,1061,132,1082,138,0,144,1060],"c0":3,"c":[1149,1219,1308,1397,1506,1614,1742,1870,2019,2167,2318,1424,526,57,1,1,1,1,1,1,1,1,1,2,1063,1212,1361,1509,1658,1807,1956,2104,2253,2402,2550,2699,2953,3200,3345,3489,3633,3777,3921,4065,4209,4353,4497,4641,4785,4932,5121,5310,5629,5947,6289,6631,6973,7315,7657,7892,8127,8362,8597,8694,8792,8889,8986,9083,9180,9278,9375,9472,9569,9666,9764,9868,9957,10046,10136,10225,10315,10572,11404,12236,12631,13026,13557,13760,13849,13913,13977,14041,14106,14170,14234,14298,14362,14426,14490,14554,14619,14685,14724,14763,14802,14841,14880,14919,14958,14996,15035,15074,15113,15152,15203,15220,15238,15255,15272,15289,15307,15324,15341,15358,15376,15393,15410,15437,15452,15487,15523,15558,15594,15629,15665,14619,13608,12598,11587,10576,9574,9614,9655,9695,9736,9776,9816,9857,9897,9938,9978,10019,10059,10106],"life":{"q0":0,"cash":[2318,2,2953,4932,8597,9868,13849,14685,15203,15437,9574,10106],"pay":[1082,0,1061,1061,1243,1061,1061,1061,1061,1061,0,1060],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[570,570,570,570,1370,1370,1370,1370,1370,1370,1370,1370],"well":[86,0,63,72,81,81,83,82,82,82,46,63],"sec":[72,0,34,46,64,65,71,69,70,72,0,35],"events":[[3,0,-1,679,6,-1],[3,1,1,1000,7,-1],[3,14,2,400,1,8],[3,12,-1,0,9,-1],[14,2,1,1082,10,-1],[14,12,-1,0,13,-1],[16,16,1,1327,0,-1,4],[16,16,4,391,3,-1,4],[17,16,2,1648,1,-1,4],[18,16,3,227,2,-1,4],[19,15,1,0,0,14],[19,15,4,0,3,15],[20,15,2,0,1,15],[21,15,3,0,2,16],[27,1,3,1061,11,-1],[27,14,2,424,1,8],[27,14,1,340,0,8],[27,14,3,58,2,8],[27,14,4,101,3,8],[27,12,-1,0,9,-1],[53,3,3,1061,18,-1],[53,1,1,1171,18,-1],[66,2,1,1243,10,-1],[66,1,3,1061,11,-1],[84,3,3,1061,18,-1],[84,1,1,1293,18,-1],[89,2,1,1319,10,-1],[89,1,3,1061,11,-1],[138,2,3,1082,10,-1],[138,13,1,0,17,-1],[138,12,-1,0,13,-1],[144,1,3,1060,11,-1],[144,12,-1,0,9,-1]]}},{"id":28,"arrived":3,"h":[3,96,59,110],"j":[3,3,15,-1,27,3,142,-1,144,3],"o":[3,1,15,0,27,1,142,0,144,1],"k":[3,1,15,2,27,1,142,2,144,1],"m":[3,3,15,2,23,1,26,0,27,1,28,2,63,3,142,2,143,1,144,2],"r":[3,0],"f":[3,2],"e":[3,4,15,-1,27,4],"w":[3,1000,5,1020,7,1040,9,1061,11,1082,15,0,27,1061,132,1082,142,0,144,1060],"c0":3,"c":[6087,6207,6347,6487,6648,6808,6989,7171,7373,7575,7778,7962,7218,6474,5731,4987,4243,3499,2756,2012,1268,524,112,112,407,643,778,913,1048,1183,1318,1454,1589,1724,1859,2095,2331,2565,2800,2930,3061,3191,3322,3452,3583,3713,3844,3974,4105,4236,4337,4544,4752,4960,5168,5376,5584,5819,6055,6290,6419,6547,6676,6794,6912,7029,7147,7265,7383,7501,7619,7737,7855,7973,8091,8209,8326,8443,8673,8904,9134,9364,9595,9825,10055,10286,10516,10746,10977,11179,11381,11584,11669,11754,11840,11925,12011,12096,12181,12267,12352,12438,12491,12545,12598,12652,12705,12758,12812,12865,12919,12972,13026,13079,13133,13281,13306,13331,13356,13381,13405,13430,13455,13480,13505,13530,13554,13579,13601,13644,13688,13731,13774,13817,13860,13904,13947,13990,14033,12994,11956,11967,11979,11991,12003,12015,12027,12039,12051,12062,12074,12086,12098,12110],"life":{"q0":0,"cash":[7778,112,2331,4236,6676,8209,10977,12438,13133,13579,11956,12110],"pay":[1082,0,1061,1061,1061,1061,1061,1061,1061,1061,0,1060],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[0,0,0,0,0,0,0,0,0,0,0,0],"well":[88,20,63,72,76,79,77,80,81,81,46,63],"sec":[77,0,33,45,55,62,65,66,67,70,1,35],"events":[[3,0,-1,5567,6,-1],[3,1,3,1000,7,-1],[3,14,2,400,1,8],[3,12,-1,0,9,-1],[15,2,3,1082,10,-1],[15,15,4,0,3,12],[15,15,3,0,2,12],[15,12,-1,0,13,-1],[25,16,1,664,0,-1,2],[26,16,2,412,1,-1],[27,1,3,1061,11,-1],[27,14,3,58,2,8],[27,14,4,101,3,8],[27,12,-1,0,9,-1],[59,13,1,0,17,-1],[142,2,3,1082,10,-1],[142,12,-1,0,13,-1],[144,1,3,1060,11,-1],[144,12,-1,0,9,-1]]}},{"id":29,"arrived":3,"h":[3,98,23,-1,27,98],"j":[3,3,14,-1,27,3,58,1,61,3,140,-1,144,3],"o":[3,1,14,0,27,1,140,0,144,1],"k":[3,1,14,2,27,1,140,2,144,1],"m":[3,3,14,2,16,1,21,0,27,1,28,2,58,3,61,2,64,3,65,2,68,3,85,2,87,3,140,2,143,1,144,2],"r":[3,0],"f":[3,2,23,-1,27,2],"e":[3,4,14,-1,27,4,140,-1],"w":[3,1000,5,1020,7,1040,9,1061,11,1082,14,0,27,1061,58,1243,61,1061,132,1082,140,0,144,1060],"c0":3,"c":[2833,2953,3093,3233,3394,3554,3735,3917,4119,4322,4524,3787,3050,2313,1575,838,101,101,101,101,101,101,101,101,1162,1411,1560,1709,1858,2006,2155,2304,2452,2601,2750,2999,3249,3497,3745,3889,4033,4177,4321,4465,4609,4753,4897,5041,5185,5329,5444,5666,5888,6110,6332,6674,7016,7358,7766,7988,8103,8218,8333,8430,8528,8625,8722,8819,8917,9014,9111,9208,9305,9403,9500,9597,9686,9776,9979,10181,10384,10587,11227,11867,12069,12272,12475,12678,12881,13062,13242,13423,13488,13552,13616,13680,13744,13808,13872,13936,14001,14065,14104,14142,14181,14220,14259,14298,14337,14376,14415,14453,14492,14531,14570,14711,14852,14994,15135,15276,15417,15559,15700,15841,15982,16123,16265,16406,16544,16704,16739,16775,16810,16846,16882,16917,16953,16102,15251,14401,13550,13763,13903,14042,14181,14321,14460,14600,14739,14878,15018,15157,15297,15436],"life":{"q0":0,"cash":[4524,101,3249,5329,8333,9597,12881,14065,14570,16406,13550,15436],"pay":[1082,0,1061,1061,1061,1061,1061,1061,1061,1061,0,1060],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[0,0,0,0,0,0,0,0,0,0,0,0],"well":[86,0,63,71,74,78,75,78,78,77,49,71],"sec":[72,0,34,44,51,59,60,61,63,68,34,56],"events":[[3,0,-1,2313,6,-1],[3,1,3,1000,7,-1],[3,14,2,400,1,8],[3,12,-1,0,9,-1],[14,2,3,1082,10,-1],[14,15,4,0,3,12],[14,15,3,0,2,12],[14,12,-1,0,13,-1],[20,16,2,1648,1,-1,4],[20,16,1,1301,0,-1,4],[23,15,2,0,1,15],[23,15,1,0,0,14],[27,1,3,1061,11,-1],[27,14,2,424,1,8],[27,14,1,340,0,8],[27,14,3,58,2,8],[27,14,4,101,3,8],[27,12,-1,0,9,-1],[58,3,3,1061,18,-1],[58,1,1,1243,18,-1],[61,2,1,1243,10,-1],[61,1,3,1061,11,-1],[140,2,3,1082,10,-1],[140,15,4,0,3,12],[140,15,3,0,2,12],[140,12,-1,0,13,-1],[144,1,3,1060,11,-1],[144,14,3,74,2,8],[144,12,-1,0,9,-1]]}},{"id":30,"arrived":3,"h":[3,98,82,110,119,86],"j":[3,3,13,2,25,-1,27,3,58,1,61,3,87,2],"o":[3,1,25,0,27,1],"k":[3,1,25,2,27,1],"m":[3,3,25,2,26,1,27,2,50,3,52,2,58,3,61,2,62,3],"r":[3,0],"f":[3,2],"e":[3,4],"w":[3,1000,5,1020,7,1040,9,1061,11,1082,25,0,27,1061,58,1243,61,1061,87,1171],"c0":3,"c":[5161,5281,5421,5561,5721,5882,6063,6244,6447,6649,6797,6934,7071,7207,7344,7481,7617,7754,7891,8028,8164,8301,8009,7117,7266,7415,7563,7712,7861,8009,8158,8307,8456,8604,8753,8902,9151,9399,9543,9687,9831,9975,10119,10264,10408,10552,10696,10840,10984,11128,11243,11358,11580,11802,12024,12366,12708,13049,13458,13573,13688,13803,13918,14015,14113,14210,14307,14404,14502,14599,14696,14793,14890,14988,15085,15182,15272,15361,15450,15540,15657,15774,16004,16234,16516,16799,17081,17363,17532,17669,17806,17944,18081,18218,18355,18493,18630,18767,18905,19042,19179,19316,19422,19527,19632,19738,19843,19948,20053,20159,20264,20369,20475,20580,20685,20762,20839,20943,21048,21153,21257,21362,21467,21571,21676,21781,21885,22006,22108,22210,22312,22414,22516,22618,22720,22822,22924,23026,23129,23231,23380,23473,23565,23658,23751,23843,23936,24029,24121,24214,24307,24399,24492,24643],"life":{"q0":0,"cash":[6797,7117,9151,11128,13918,15182,17532,19316,20685,22006,23380,24643],"pay":[1082,0,1061,1061,1061,1061,1171,1171,1171,1171,1171,1171],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[50,50,50,50,50,50,340,1100,1860,2620,3380,4140],"well":[81,50,65,74,77,81,87,86,87,88,89,90],"sec":[63,0,37,49,57,66,77,78,79,85,87,89],"events":[[3,0,-1,4641,6,-1],[3,1,3,1000,7,-1],[3,14,2,400,1,8],[3,12,-1,0,9,-1],[13,2,3,1082,10,-1],[13,1,2,1082,11,-1],[25,2,2,1082,10,-1],[25,12,-1,0,13,-1],[27,1,3,1061,11,-1],[27,12,-1,0,9,-1],[58,3,3,1061,18,-1],[58,1,1,1243,18,-1],[61,2,1,1243,10,-1],[61,1,3,1061,11,-1],[82,13,1,0,17,-1],[87,3,3,1061,18,-1],[87,1,2,1171,18,-1],[119,13,1,0,17,-1]]}},{"id":31,"arrived":3,"h":[3,82],"j":[3,2,85,1,88,2],"o":[3,1],"k":[3,1],"m":[3,3],"r":[3,0],"f":[3,-1,4,2],"e":[3,4],"w":[3,1000,5,1020,7,1040,9,1061,11,1082,26,1061,40,1082,42,1104,82,1126,84,1148,85,1319,88,1171],"c0":3,"c":[4592,5062,5151,5240,5348,5457,5585,5713,5861,6010,6158,6288,6418,6548,6678,6808,6938,7068,7198,7328,7458,7589,7719,7849,7924,7999,8075,8150,8225,8300,8376,8451,8526,8602,8677,8752,8928,9116,9200,9304,9409,9513,9617,9722,9826,9931,10035,10139,10244,10348,10415,10482,10656,10830,11004,11178,11352,11526,11700,11767,11834,11901,11988,12044,12099,12155,12211,12267,12322,12378,12434,12489,12545,12601,12656,12728,12784,12839,12894,12971,13047,13144,13861,14234,14607,15038,15271,15504,15623,15717,15811,15904,15998,16092,16186,16280,16374,16467,16561,16655,16749,16843,16911,16979,17047,17116,17184,17252,17320,17388,17456,17525,17593,17661,17729,17784,17838,17892,17946,18001,18055,18109,18164,18218,18272,18327,18381,18475,18534,18593,18652,18711,18770,18829,18889,18948,19007,19066,19125,19184,19346,19403,19460,19517,19574,19631,19688,19745,19801,19858,19915,19972,20029,20200],"life":{"q0":0,"cash":[6158,7849,8928,10348,11988,12728,15623,16843,17729,18475,19346,20200],"pay":[1082,1061,1061,1104,1104,1104,1171,1171,1171,1171,1171,1171],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[570,1270,1960,2680,3390,4110,4340,5100,5860,6620,7380,8140],"well":[87,85,83,85,84,85,84,84,84,85,86,86],"sec":[74,72,73,71,71,73,73,73,75,78,80,82],"events":[[3,0,-1,4122,6,-1],[3,1,2,1000,7,-1],[3,12,-1,0,9,-1],[4,14,2,400,1,8],[85,3,2,1148,18,-1],[85,1,1,1293,18,-1],[88,2,1,1319,10,-1],[88,1,2,1171,11,-1]]}},{"id":32,"arrived":3,"h":[3,82,57,96,83,86],"j":[3,2,82,1,89,3,137,-1,144,3],"o":[3,1,137,0,144,1],"k":[3,1,137,2,144,1],"m":[3,3,137,2,143,1,144,2],"r":[3,0],"f":[3,2],"e":[3,4],"w":[3,1000,5,1020,7,1040,9,1061,11,1082,26,1061,40,1082,42,1104,82,1268,83,1293,85,1319,89,1061,132,1082,137,0,144,1060],"c0":3,"c":[3722,3792,3881,3970,4079,4187,4315,4443,4592,4740,4888,5018,5148,5278,5408,5538,5668,5798,5928,6059,6189,6319,6449,6579,6654,6729,6805,6880,6955,7030,7106,7181,7256,7332,7407,7482,7658,7846,7930,8034,8139,8243,8347,8452,8556,8661,8765,8869,8974,9078,9145,9212,9386,9560,9734,9930,10125,10321,10516,10605,10694,10782,10891,10962,11032,11103,11173,11243,11314,11384,11454,11525,11595,11665,11736,11823,11885,11947,12010,12401,12643,12928,13350,13773,14195,14618,15305,15535,15652,15744,15837,15929,16021,16113,16205,16298,16390,16482,16574,16667,16759,16851,16919,16986,17053,17121,17188,17256,17323,17391,17458,17526,17593,17661,17728,17781,17834,17887,17939,17992,18045,18098,18151,18204,18256,18309,18362,18440,18490,18561,18633,18704,18776,18847,17836,16826,15815,14805,13794,12784,11831,11871,11911,11952,11992,12033,12073,12113,12154,12194,12235,12275,12315,12413],"life":{"q0":0,"cash":[4888,6579,7658,9078,10891,11823,15652,16851,17728,18440,11831,12413],"pay":[1082,1061,1061,1104,1104,1104,1061,1061,1061,1061,0,1060],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[570,1270,1960,2680,3390,4110,4110,4110,4110,4110,4110,4110],"well":[86,83,81,82,82,84,78,78,79,82,46,63],"sec":[71,67,69,66,67,71,60,62,65,72,1,35],"events":[[3,0,-1,3652,6,-1],[3,1,2,1000,7,-1],[3,12,-1,0,9,-1],[57,13,1,0,17,-1],[82,3,2,1104,18,-1],[82,1,1,1268,18,-1],[83,13,1,0,17,-1],[89,2,1,1319,10,-1],[89,1,3,1061,11,-1],[137,2,3,1082,10,-1],[137,12,-1,0,13,-1],[144,1,3,1060,11,-1],[144,12,-1,0,9,-1]]}},{"id":33,"arrived":3,"h":[3,82],"j":[3,2,85,1,87,2],"o":[3,1],"k":[3,1],"m":[3,3],"r":[3,0],"f":[3,2],"e":[3,4],"w":[3,1000,5,1020,7,1040,9,1061,11,1082,26,1061,40,1082,42,1104,82,1126,84,1148,85,1319,87,1171],"c0":3,"c":[10359,10429,10518,10607,10715,10824,10952,11080,11228,11376,11525,11655,11785,11915,12045,12175,12305,12435,12565,12695,12825,12955,13085,13215,13291,13366,13441,13516,13592,13667,13742,13818,13893,13968,14044,14119,14295,14483,14566,14671,14775,14880,14984,15088,15193,15297,15402,15506,15610,15715,15782,15849,16023,16197,16371,16545,16718,16892,17066,17133,17200,17267,17355,17410,17466,17522,17578,17633,17689,17745,17800,17856,17912,17967,18023,18095,18150,18206,18261,18337,18413,18511,19227,19600,19965,20198,20431,20664,20783,20877,20971,21065,21159,21252,21346,21440,21534,21628,21722,21815,21909,22003,22071,22140,22208,22276,22344,22412,22480,22549,22617,22685,22753,22821,22890,22944,22998,23053,23107,23161,23216,23270,23324,23378,23433,23487,23541,23636,23695,23754,23813,23872,23931,23990,24049,24108,24167,24226,24285,24345,24508,24565,24622,24678,24735,24792,24849,24906,24963,25020,25077,25134,25191,25362],"life":{"q0":0,"cash":[11525,13215,14295,15715,17355,18095,20783,22003,22890,23636,24508,25362],"pay":[1082,1061,1061,1104,1104,1104,1171,1171,1171,1171,1171,1171],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[570,1270,1960,2680,3390,4110,4400,5160,5920,6680,7440,8200],"well":[88,87,85,86,86,87,84,84,85,87,88,89],"sec":[77,75,77,75,75,78,72,73,76,81,84,86],"events":[[3,0,-1,10289,6,-1],[3,1,2,1000,7,-1],[3,12,-1,0,9,-1],[85,3,2,1148,18,-1],[85,1,1,1293,18,-1],[87,2,1,1319,10,-1],[87,1,2,1171,11,-1]]}},{"id":34,"arrived":4,"h":[4,82,82,86],"j":[4,2,80,1,93,3,134,-1,144,3],"o":[4,1,134,0,144,1],"k":[4,1,134,2,144,1],"m":[4,3,85,2,87,3,134,2,143,1,144,2],"r":[4,0],"f":[4,2],"e":[4,4],"w":[4,1000,5,1020,7,1040,9,1061,11,1082,26,1061,40,1082,42,1104,80,1243,81,1268,83,1293,85,1319,93,1061,132,1082,134,0,144,1060],"c0":4,"c":[3802,3891,3980,4088,4197,4325,4453,4601,4750,4898,5028,5158,5288,5418,5548,5678,5808,5938,6068,6198,6328,6458,6588,6664,6739,6814,6890,6965,7040,7115,7191,7266,7341,7417,7492,7668,7856,7940,8044,8148,8253,8357,8461,8566,8670,8775,8879,8983,9088,9155,9222,9396,9570,9744,9918,10092,10266,10439,10506,10573,10641,10728,10783,10839,10895,10950,11006,11062,11117,11173,11229,11284,11340,11396,11468,11523,11773,11984,12195,12480,12764,13624,14484,14906,15329,15752,16174,16483,16768,16936,17028,17120,17212,17305,17397,17489,17581,17673,17766,17858,17952,18019,18087,18154,18222,18289,18356,18424,18491,18559,18626,18694,18761,18836,18888,18941,18994,19047,19100,19153,19205,19258,19311,19364,19417,19470,19552,19602,19674,19745,18735,17724,16714,15703,14692,13682,12671,11661,10650,9701,9742,9782,9822,9863,9903,9944,9984,10024,10065,10105,10146,10186,10287],"life":{"q0":0,"cash":[4898,6588,7668,9088,10728,11468,16483,17952,18836,19552,9701,10287],"pay":[1082,1061,1061,1104,1104,1104,1319,1061,1061,1061,0,1060],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[520,1220,1910,2630,3340,4060,4830,4830,4830,4830,4830,4830],"well":[87,85,82,84,84,85,88,84,84,85,46,63],"sec":[74,71,72,70,70,72,81,72,73,77,0,35],"events":[[4,0,-1,3332,6,-1],[4,1,2,1000,7,-1],[4,14,2,400,1,8],[4,12,-1,0,9,-1],[80,3,2,1104,18,-1],[80,1,1,1243,18,-1],[82,13,1,0,17,-1],[93,2,1,1319,10,-1],[93,1,3,1061,11,-1],[134,2,3,1082,10,-1],[134,12,-1,0,13,-1],[144,1,3,1060,11,-1],[144,12,-1,0,9,-1]]}},{"id":35,"arrived":4,"h":[4,82,62,96,144,82],"j":[4,2],"o":[4,1],"k":[4,1],"m":[4,3],"r":[4,0],"f":[4,2],"e":[4,4],"w":[4,1000,5,1020,7,1040,9,1061,11,1082,26,1061,40,1082,42,1104,82,1126,84,1148,86,1171],"c0":4,"c":[1971,2060,2149,2258,2366,2494,2622,2770,2919,3067,3197,3327,3457,3587,3717,3847,3977,4107,4237,4368,4498,4628,4758,4833,4908,4984,5059,5134,5209,5285,5360,5435,5511,5586,5661,5837,6025,6109,6213,6318,6422,6526,6631,6735,6840,6944,7048,7153,7257,7324,7391,7565,7739,7913,8087,8261,8435,8609,8676,8764,8853,8962,9032,9103,9173,9243,9314,9384,9454,9525,9595,9665,9736,9806,9893,9955,10017,10080,10163,10247,10351,10569,10809,11049,11289,11529,11769,11896,11989,12083,12176,12269,12363,12456,12550,12643,12736,12830,12923,13016,13110,13169,13229,13289,13349,13408,13468,13528,13588,13647,13707,13767,13826,13886,13924,13962,14000,14038,14076,14114,14152,14190,14228,14266,14304,14342,14422,14457,14492,14527,14562,14596,14631,14666,14701,14736,14770,14805,14840,14985,15018,15075,15132,15188,15245,15302,15359,15416,15473,15530,15587,15644,15821],"life":{"q0":0,"cash":[3067,4758,5837,7257,8962,9893,11896,13110,13886,14422,14985,15821],"pay":[1082,1061,1061,1104,1104,1104,1171,1171,1171,1171,1171,1171],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[520,1220,1910,2630,3340,4060,4810,5570,6330,7090,7850,8610],"well":[86,85,81,83,83,84,83,83,83,83,83,84],"sec":[73,70,70,68,69,71,71,71,72,74,75,77],"events":[[4,0,-1,1901,6,-1],[4,1,2,1000,7,-1],[4,12,-1,0,9,-1],[62,13,1,0,17,-1],[144,13,1,0,17,-1]]}},{"id":36,"arrived":4,"h":[4,72,27,96,101,98],"j":[4,2,58,1,60,2,80,1,92,3,135,-1,144,3],"o":[4,1,135,0,144,1],"k":[4,1,135,2,144,1],"m":[4,3,135,2,143,1,144,2],"r":[4,0],"f":[4,2],"e":[4,4],"w":[4,1000,5,1020,7,1040,9,1061,11,1082,26,1061,40,1082,42,1104,58,1243,60,1104,80,1243,81,1268,83,1293,85,1319,92,1061,132,1082,135,0,144,1060],"c0":4,"c":[2140,2229,2318,2426,2534,2662,2791,2939,3087,3236,3366,3496,3626,3756,3886,4016,4146,4276,4406,4536,4666,4796,4926,5008,5090,5172,5255,5337,5419,5501,5583,5665,5747,5830,5912,6095,6296,6394,6512,6630,6748,6867,6985,7103,7221,7339,7458,7576,7694,7783,7871,8067,8263,8458,9065,9393,9712,9908,9997,10085,10174,10280,10351,10421,10492,10562,10632,10703,10773,10843,10914,10984,11054,11125,11210,11272,11530,11749,11967,12209,12452,12832,13212,13593,13973,14353,14734,15001,15052,15093,15135,15176,15218,15260,15301,15343,15384,15426,15490,15554,15620,15658,15697,15736,15775,15814,15853,15892,15930,15969,16008,16047,16086,16132,16149,16166,16184,16201,16218,16235,16253,16270,16287,16304,16322,16339,16384,16398,16434,16469,16505,15458,14412,13366,12319,11273,10226,9180,8134,7143,7155,7167,7178,7190,7202,7214,7225,7237,7249,7260,7272,7284,7351],"life":{"q0":0,"cash":[3236,4926,6095,7694,10280,11210,15001,15620,16132,16384,7143,7351],"pay":[1082,1061,1061,1104,1104,1104,1319,1061,1061,1061,0,1060],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[520,1220,1910,2630,2960,3670,4440,4440,4440,4440,4440,4440],"well":[86,84,82,84,85,85,88,83,82,83,46,62],"sec":[73,70,70,69,72,74,81,71,70,73,0,32],"events":[[4,0,-1,2070,6,-1],[4,1,2,1000,7,-1],[4,12,-1,0,9,-1],[27,13,1,0,17,-1],[58,3,2,1104,18,-1],[58,1,1,1243,18,-1],[60,2,1,1243,10,-1],[60,1,2,1104,11,-1],[80,3,2,1104,18,-1],[80,1,1,1243,18,-1],[92,2,1,1319,10,-1],[92,1,3,1061,11,-1],[101,13,1,0,17,-1],[135,2,3,1082,10,-1],[135,12,-1,0,13,-1],[144,1,3,1060,11,-1],[144,12,-1,0,9,-1]]}},{"id":37,"arrived":4,"h":[4,72,22,-1,27,98],"j":[4,1,13,-1,27,3,53,1,65,3,81,1,90,3,136,-1,144,3],"o":[4,1,13,0,27,1,136,0,144,1],"k":[4,1,13,2,27,1,136,2,144,1],"m":[4,3,13,1,19,0,27,1,28,2,53,3,54,2,55,3,85,2,87,3,136,2,143,1,144,2],"r":[4,0],"f":[4,2,22,-1,27,2],"e":[4,4,13,-1,27,4,136,-1],"w":[4,1000,5,1020,7,1040,9,1061,11,1082,13,0,27,1061,53,1195,55,1218,57,1243,65,1061,81,1268,83,1293,85,1319,90,1061,132,1082,136,0,144,1060],"c0":4,"c":[3071,3160,3249,3357,3465,3689,3912,4155,4303,4044,3300,2556,1812,1069,325,325,325,325,325,325,325,325,325,1386,1635,1784,1933,2081,2230,2379,2528,2676,2825,2974,3223,3473,3721,3968,4113,4257,4401,4545,4689,4833,4977,5121,5265,5409,5553,5742,6038,6357,6676,7018,7360,7701,8043,8385,8727,8962,9197,10050,10148,10245,10342,10439,10537,10634,10731,10828,10925,11023,11120,11217,11314,11404,11493,11839,12186,12556,12927,13759,14591,14986,15381,15776,16564,16767,16948,17129,17310,17374,17438,17502,17566,17631,17695,17759,17823,17887,17951,17990,18029,18068,18107,18146,18184,18223,18262,18301,18340,18379,18418,18456,18598,18739,18880,19021,19163,19304,19445,19586,19727,19869,20010,20151,20292,20431,20590,20626,20661,20697,19846,18995,18145,17294,16443,15593,14742,13891,14104,14244,14383,14523,14662,14801,14941,15080,15220,15359,15498,15638,15777],"life":{"q0":0,"cash":[4044,325,3473,5553,10050,11314,16767,17951,18456,20292,13891,15777],"pay":[0,0,1061,1061,1061,1061,1061,1061,1061,1061,0,1060],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[0,0,0,0,0,0,0,0,0,0,0,0],"well":[33,0,64,72,77,80,79,82,82,80,50,71],"sec":[0,0,34,46,57,64,69,69,71,74,36,57],"events":[[4,0,-1,3001,6,-1],[4,1,1,1000,7,-1],[4,12,-1,0,9,-1],[13,2,1,1082,10,-1],[13,15,4,0,3,12],[13,15,3,0,2,12],[13,12,-1,0,13,-1],[19,16,2,1648,1,-1,4],[19,16,1,1327,0,-1,4],[22,15,2,0,1,15],[22,15,1,0,0,14],[27,1,3,1061,11,-1],[27,14,2,424,1,8],[27,14,1,340,0,8],[27,14,3,58,2,8],[27,14,4,101,3,8],[27,12,-1,0,9,-1],[53,3,3,1061,18,-1],[53,1,1,1171,18,-1],[65,2,1,1243,10,-1],[65,1,3,1061,11,-1],[81,3,3,1061,18,-1],[81,1,1,1243,18,-1],[90,2,1,1319,10,-1],[90,1,3,1061,11,-1],[136,2,3,1082,10,-1],[136,15,4,0,3,12],[136,15,3,0,2,12],[136,12,-1,0,13,-1],[144,1,3,1060,11,-1],[144,14,3,74,2,8],[144,12,-1,0,9,-1]]}},{"id":38,"arrived":4,"h":[4,45,28,72,80,110],"j":[4,1,12,4,20,-1,27,1,29,4,54,1,64,3,139,-1,144,3],"o":[4,1,20,0,27,1,139,0,144,1],"k":[4,1,20,2,27,1,139,2,144,1],"m":[4,3,20,2,22,1,28,2,61,3,64,2,69,3,139,2,143,1,144,2],"r":[4,0],"f":[4,2],"e":[4,4,20,-1,27,4],"w":[4,1000,5,1020,7,1040,9,1061,11,1082,12,1061,20,0,27,1061,28,1082,29,1040,54,1195,55,1218,57,1243,64,1061,132,1082,139,0,144,1060],"c0":4,"c":[1919,2103,2287,2490,2694,2917,3140,3383,3981,4162,4325,4488,4651,4814,4977,5139,4396,3652,2908,2164,1421,677,265,499,696,917,1031,1146,1260,1375,1489,1603,1718,1832,2047,2262,2476,2689,2799,2909,3019,3128,3238,3348,3458,3567,3677,3787,3896,3977,4259,4563,4868,5196,5524,5852,6180,6507,6835,7056,7774,7875,7950,8025,8101,8176,8251,8327,8402,8477,8553,8628,8703,8779,8854,8921,8989,9219,9449,9680,9910,10141,10371,10601,10832,11062,11292,11523,11725,11927,12129,12215,12300,12386,12471,12557,12642,12727,12813,12898,12984,13037,13091,13144,13197,13251,13304,13358,13411,13465,13518,13572,13625,13679,13827,13976,14125,14274,14422,14571,14720,14869,15017,15166,15315,15464,15612,15758,15925,15969,16012,16055,16098,16141,16185,15146,14107,13068,12029,10991,11003,11014,11026,11038,11050,11062,11074,11086,11098,11109,11121,11133,11145],"life":{"q0":0,"cash":[4162,265,2262,3896,7875,8854,11523,12984,13679,15612,10991,11145],"pay":[1061,0,1040,1040,1061,1061,1061,1061,1061,1061,0,1060],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[0,0,0,0,0,0,0,0,0,0,0,0],"well":[82,32,61,69,74,77,75,78,79,77,46,62],"sec":[64,0,30,41,50,58,61,62,64,68,0,34],"events":[[4,0,-1,1754,6,-1],[4,1,1,1000,7,-1],[4,12,-1,0,9,-1],[12,2,1,1082,10,-1],[12,1,4,1061,11,-1],[20,2,4,1061,10,-1],[20,15,4,0,3,12],[20,15,3,0,2,12],[20,12,-1,0,13,-1],[26,16,1,332,0,-1],[27,1,1,1061,11,-1],[27,14,3,58,2,8],[27,14,4,101,3,8],[27,12,-1,0,9,-1],[28,13,1,0,17,-1],[29,2,1,1082,10,-1],[29,1,4,1040,11,-1],[54,3,4,1040,18,-1],[54,1,1,1195,18,-1],[64,2,1,1243,10,-1],[64,1,3,1061,11,-1],[80,13,1,0,17,-1],[139,2,3,1082,10,-1],[139,12,-1,0,13,-1],[144,1,3,1060,11,-1],[144,12,-1,0,9,-1]]}},{"id":39,"arrived":4,"h":[4,86],"j":[4,1,12,2],"o":[4,1],"k":[4,1],"m":[4,3,13,2,17,3,26,2,27,3],"r":[4,0],"f":[4,2],"e":[4,4],"w":[4,1000,5,1020,7,1040,9,1061,11,1082,26,1061,40,1082,42,1104,82,1126,84,1148,86,1171],"c0":4,"c":[1860,2044,2228,2432,2635,2858,3081,3324,3889,4037,4174,4311,4447,4584,4721,4857,4994,5131,5268,5404,5541,5678,5814,5910,6006,6101,6197,6293,6388,6484,6580,6675,6771,6867,6963,7159,7381,7498,7637,7775,7913,8052,8190,8328,8467,8605,8743,8882,9020,9136,9252,9475,9698,9921,10144,10368,10591,10814,10930,11046,11162,11296,11401,11507,11613,11718,11824,11930,12035,12141,12246,12352,12458,12563,12684,12788,12893,12997,13123,13249,13396,13656,13938,14220,14503,14785,15067,15236,15380,15524,15668,15812,15956,16100,16244,16388,16532,16677,16821,16965,17109,17228,17347,17467,17586,17705,17825,17944,18063,18183,18302,18421,18541,18660,18765,18869,18974,19079,19183,19288,19393,19497,19602,19707,19811,19916,20061,20163,20265,20367,20469,20571,20673,20775,20877,20979,21081,21184,21286,21492,21584,21677,21770,21862,21955,22048,22140,22233,22326,22418,22511,22604,22811],"life":{"q0":0,"cash":[4037,5814,7159,9020,11296,12684,15236,17109,18660,20061,21492,22811],"pay":[1082,1061,1061,1104,1104,1104,1171,1171,1171,1171,1171,1171],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[100,810,1500,2210,2930,3650,4390,5150,5910,6670,7430,8200],"well":[73,75,76,79,81,83,82,82,83,86,87,88],"sec":[46,50,59,60,64,70,69,69,72,79,82,85],"events":[[4,0,-1,1695,6,-1],[4,1,1,1000,7,-1],[4,12,-1,0,9,-1],[12,2,1,1082,10,-1],[12,1,2,1082,11,-1]]}},{"id":40,"arrived":4,"h":[4,98,70,70],"j":[4,3,12,2,85,1,87,2],"o":[4,1],"k":[4,1],"m":[4,3],"r":[4,0],"f":[4,2],"e":[4,4],"w":[4,1000,5,1020,7,1040,9,1061,11,1082,26,1061,40,1082,42,1104,82,1126,84,1148,85,1319,87,1171],"c0":4,"c":[1266,1501,1736,1991,2247,2523,2799,3096,3245,3393,3530,3666,3803,3940,4076,4213,4350,4486,4623,4760,4897,5033,5170,5266,5361,5457,5553,5648,5744,5840,5935,6031,6127,6222,6318,6515,6730,6841,6973,7104,7236,7368,7500,7631,7763,7895,8027,8158,8290,8393,8496,8705,8915,9124,9334,9544,9753,9963,10066,10168,10271,10391,10476,10561,10646,10731,10816,10879,10942,11006,11069,11132,11196,11259,11337,11392,11447,11503,11579,11655,11753,12463,12836,13201,13434,13667,13899,14019,14113,14207,14300,14394,14488,14582,14676,14770,14863,14957,15051,15145,15239,15307,15375,15443,15511,15580,15648,15716,15784,15852,15921,15989,16057,16125,16179,16234,16288,16342,16397,16451,16505,16560,16614,16668,16723,16777,16869,16928,16987,17046,17105,17164,17223,17282,17341,17400,17459,17518,17577,17734,17783,17833,17882,17931,17980,18029,18079,18128,18177,18226,18276,18325,18482],"life":{"q0":0,"cash":[3393,5170,6515,8290,10391,11337,14019,15239,16125,16869,17734,18482],"pay":[1082,1061,1061,1104,1104,1104,1171,1171,1171,1171,1171,1171],"loan":[0,0,0,0,0,0,0,0,0,0,0,0],"shares":[100,810,1500,2210,2930,3650,3940,4700,5460,6220,6980,7740],"well":[76,77,77,80,81,83,78,78,80,82,84,84],"sec":[52,55,62,62,65,69,60,62,66,72,75,78],"events":[[4,0,-1,1051,6,-1],[4,1,3,1000,7,-1],[4,12,-1,0,9,-1],[12,2,3,1082,10,-1],[12,1,2,1082,11,-1],[70,13,1,0,17,-1],[85,3,2,1148,18,-1],[85,1,1,1293,18,-1],[87,2,1,1319,10,-1],[87,1,2,1171,11,-1]]}}],"firms":[{"id":1,"name":"Housing 1","need":"housing","founded":0,"end":null,"s":[0,71],"n":[0,0,1,3,2,6,3,9,4,12,12,10,13,9,14,8,15,7,16,6,27,8,29,7,30,6,36,8,38,10,39,12,41,10,42,9,43,8,44,7,45,6,53,9,54,11,55,14,57,15,58,18,59,19,60,17,61,15,62,13,63,11,64,9,65,8,66,7,67,6,80,9,81,12,82,14,84,15,85,19,87,17,88,15,89,13,90,11,91,9,92,8,93,7,94,6,95,5,96,4,105,3,118,4],"c":[0,4,1,14,2,24,3,33,4,40,19,39,22,38,23,36,26,35,27,40],"p":[0,33000,26,33990,52,35010,65,36060,91,37142,104,38256]},{"id":2,"name":"Food 2","need":"food","founded":0,"end":null,"s":[0,83],"n":[0,0,1,3,2,6,3,9,4,12,12,14,13,15,25,14,30,15,36,13,38,12,41,13,43,14,44,15,55,14,58,13,60,14,63,15,80,12,82,10,85,7,87,12,88,15],"c":[0,4,1,12,2,22,3,32,4,40,20,39,22,38,23,37,24,36,26,35,27,40],"p":[0,40000,13,41200,26,42436,52,43709,91,45020,104,46371,117,47762]},{"id":3,"name":"Appliances 3","need":"appliances","founded":0,"end":null,"s":[0,97],"n":[0,0,1,3,2,6,3,9,4,10,12,9,13,8,14,7,15,6,16,5,17,4,18,3,19,2,27,12,39,11,45,12,53,9,54,8,55,7,57,6,58,4,61,6,62,7,64,9,65,10,66,11,67,12,81,10,84,9,87,6,89,8,90,9,91,10,92,11,93,12,94,13,96,14,105,15,133,13,134,11,135,9,136,8,137,7,138,6,139,5,140,4,141,3,142,2,144,14],"c":[0,4,1,14,2,24,3,33,4,40,13,39,14,38,15,36,16,35,17,34,18,33,20,32,21,31,27,40,134,39,135,38,136,37,140,36,141,35,144,40],"p":[0,5500,13,5665,26,5835,39,6010,52,6190,65,6376,78,6567,91,6764,104,6967,117,7176,143,7391]},{"id":4,"name":"Entertainment 4","need":"entertainment","founded":0,"end":null,"s":[0,58],"n":[0,0,1,1,2,2,12,3,20,2,29,3,38,2,39,1,41,2,42,3,54,2,55,1,59,0,60,1,62,2,63,3,81,2,85,1,88,0,90,1,91,2,95,3,118,2,133,3],"c":[0,4,1,14,2,24,3,33,4,40,13,39,14,38,15,36,16,35,17,34,18,33,19,32,20,31,27,40,118,39,134,38,135,37,136,36,140,35,141,34,144,35],"p":[0,9500,13,9785,26,10079,39,10381,52,10692,65,11013,78,11343,91,11683,104,12033,117,12394,143,12766,156,13149]}],"spots":[{"x":0,"y":0,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":1,"y":0,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":2,"y":0,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":3,"y":0,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":4,"y":0,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":5,"y":0,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":6,"y":0,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":7,"y":0,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":8,"y":0,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":9,"y":0,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":10,"y":0,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":11,"y":0,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":12,"y":0,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":0,"y":1,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":1,"y":1,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":2,"y":1,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":3,"y":1,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":4,"y":1,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":5,"y":1,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":6,"y":1,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":7,"y":1,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":8,"y":1,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":9,"y":1,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":10,"y":1,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":11,"y":1,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":12,"y":1,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":0,"y":2,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":1,"y":2,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":2,"y":2,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":3,"y":2,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":4,"y":2,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":5,"y":2,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":6,"y":2,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":7,"y":2,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":8,"y":2,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":9,"y":2,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":10,"y":2,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":11,"y":2,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":12,"y":2,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":0,"y":3,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":1,"y":3,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":2,"y":3,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":3,"y":3,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":4,"y":3,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":5,"y":3,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":6,"y":3,"label":"","k":[0,1],"u":[0,1],"n":[0,4,52,5,65,6,86,7]},{"x":7,"y":3,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":8,"y":3,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":9,"y":3,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":10,"y":3,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":11,"y":3,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":12,"y":3,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":0,"y":4,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":1,"y":4,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":2,"y":4,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":3,"y":4,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":4,"y":4,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":5,"y":4,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":6,"y":4,"label":"","k":[0,2],"u":[0,4],"n":[0,0]},{"x":7,"y":4,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":8,"y":4,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":9,"y":4,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":10,"y":4,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":11,"y":4,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":12,"y":4,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":0,"y":5,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":1,"y":5,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":2,"y":5,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":3,"y":5,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":4,"y":5,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":5,"y":5,"label":"","k":[0,1],"u":[0,1],"n":[0,8]},{"x":6,"y":5,"label":"","k":[0,2],"u":[0,1],"n":[0,0]},{"x":7,"y":5,"label":"","k":[0,1],"u":[0,1],"n":[0,8]},{"x":8,"y":5,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":9,"y":5,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":10,"y":5,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":11,"y":5,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":12,"y":5,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":0,"y":6,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":1,"y":6,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":2,"y":6,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":3,"y":6,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":4,"y":6,"label":"","k":[0,1],"u":[0,1],"n":[0,8]},{"x":5,"y":6,"label":"","k":[0,2],"u":[0,2],"n":[0,0]},{"x":6,"y":6,"label":"bank","k":[0,3],"u":[0,-1],"n":[0,0]},{"x":7,"y":6,"label":"broker","k":[0,3],"u":[0,-1],"n":[0,0]},{"x":8,"y":6,"label":"","k":[0,1],"u":[0,1],"n":[0,8]},{"x":9,"y":6,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":10,"y":6,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":11,"y":6,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":12,"y":6,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":0,"y":7,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":1,"y":7,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":2,"y":7,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":3,"y":7,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":4,"y":7,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":5,"y":7,"label":"","k":[0,1],"u":[0,1],"n":[0,8]},{"x":6,"y":7,"label":"","k":[0,2],"u":[0,3],"n":[0,0]},{"x":7,"y":7,"label":"","k":[0,1],"u":[0,1],"n":[0,8]},{"x":8,"y":7,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":9,"y":7,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":10,"y":7,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":11,"y":7,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":12,"y":7,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":0,"y":8,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":1,"y":8,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":2,"y":8,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":3,"y":8,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":4,"y":8,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":5,"y":8,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":6,"y":8,"label":"","k":[0,1],"u":[0,1],"n":[0,8]},{"x":7,"y":8,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":8,"y":8,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":9,"y":8,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":10,"y":8,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":11,"y":8,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":12,"y":8,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":0,"y":9,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":1,"y":9,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":2,"y":9,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":3,"y":9,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":4,"y":9,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":5,"y":9,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":6,"y":9,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":7,"y":9,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":8,"y":9,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":9,"y":9,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":10,"y":9,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":11,"y":9,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":12,"y":9,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":0,"y":10,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":1,"y":10,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":2,"y":10,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":3,"y":10,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":4,"y":10,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":5,"y":10,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":6,"y":10,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":7,"y":10,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":8,"y":10,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":9,"y":10,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":10,"y":10,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":11,"y":10,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":12,"y":10,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":0,"y":11,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":1,"y":11,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":2,"y":11,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":3,"y":11,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":4,"y":11,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":5,"y":11,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":6,"y":11,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":7,"y":11,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":8,"y":11,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":9,"y":11,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":10,"y":11,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":11,"y":11,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":12,"y":11,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":0,"y":12,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":1,"y":12,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":2,"y":12,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":3,"y":12,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":4,"y":12,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":5,"y":12,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":6,"y":12,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":7,"y":12,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":8,"y":12,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":9,"y":12,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":10,"y":12,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":11,"y":12,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]},{"x":12,"y":12,"label":"","k":[0,0],"u":[0,-1],"n":[0,0]}],"series":{"n":{"all":[4,14,24,33,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40,40],"owner":[4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],"working":[0,10,20,29,36,36,36,36,36,36,36,36,36,35,33,31,29,28,27,26,25,25,25,25,25,24,24,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,36,35,33,31,30,29,28,27,26,25,24,24,36,36,36,36,36,36,36,36,36,36,36,36,36],"out":[0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,5,7,8,9,10,11,11,11,11,11,12,12,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,3,5,6,7,8,9,10,11,12,12,0,0,0,0,0,0,0,0,0,0,0,0,0]},"unhappy":{"all":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.025,0.025,0.025,0.05,0.075,0.075,0.075,0.125,0.15,0.175,0.225,0.225,0.225,0.3,0.225,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.025,0.025,0.025,0.025,0.025,0.025,0.025,0.025,0.25,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"owner":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"working":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.25,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"out":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,1.0,0.3333,0.2,0.2857,0.375,0.3333,0.3,0.4545,0.5455,0.6364,0.8182,0.8182,0.75,1.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.2,0.1667,0.1429,0.125,0.1111,0.1,0.0909,0.0833,0.8333,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]},"homeless":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,1,1,2,4,4,4,5,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"riders":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"jobless":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.025,0.075,0.125,0.175,0.2,0.225,0.25,0.275,0.275,0.275,0.275,0.275,0.3,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.025,0.075,0.125,0.15,0.175,0.2,0.225,0.25,0.275,0.3,0.3,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"destitute":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,2,2,2,3,4,6,7,8,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],"firms":[4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4,4],"wage":[100000,100000,100000,100000,100000,101888,102000,103926,104040,106005,106121,108125,108066,108061,108050,108037,108023,108015,108007,107998,108073,108073,108073,108073,108073,108066,105904,105962,106434,106317,106258,106258,106619,106619,106986,106986,107847,107847,109029,109700,110407,109795,110212,110024,109837,109530,109530,109530,109530,109530,109530,109530,109530,111036,111837,113820,113820,115273,116671,117235,116285,115273,114204,113254,112242,111736,111230,110725,110725,110725,110725,110725,110725,110725,110725,110725,110725,110725,110725,110725,111885,114289,115813,116799,118070,121345,121791,121890,121434,120000,118508,117016,116299,115582,114864,114090,113373,113373,113373,113373,113373,113373,113373,113373,113373,112655,112655,112655,112655,112655,112655,112655,112655,112655,112655,112655,112655,112655,113430,113430,113430,113430,113430,113430,113430,113430,113430,113430,113430,113430,113430,113430,114430,114547,114932,115366,115605,115861,116134,116428,116745,117087,117457,117011,113353,113353,113353,113353,113353,113353,113353,113353,113353,113353,113353,113353,113353],"basket":[88000,88000,88000,88000,88000,88000,88000,88000,88000,88000,88000,88000,88000,89650,89650,89650,89650,89650,89650,89650,89650,89650,89650,89650,89650,89650,92340,92340,92340,92340,92340,92340,92340,92340,92340,92340,92340,92340,92340,92817,92817,92817,92817,92817,92817,92817,92817,92817,92817,92817,92817,92817,95601,95601,95601,95601,95601,95601,95601,95601,95601,95601,95601,95601,95601,97158,97158,97158,97158,97158,97158,97158,97158,97158,97158,97158,97158,97158,97679,97679,97679,97679,97679,97679,97679,97679,97679,97679,97679,97679,97679,100609,100609,100609,100609,100609,100609,100609,100609,100609,100609,100609,100609,100609,103627,103627,103627,103627,103627,103627,103627,103627,103627,103627,103627,103627,103627,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,105588,106175,106175,106175,106175,106175,106175,106175,106175,106175,106175,106175,106175,106175,106558]},"line":{"weeks":[0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87,88,89,90,91,92,93,94,95,96,97,98,99,100,101,102,103,104,105,106,107,108,109,110,111,112,113,114,115,116,117,118,119,120,121,122,123,124,125,126,127,128,129,130,131,132,133,134,135,136,137,138,139,140,141,142,143,144,145,146,147,148,149,150,151,152,153,154,155,156],"unhappy":[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.025,0.025,0.025,0.05,0.075,0.075,0.075,0.125,0.15,0.175,0.225,0.225,0.225,0.3,0.225,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.025,0.025,0.025,0.025,0.025,0.025,0.025,0.025,0.25,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0]},"marks":[{"week":4,"kind":"full","label":"Town full"}],"qweeks":[13,26,39,52,65,78,91,104,117,130,143,156],"kinds":["arrival","hire","layoff","quit","employer_changed","promotion","demotion","ceo_appointed","firm_founded","founding_blocked","takeover","control_change","class_change","moved_home","sub_start","sub_end","missed_payment","loan_missed","loan_called","loan_repaid","default","share_trade","share_issue","cash_call","offer_refused","too_far"],"words":["housing","food","appliances","entertainment","founder","owner","worker","outside","signup","working","laid_off","resident","budget","out","evicted","cut_off","repossessed","cheaper","moved","better"]}</script>
+<script>
+var TownCore = (function () {
+  "use strict";
+  var STREET = 0.16;        // half the width of a street, in blocks: a block is drawn inside it
+  var WALK = 0.03;          // the share of the week's round a walker takes to cover one block
+  var MOST_TRAVEL = 0.6;    // however far apart the stops are, at most this much of the round is travel
+
+  // The value in force in `week`: the last entry at or before it. null before the first.
+  function at(track, week) {
+    var lo = 0, hi = track.length / 2 - 1, found = -1;
+    while (lo <= hi) {
+      var mid = (lo + hi) >> 1;
+      if (track[mid * 2] <= week) { found = mid; lo = mid + 1; } else { hi = mid - 1; }
+    }
+    return found < 0 ? null : track[found * 2 + 1];
+  }
+
+  // A number from 0 up to 1 that is always the same for the same id and salt.
+  function rnd(id, salt) {
+    var x = Math.imul(id + 1, 0x9E3779B1) ^ Math.imul(salt + 1, 0x85EBCA6B);
+    x ^= x >>> 15; x = Math.imul(x, 0x2C1B3C6D);
+    x ^= x >>> 12; x = Math.imul(x, 0x297A2D39);
+    x ^= x >>> 15;
+    return (x >>> 0) / 4294967296;
+  }
+
+  // A person's own place inside the block whose corner is (bx, by). Drawn, not recorded.
+  function inBlock(bx, by, id, salt) {
+    var pad = STREET + 0.05, room = 1 - 2 * pad;
+    return { x: bx + pad + room * rnd(id, salt), y: by + pad + room * rnd(id, salt + 101), bx: bx, by: by };
+  }
+
+  // The same place pulled toward the middle of its block, for a building smaller than the block.
+  function shrink(p, by) {
+    return { x: p.bx + 0.5 + (p.x - p.bx - 0.5) * by, y: p.by + 0.5 + (p.y - p.by - 0.5) * by,
+             bx: p.bx, by: p.by, stay: p.stay };
+  }
+
+  // The way from one place to another. Streets run on the whole numbers. Out of the block to
+  // the street beside it, along that street, along the street beside the other block, and in.
+  // `lane` (-1 to 1) is which side of the street this person keeps to.
+  function route(a, b, lane) {
+    if (a.bx === b.bx && a.by === b.by) return [[a.x, a.y], [b.x, b.y]];
+    var off = (lane || 0) * STREET * 0.7;
+    var sy = (b.by < a.by ? a.by : a.by + 1) + off;
+    var sx = (b.bx < a.bx ? b.bx + 1 : b.bx) + off;
+    return [[a.x, a.y], [a.x, sy], [sx, sy], [sx, b.y], [b.x, b.y]];
+  }
+
+  function length(pts) {
+    var total = 0;
+    for (var i = 1; i < pts.length; i++) total += Math.hypot(pts[i][0] - pts[i - 1][0], pts[i][1] - pts[i - 1][1]);
+    return total;
+  }
+
+  // The point a share `f` (0 to 1) of the way along a route.
+  function along(pts, f) {
+    var left = Math.min(1, Math.max(0, f)) * length(pts);
+    for (var i = 1; i < pts.length; i++) {
+      var dx = pts[i][0] - pts[i - 1][0], dy = pts[i][1] - pts[i - 1][1], step = Math.hypot(dx, dy);
+      if (left <= step) {
+        var part = step > 0 ? left / step : 0;
+        return [pts[i - 1][0] + dx * part, pts[i - 1][1] + dy * part];
+      }
+      left -= step;
+    }
+    return pts[pts.length - 1].slice();
+  }
+
+  // The week's round. `stops` are places in order, each with a `stay` weight; the first and
+  // last are home. `pace` is the share of the round one block takes. Returns the stops, the
+  // route of each leg, and `t`: the moments the person leaves a stop or reaches the next,
+  // from 0 to 1.
+  function plan(stops, pace, lane) {
+    var legs = [], times = [], travel = 0, weight = 0, i;
+    for (i = 1; i < stops.length; i++) {
+      var pts = route(stops[i - 1], stops[i], lane), time = length(pts) * pace;
+      legs.push(pts); times.push(time); travel += time;
+    }
+    var squeeze = travel > MOST_TRAVEL ? MOST_TRAVEL / travel : 1;
+    for (i = 0; i < stops.length; i++) weight += stops[i].stay || 0;
+    var rest = 1 - travel * squeeze, t = [0], now = 0;
+    for (i = 0; i < stops.length; i++) {
+      now += weight > 0 ? rest * (stops[i].stay || 0) / weight : rest / stops.length;
+      t.push(now);
+      if (i < legs.length) { now += times[i] * squeeze; t.push(now); }
+    }
+    t[t.length - 1] = 1;
+    return { stops: stops, legs: legs, t: t };
+  }
+
+  // Where the person is at `phase` (0 to 1) of the round, and whether they are on the road.
+  function where(plan, phase) {
+    var t = plan.t, last = plan.stops.length - 1, j = 0;
+    if (!(phase > 0)) return { x: plan.stops[0].x, y: plan.stops[0].y, moving: false };
+    if (phase >= 1) return { x: plan.stops[last].x, y: plan.stops[last].y, moving: false };
+    while (j < t.length - 2 && phase >= t[j + 1]) j++;
+    if (j % 2 === 0) return { x: plan.stops[j / 2].x, y: plan.stops[j / 2].y, moving: false };
+    var span = t[j + 1] - t[j];
+    var p = along(plan.legs[(j - 1) / 2], span > 0 ? (phase - t[j]) / span : 1);
+    return { x: p[0], y: p[1], moving: true };
+  }
+
+  // --- numbers and dates in words ----------------------------------------------------------
+  function pct(share) {
+    var v = share * 100, tenths = Math.round(v * 10) / 10;
+    return (tenths >= 10 || tenths === 0 ? v.toFixed(0) : tenths.toFixed(1)) + "%";
+  }
+  // The same, but a share still under `limit` is never rounded up to look as if it had reached it.
+  function pctUnder(share, limit) {
+    if (share < limit && pct(share) === pct(limit)) return (Math.floor(share * 1000 + 1e-9) / 10).toFixed(1) + "%";
+    return pct(share);
+  }
+  // Week 0, when the founders arrive, is in year 1, quarter 1. Quarters end on weeks 13, 26 and so on.
+  function whenText(week, year, quarter) {
+    var inYear = Math.max(1, Math.round(year / quarter));
+    return "Year " + Math.max(1, Math.ceil(week / year)) + ", quarter "
+         + ((Math.max(1, Math.ceil(week / quarter)) - 1) % inYear + 1);
+  }
+  // Which recorded week to show for `week`: the last at or before it (the first, if none).
+  function indexAt(weeks, week) {
+    var lo = 0, hi = weeks.length - 1, found = 0;
+    while (lo <= hi) {
+      var mid = (lo + hi) >> 1;
+      if (weeks[mid] <= week) { found = mid; lo = mid + 1; } else { hi = mid - 1; }
+    }
+    return found;
+  }
+  // The first recorded week at or after `week` (the last, if none): by then it has happened.
+  function indexFrom(weeks, week) {
+    for (var i = 0; i < weeks.length; i++) if (weeks[i] >= week) return i;
+    return weeks.length - 1;
+  }
+  // A person's life lines have one point a quarter, from point `q0` of `qweeks`. Which of their
+  // `count` points is the latest at or before `week`? -1 if none yet.
+  function sampleAt(qweeks, q0, count, week) {
+    var found = -1;
+    for (var k = 0; k < count && qweeks[q0 + k] <= week; k++) found = k;
+    return found;
+  }
+  // A list with one value for each recorded week, starting at recorded week number `first`:
+  // its value for recorded week number `i`. null before the first, or past the end.
+  function weekly(values, first, i) {
+    var k = i - first;
+    return k >= 0 && k < values.length ? values[k] : null;
+  }
+
+  // --- the week of one person --------------------------------------------------------------
+  // The spot of every firm that exists and has premises in `week`.
+  function firmSpots(firms, week) {
+    var out = {};
+    for (var i = 0; i < firms.length; i++) {
+      var f = firms[i];
+      if (f.end != null && week >= f.end) continue;
+      var s = at(f.s, week);
+      if (s != null && s >= 0) out[f.id] = s;
+    }
+    return out;
+  }
+  // A person's own place in the band under the map, where people with no home are drawn.
+  function inStrip(id, W, H) {
+    var pad = STREET + 0.05, x = pad + (W - 2 * pad) * rnd(id, 9);
+    return { x: x, y: H + pad + (1 - 2 * pad) * rnd(id, 10), bx: Math.floor(x), by: H };
+  }
+  // What the record says about person `p` in `week`, and their round for it. null before they
+  // arrive. `env` is the town that week: W, H, ride (how much faster a ride is), spots,
+  // firmSpot (from firmSpots) and size(spot), how much of its block a building fills.
+  function weekOf(p, week, env) {
+    var home = at(p.h, week);
+    if (home == null) return null;
+    var q = { p: p, home: home, job: at(p.j, week), role: at(p.o, week), klass: at(p.k, week),
+              mood: at(p.m, week), rides: at(p.r, week) === 1, food: at(p.f, week), fun: at(p.e, week), day: 0 };
+    function placeOn(spot, salt) {
+      var here = inBlock(env.spots[spot].x, env.spots[spot].y, p.id, salt), size = env.size(spot);
+      return size < 1 ? shrink(here, size) : here;
+    }
+    function stop(place, weight) { return { x: place.x, y: place.y, bx: place.bx, by: place.by, stay: weight }; }
+    var early = 0.3 + 0.4 * rnd(p.id, 3);           // how much of the time at home comes before setting out
+    var base = home >= 0 ? placeOn(home, 1) : inStrip(p.id, env.W, env.H);
+    var stops = [stop(base, 2 * early)];
+    function visit(firm, salt, weight) {            // only a firm that has premises this week
+      var spot = firm != null && firm >= 0 ? env.firmSpot[firm] : null;
+      if (spot == null) return false;
+      stops.push(stop(placeOn(spot, salt), weight));
+      return true;
+    }
+    if (visit(q.job, 2, 4)) q.day = 1;              // where they spend the day: at work, else at home
+    visit(q.food, 3, 1);
+    visit(q.fun, 4, 1);
+    stops.push(stop(base, 2 * (1 - early)));
+    q.plan = plan(stops, WALK / (q.rides ? env.ride : 1), 2 * rnd(p.id, 5) - 1);
+    return q;
+  }
+
+  // --- pointing ----------------------------------------------------------------------------
+  // The person under the pointer: the nearest whose dot is within `reach` pixels. Each has x and y.
+  function pickPerson(present, mx, my, reach) {
+    var best = null, near = reach * reach;
+    for (var i = 0; i < present.length; i++) {
+      var dx = present[i].x - mx, dy = present[i].y - my, d = dx * dx + dy * dy;
+      if (d < near) { near = d; best = present[i]; }
+    }
+    return best;
+  }
+  // What a point is over, in blocks: a spot (the block itself, or the street just above it where
+  // its name is written), the strip for people with no home, or nothing.
+  function blockAt(ux, uy, W, H) {
+    var g = STREET, bx = Math.floor(ux), by = Math.floor(uy), fx = ux - bx, fy = uy - by;
+    if (by === H && fy > g && fy < 1 - g) return ux > g && ux < W - g ? { type: "strip" } : null;
+    if (bx < 0 || bx >= W || fx <= g || fx >= 1 - g) return null;
+    if (by >= 0 && by < H && fy > g && fy < 1 - g) return { type: "spot", x: bx, y: by, name: false };
+    var row = Math.round(uy);
+    if (Math.abs(uy - row) > g) return null;
+    if (row === H) return { type: "strip" };
+    if (row >= 0 && row < H) return { type: "spot", x: bx, y: row + 0, name: true };
+    return null;
+  }
+
+  // --- one person's life in words ----------------------------------------------------------
+  // An event is [week, kind, firm, amount, word, word] and, when it stands for several in one
+  // quarter, how many. `env` gives kinds, words, firm(id) for a firm's name and money(n).
+  function lifeText(e, env) {
+    var kind = env.kinds[e[1]], firm = env.firm(e[2]), amount = e[3], times = e[6] || 1;
+    var a = e[4] >= 0 ? env.words[e[4]] : "", b = e[5] >= 0 ? env.words[e[5]] : "";
+    var sum = env.money(amount), pay = sum + " a week";
+    var again = times > 1 ? " (" + times + " times this quarter)" : "";
+    function plain(word) { return String(word).replace(/_/g, " "); }
+    function shares(n, sort) { return n.toLocaleString("en-AU") + " " + (sort || "") + (n === 1 ? "share" : "shares"); }
+    switch (kind) {
+      case "arrival":
+        return (a === "founder" ? "Arrived to start a firm" : "Arrived for a job") + ", bringing " + sum;
+      case "hire":
+        return "Hired by " + firm + " at " + pay + (a === "moved" ? ", leaving another job" : "");
+      case "layoff":
+        return ({ laid_off: "Laid off by " + firm,
+                  out_of_reach: "Lost the job at " + firm + ": could not get there",
+                  wound_up: "Lost the job at " + firm + ": the firm was wound up",
+                  firm_failed: "Lost the job at " + firm + ": the firm failed",
+                  unpaid: "Lost the job at " + firm + ": it could not pay wages",
+                  ousted: "Removed as chief executive of " + firm })[a]
+               || "Lost the job at " + firm + " (" + plain(a) + ")";
+      case "quit":
+        return ({ moved: "Left " + firm + " for another job",
+                  poached: "Left " + firm + " to run another firm",
+                  founded: "Left " + firm + " to run their own firm" })[a] || "Left " + firm + " (" + plain(a) + ")";
+      case "employer_changed": return "Their employer was taken over by " + firm + ", now paid " + pay;
+      case "promotion": return "Promoted to executive at " + firm + ", " + pay;
+      case "demotion": return "Moved back to staff at " + firm + ", " + pay;
+      case "ceo_appointed": return "Made chief executive of " + firm + ", " + pay;
+      case "firm_founded": return "Founded " + firm + " (" + a + ") with " + sum;
+      case "founding_blocked": return "Could not start a " + a + " firm: " + plain(b);
+      case "takeover": return "Bought " + firm + " for " + sum;
+      case "control_change": return "Took control of " + firm;
+      case "class_change":
+        return a === "owner" ? "Joined the owner class" : a === "working" ? "Joined the working class" : "Now out of work";
+      case "moved_home":
+        return ({ cheaper: "Moved to a home that costs less once rent, fares and time on the road are counted",
+                  reach: "Moved home to stay within reach of work", job: "Moved home for a job",
+                  food: "Moved home to be within reach of food" })[a] || "Moved home";
+      case "sub_start":
+        if (a === "housing") return "Rented a home from " + firm + again;   // the rent depends on the block
+        return (b === "switch" ? "Switched " + a + " to " + firm + ", " + pay
+              : b === "needed" ? "Took " + a + " from " + firm + " because they needed it, " + pay
+              : "Began paying " + firm + " for " + a + ", " + pay) + again;
+      case "sub_end":
+        return (({ budget: "Gave up " + a + ": could not afford it",
+                   cut_off: "Cut off by " + firm + " after missed payments (" + a + ")",
+                   evicted: "Evicted by " + firm + " after missed rent",
+                   repossessed: firm + " took back the " + a + " after missed payments",
+                   unserved: "Left " + firm + " (" + a + "): it could not serve them",
+                   out_of_reach: "Lost " + a + ": " + firm + " was too far away",
+                   redeveloped: "Put out of their home: it was pulled down for premises" })[b]
+                || "Lost " + a + " (" + plain(b) + ")") + again;
+      case "missed_payment":
+        return times > 1 ? "Missed " + times + " payments to " + firm + " for " + a + " (" + sum + " in all)"
+                         : "Missed a payment to " + firm + " for " + a + " (" + sum + ")";
+      case "loan_missed":
+        return times > 1 ? "Missed " + times + " loan payments (" + sum + " in all)" : "Missed a loan payment (" + sum + ")";
+      case "loan_called":
+        return times > 1 ? "The bank called in their loan " + times + " times, the largest " + sum
+                         : "The bank called in their loan of " + sum;
+      case "loan_repaid":
+        return times > 1 ? "Finished repaying a called loan " + times + " times" : "Finished repaying the called loan";
+      case "default": return "Defaulted: the bank wrote off " + sum;
+      case "share_trade":
+        if (b !== "sold") return "Bought " + shares(amount) + " in " + firm + (times > 1 ? " in " + times + " purchases" : "");
+        var why = a === "distress" ? "to pay the bills" : a === "unhappy" ? "valuing them below the price"
+                : a === "forced" ? "because the bank called in their loan" : "";
+        var sold = "Sold " + shares(amount) + " in " + firm + (times > 1 ? " in " + times + " sales" : "");
+        return why ? sold + (times > 1 || a === "unhappy" ? ", " : " ") + why : sold;
+      case "share_issue":
+        return "Bought " + shares(amount, "new ") + " in " + firm + (times > 1 ? " in " + times + " purchases" : "");
+      case "cash_call":
+        return "Put " + sum + " into " + firm + " to keep it going" + (times > 1 ? ", in " + times + " payments" : "");
+      case "offer_refused": return "Turned down a job at " + firm + " paying " + pay;
+      case "too_far":
+        return (a === "job" ? "A job was too far to reach" : a.charAt(0).toUpperCase() + a.slice(1) + " was too far to reach") + again;
+    }
+    return plain(kind);
+  }
+
+  return { STREET: STREET, WALK: WALK, MOST_TRAVEL: MOST_TRAVEL, at: at, rnd: rnd, inBlock: inBlock,
+           shrink: shrink, route: route, length: length, along: along, plan: plan, where: where,
+           pct: pct, pctUnder: pctUnder, whenText: whenText, indexAt: indexAt, indexFrom: indexFrom,
+           sampleAt: sampleAt, weekly: weekly, firmSpots: firmSpots, inStrip: inStrip, weekOf: weekOf,
+           pickPerson: pickPerson, blockAt: blockAt, lifeText: lifeText };
+})();
+</script>
+<script>
+(function () {
+  "use strict";
+  var DATA = JSON.parse(document.getElementById("data").textContent);
+  var C = TownCore, NS = "http://www.w3.org/2000/svg";
+  var W = DATA.map.w, H = DATA.map.h, weeks = DATA.weeks, N = weeks.length;
+  var YEAR = DATA.run.year, QUARTER = DATA.run.quarter, STEP = DATA.run.step;
+  var people = DATA.people, spots = DATA.spots, series = DATA.series;
+  var SCOPES = ["all", "owner", "working", "out"];
+  var KLASS = ["Owner class", "Working class", "Out of work"];
+  var MOOD = ["Very unhappy", "Unhappy", "Content", "Well"];
+  var ROLE = ["Works at ", "Staff at ", "An executive at ", "Chief executive of "];
+  // A step is one recorded week. Most runs record every week; some record every fourth.
+  var UNIT = STEP === 1 ? "week" : "recorded week";
+  var AT_WORK = " People are shown where they spend the day: at work, or at home.";
+  var SPEEDS = [
+    { name: "Walk", wps: 0.125, round: true,
+      note: "A " + UNIT + " takes eight seconds: slow enough to watch one person walk." },
+    { name: "Slow", wps: 0.5, round: true,
+      note: "A " + UNIT + " takes two seconds. People make their round: home, work, shops, home." },
+    { name: "Fast", wps: 6, round: false, note: "Six " + UNIT + "s a second." + AT_WORK },
+    { name: "Fastest", wps: 26, round: false,
+      note: (STEP === 1 && YEAR === 52 ? "Half a year a second." : "Twenty-six " + UNIT + "s a second.") + AT_WORK }
+  ];
+  var EDGE = 0.2;                                   // blank margin round the map, in blocks
+
+  var firms = {}, personAt = {}, spotAt = {}, MOST_STAFF = 1;
+  DATA.firms.forEach(function (f) {
+    firms[f.id] = f;
+    for (var i = 1; i < f.n.length; i += 2) MOST_STAFF = Math.max(MOST_STAFF, f.n[i]);
+  });
+  people.forEach(function (p, i) { personAt[p.id] = i; });
+  spots.forEach(function (s, i) { spotAt[s.x + "," + s.y] = i; });
+
+  var $ = function (id) { return document.getElementById(id); };
+  var canvas = $("town"), ctx = canvas.getContext("2d"), tip = $("tip");
+  var t = 0.5;                 // whole part: which recorded week; the rest: how far through its round
+  var playing = false, speed = 1, mode = "mood", sel = null, hot = null, pointer = null;
+  var frame = -1, present = [], byPerson = {}, spotNow = [];
+  var S = 40, cssW = 0, cssH = 0, col = {}, lastTick = 0, names = {};
+  var lineX = null, lineY = null, cursor = null, cursorDot = null, lifeUI = null;
+
+  // --- small helpers -----------------------------------------------------------------------
+  function el(name, cls, parent, text) {
+    var e = document.createElement(name);
+    if (cls) e.className = cls;
+    if (text != null) e.textContent = text;
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function svgEl(name, attrs, parent) {
+    var e = document.createElementNS(NS, name);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function money(dollars) {
+    return (dollars < 0 ? "-$" : "$") + Math.abs(Math.round(dollars)).toLocaleString("en-AU");
+  }
+  function cap(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function count(n, one, many) { return n.toLocaleString("en-AU") + " " + (n === 1 ? one : many); }
+  function yearOf(week) { return Math.max(1, Math.ceil(week / YEAR)); }
+  function firmName(id) { return firms[id] ? firms[id].name : "a firm that has gone"; }
+  var TELL = { kinds: DATA.kinds, words: DATA.words, firm: firmName, money: money };
+
+  function readColours() {
+    var cs = getComputedStyle(document.body);
+    function v(name) { return cs.getPropertyValue(name).trim(); }
+    col = {
+      surface: v("--surface-1"), text: v("--text-primary"), text2: v("--text-secondary"),
+      muted: v("--muted"), grid: v("--grid"), home: v("--home"), premises: v("--premises"),
+      line: v("--block-line"),
+      mood: [v("--mood-0"), v("--mood-1"), v("--mood-2"), v("--mood-3")],
+      klass: [v("--series-1"), v("--series-2"), v("--series-3")]
+    };
+  }
+
+  // --- the week ------------------------------------------------------------------------------
+  // Everything the record says about one week, and each person's round for it.
+  function prepare(i) {
+    var week = weeks[i], firmSpot = C.firmSpots(DATA.firms, week);
+    frame = i; present = []; byPerson = {};
+    spotNow = spots.map(function (s) {
+      var u = C.at(s.u, week);
+      return { k: C.at(s.k, week) || 0, u: u == null ? -1 : u, n: C.at(s.n, week) || 0, lived: 0, size: 1 };
+    });
+    for (var id in firmSpot) {                      // a firm's building is sized by its staff
+      var st = spotNow[firmSpot[id]];
+      if (st.k === 2) st.size = 0.5 + 0.5 * Math.sqrt(Math.max(0, C.at(firms[id].n, week) || 0) / MOST_STAFF);
+    }
+    var env = { W: W, H: H, ride: DATA.run.ride, spots: spots, firmSpot: firmSpot,
+                size: function (spot) { return spotNow[spot].k === 2 ? spotNow[spot].size : 1; } };
+    people.forEach(function (p) {
+      var q = C.weekOf(p, week, env);
+      if (!q) return;                               // not in town yet
+      q.x = 0; q.y = 0; q.moving = false;
+      q.cash = C.weekly(p.c, p.c0, i); q.pay = C.at(p.w, week);     // their money that week, for their card
+      if (q.home >= 0) spotNow[q.home].lived++;
+      present.push(q);
+      byPerson[p.id] = q;
+    });
+  }
+
+  // Where everyone is at this moment of the round, in pixels.
+  function locate(phase) {
+    var round = SPEEDS[speed].round;
+    for (var i = 0; i < present.length; i++) {
+      var q = present[i], w;
+      if (round) { w = C.where(q.plan, phase); }
+      else { w = q.plan.stops[q.day]; w = { x: w.x, y: w.y, moving: false }; }
+      q.x = (w.x + EDGE) * S; q.y = (w.y + EDGE) * S; q.moving = w.moving;
+    }
+  }
+
+  // --- drawing -------------------------------------------------------------------------------
+  function layout() {
+    var room = $("mapwrap").clientWidth - 22;
+    var tall = Math.max(280, window.innerHeight - 240);
+    S = Math.max(14, Math.min(room / (W + 2 * EDGE), tall / (H + 1 + 2 * EDGE)));
+    cssW = Math.round(S * (W + 2 * EDGE)); cssH = Math.round(S * (H + 1 + 2 * EDGE));
+    var dpr = window.devicePixelRatio || 1;
+    canvas.style.width = cssW + "px"; canvas.style.height = cssH + "px";
+    canvas.width = Math.round(cssW * dpr); canvas.height = Math.round(cssH * dpr);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    names = {};
+  }
+  function box(x, y, w, h, r) {
+    ctx.beginPath();
+    if (ctx.roundRect) ctx.roundRect(x, y, w, h, r); else ctx.rect(x, y, w, h);
+  }
+  function corner(spot) {                           // the top left of a spot's block, in pixels
+    return [(spots[spot].x + C.STREET + EDGE) * S, (spots[spot].y + C.STREET + EDGE) * S];
+  }
+  function strip() {                                // the band under the map for people with no home
+    return [(C.STREET + EDGE) * S, (H + C.STREET + EDGE) * S, (W - 2 * C.STREET) * S, (1 - 2 * C.STREET) * S];
+  }
+  function drawBlocks() {
+    var side = (1 - 2 * C.STREET) * S, r = Math.max(2, S * 0.07);
+    ctx.lineWidth = 1;
+    for (var i = 0; i < spots.length; i++) {
+      var st = spotNow[i], c = corner(i), x = c[0], y = c[1];
+      if (st.k === 1) {
+        box(x, y, side, side, r); ctx.fillStyle = col.home; ctx.fill();
+        ctx.strokeStyle = col.line; ctx.stroke();
+      } else if (st.k === 2) {
+        box(x, y, side, side, r); ctx.strokeStyle = col.grid; ctx.stroke();
+        var b = side * st.size, o = (side - b) / 2;
+        box(x + o, y + o, b, b, r); ctx.fillStyle = col.premises; ctx.fill();
+        ctx.strokeStyle = col.line; ctx.stroke();
+      } else if (st.k === 3) {
+        box(x, y, side, side, r); ctx.fillStyle = col.surface; ctx.fill();
+        ctx.lineWidth = 1.5; ctx.strokeStyle = col.muted; ctx.stroke(); ctx.lineWidth = 1;
+      } else {
+        box(x, y, side, side, r); ctx.strokeStyle = col.grid; ctx.stroke();
+      }
+    }
+    var band = strip();
+    ctx.setLineDash([4, 4]); box(band[0], band[1], band[2], band[3], r);
+    ctx.strokeStyle = col.muted; ctx.stroke(); ctx.setLineDash([]);
+  }
+  function dotSize() { return Math.max(1.5, Math.min(3.4, S * 0.062)); }
+  // Class is the shape (Jason, 16/11/2026): an owner a square, the working class a circle,
+  // someone out of work a triangle, each about the same area and centred on the person.
+  function personPath(q, r) {
+    if (q.klass === 0) {
+      var h = r * 0.89;
+      ctx.rect(q.x - h, q.y - h, 2 * h, 2 * h);
+    } else if (q.klass === 2) {
+      var R = r * 1.5, w = R * 0.866;
+      ctx.moveTo(q.x, q.y - R); ctx.lineTo(q.x + w, q.y + R / 2); ctx.lineTo(q.x - w, q.y + R / 2);
+      ctx.closePath();
+    } else {
+      ctx.arc(q.x, q.y, r, 0, 6.2832);
+    }
+  }
+  function drawPeople() {
+    var r = dotSize(), last = null, palette = mode === "mood" ? col.mood : col.klass;
+    ctx.lineWidth = 0.75; ctx.strokeStyle = col.surface;
+    for (var i = 0; i < present.length; i++) {
+      var q = present[i], c = palette[mode === "mood" ? q.mood : q.klass];
+      if (c !== last) { ctx.fillStyle = c; last = c; }
+      ctx.beginPath();
+      personPath(q, r);
+      ctx.fill();
+      if (q.moving && q.rides) {                   // someone on the road by ride: a dark outline
+        ctx.lineWidth = 1.25; ctx.strokeStyle = col.text; ctx.stroke();
+        ctx.lineWidth = 0.75; ctx.strokeStyle = col.surface;
+      } else {
+        ctx.stroke();
+      }
+    }
+  }
+  function fit(text, most) {
+    var key = text + "|" + Math.round(most);
+    if (names[key]) return names[key];
+    var out = text;
+    if (ctx.measureText(out).width > most) {
+      while (out.length > 2 && ctx.measureText(out + ".").width > most) out = out.slice(0, -1);
+      out += ".";
+    }
+    names[key] = out;
+    return out;
+  }
+  function spotName(i) {
+    var st = spotNow[i];
+    if (st.k === 2) return firms[st.u] ? cap(firms[st.u].need) : "";
+    if (st.k === 3) return spots[i].label === "broker" ? "Broker" : cap(spots[i].label || "Service");
+    return "";
+  }
+  function named(x, y) {                            // does the spot at (x, y) carry a name this week?
+    var i = spotAt[x + "," + y];
+    return i != null && spotName(i) !== "";
+  }
+  function drawNames() {
+    var size = Math.max(8.5, Math.min(11, S * 0.2));
+    ctx.font = "600 " + size + "px system-ui, -apple-system, 'Segoe UI', sans-serif";
+    ctx.textBaseline = "middle"; ctx.lineJoin = "round"; ctx.lineWidth = 3;
+    ctx.strokeStyle = col.surface; ctx.fillStyle = col.text2;
+    if (S >= 30) {                                  // smaller than this the names cannot be read: the hover text has them
+      ctx.textAlign = "center";
+      for (var i = 0; i < spots.length; i++) {
+        var name = spotName(i);
+        if (!name) continue;
+        var x = (spots[i].x + 0.5 + EDGE) * S, y = (spots[i].y + EDGE) * S;    // in the street above the block
+        var free = !named(spots[i].x - 1, spots[i].y) && !named(spots[i].x + 1, spots[i].y);
+        name = fit(name, S * (free ? 1.95 : 0.98));  // room to spread when the neighbours carry no name
+        ctx.strokeText(name, x, y); ctx.fillText(name, x, y);
+      }
+    }
+    var band = strip(), homeless = series.homeless[frame];
+    var text = "No home" + (homeless != null ? ": " + homeless.toLocaleString("en-AU") : "");
+    ctx.textAlign = "left";                         // the strip keeps its label at any size
+    ctx.strokeText(text, band[0] + 2, band[1] - S * C.STREET);
+    ctx.fillText(text, band[0] + 2, band[1] - S * C.STREET);
+  }
+  function outline(spot, width, colour) {
+    var c = corner(spot), side = (1 - 2 * C.STREET) * S;
+    box(c[0] - 2, c[1] - 2, side + 4, side + 4, Math.max(2, S * 0.07) + 2);
+    ctx.lineWidth = width; ctx.strokeStyle = colour; ctx.stroke();
+  }
+  function ring(q, extra, width) {
+    ctx.beginPath(); ctx.arc(q.x, q.y, dotSize() + extra, 0, 6.2832);
+    ctx.lineWidth = width; ctx.strokeStyle = col.text; ctx.stroke();
+  }
+  function drawMarks() {
+    if (hot && hot.type === "spot") outline(hot.id, 1.5, col.text2);
+    if (sel && sel.type === "spot") outline(sel.id, 2, col.text);
+    if (sel && sel.type === "strip" || hot && hot.type === "strip") {
+      var band = strip();
+      box(band[0] - 2, band[1] - 2, band[2] + 4, band[3] + 4, 5);
+      ctx.lineWidth = 1.5; ctx.strokeStyle = col.text2; ctx.stroke();
+    }
+    var q = sel && sel.type === "person" ? byPerson[sel.id] : null;
+    if (q) {                                        // the round of the person being followed
+      ctx.globalAlpha = 0.55; ctx.lineWidth = 1.5; ctx.strokeStyle = col.text; ctx.lineJoin = "round";
+      q.plan.legs.forEach(function (pts) {
+        ctx.beginPath();
+        pts.forEach(function (p, j) {
+          if (j) ctx.lineTo((p[0] + EDGE) * S, (p[1] + EDGE) * S); else ctx.moveTo((p[0] + EDGE) * S, (p[1] + EDGE) * S);
+        });
+        ctx.stroke();
+      });
+      ctx.globalAlpha = 1;
+      var palette = mode === "mood" ? col.mood : col.klass;
+      ctx.beginPath(); personPath(q, dotSize() + 1.5);
+      ctx.fillStyle = palette[mode === "mood" ? q.mood : q.klass]; ctx.fill();
+      ring(q, 5, 2);
+    }
+    if (hot && hot.type === "person" && byPerson[hot.id] && !(sel && sel.type === "person" && sel.id === hot.id)) {
+      ring(byPerson[hot.id], 3, 1.5);
+    }
+  }
+  function draw() {
+    ctx.clearRect(0, 0, cssW, cssH);
+    drawBlocks(); drawPeople(); drawNames(); drawMarks();
+  }
+  function render() {
+    var i = Math.min(N - 1, Math.max(0, Math.floor(t))), turned = i !== frame;
+    if (turned) prepare(i);
+    locate(t - i);
+    if (turned) { updatePanel(); updateLine(); updateDetail(); pointAgain(); }
+    draw();
+  }
+
+  // --- time ----------------------------------------------------------------------------------
+  function seek(i) {
+    i = Math.max(0, Math.min(N - 1, i));
+    t = i + (SPEEDS[speed].round ? Math.min(0.999, t - Math.floor(t)) : 0.5);
+    render();
+  }
+  function setPlaying(on) {
+    if (on && Math.floor(t) >= N - 1) t = 0;        // on the last week: start again from the first
+    playing = on;
+    $("play").textContent = on ? "Pause" : "Play";
+    $("play").setAttribute("aria-pressed", on ? "true" : "false");
+    if (on) { lastTick = performance.now(); requestAnimationFrame(tick); }
+  }
+  function tick(now) {
+    if (!playing) return;
+    var dt = Math.min(0.1, (now - lastTick) / 1000);
+    lastTick = now;
+    t += dt * SPEEDS[speed].wps;
+    if (t >= N - 0.001) { t = N - 0.001; setPlaying(false); }
+    render();
+    if (playing) requestAnimationFrame(tick);
+  }
+  function setSpeed(i) {
+    speed = i;
+    Array.prototype.forEach.call($("speeds").children, function (b, j) {
+      b.setAttribute("aria-pressed", j === i ? "true" : "false");
+    });
+    $("speednote").textContent = SPEEDS[i].note
+      + (STEP === 1 ? "" : " This run recorded people every " + STEP + "th week, so the page moves " + STEP + " weeks at a time.");
+    render();
+  }
+
+  // --- the side panel ------------------------------------------------------------------------
+  function updatePanel() {
+    var i = frame, week = weeks[i];
+    $("when").textContent = C.whenText(week, YEAR, QUARTER);
+    $("whensub").textContent = "Week " + week + " of " + weeks[N - 1];
+    SCOPES.forEach(function (scope) {
+      var n = series.n[scope][i], u = series.unhappy[scope][i], nobody = !n || u == null;
+      $("n-" + scope).textContent = n == null ? "" : n.toLocaleString("en-AU");
+      $("u-" + scope).textContent = nobody ? "nobody" : scope === "all" ? C.pctUnder(u, DATA.run.fail) : C.pct(u);
+      $("bar-" + scope).style.width = (nobody ? 0 : 100 * u) + "%";
+    });
+    function fact(id, value, text) { $(id).textContent = value == null ? "not recorded" : text(value); }
+    function whole(v) { return v.toLocaleString("en-AU"); }
+    function weekly(v) { return money(v / 100) + " a week"; }
+    fact("f-homeless", series.homeless[i], whole);
+    fact("f-destitute", series.destitute[i], whole);
+    fact("f-riders", series.riders[i], C.pct);
+    fact("f-jobless", series.jobless[i], C.pct);
+    fact("f-wage", series.wage[i], weekly);
+    fact("f-basket", series.basket[i], weekly);
+    fact("f-firms", series.firms[i], whole);
+    var slider = $("seek");
+    slider.value = i;
+    slider.setAttribute("aria-valuetext", C.whenText(week, YEAR, QUARTER) + ", week " + week);
+  }
+  function buildLegend() {
+    var ul = $("legend");
+    ul.textContent = "";
+    var SHAPE = ["owner", "working", "out"];
+    if (mode === "mood") {
+      [3, 2, 1, 0].forEach(function (k) {
+        var li = el("li", null, ul);
+        el("span", "key-dot", li).style.background = "var(--mood-" + k + ")";
+        el("span", null, li, MOOD[k]);
+      });
+    }
+    [0, 1, 2].forEach(function (k) {                // the shape is the class, in either colouring
+      var li = el("li", mode === "mood" ? "shape" : null, ul);
+      var mark = el("span", "key-shape " + SHAPE[k], li);
+      if (mode !== "mood") mark.style.background = "var(--series-" + (k + 1) + ")";
+      el("span", null, li, KLASS[k]);
+    });
+    el("li", "note", ul, mode === "mood"
+      ? "Unhappy means wellbeing under " + DATA.run.cutoff + ". The town fails when " + C.pct(DATA.run.fail) + " of everyone is unhappy. "
+        + "The shape is the class."
+      : "Class is by role, and is worked out again every week.");
+    var li = el("li", "note", ul);
+    el("span", "key-ride", li);
+    el("span", null, li, "A dark outline is someone riding. In the model a ride is " + DATA.run.ride + " times as fast as walking.");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-mode]"), function (b) {
+      b.setAttribute("aria-pressed", b.getAttribute("data-mode") === mode ? "true" : "false");
+    });
+  }
+
+  // --- the time line -------------------------------------------------------------------------
+  // The share unhappy for every week the run measured, whatever weeks the people were recorded.
+  function buildLine() {
+    var host = $("line"), all = DATA.line;
+    host.textContent = "";
+    var w = Math.max(280, host.clientWidth), L = 40, R = 12, B = 22;
+    var s = svgEl("svg", { width: w, role: "img",
+                           "aria-label": "Share of everyone who is unhappy, week by week" }, host);
+    var first = Math.min(weeks[0], all.weeks.length ? all.weeks[0] : weeks[0]);
+    var last = Math.max(weeks[N - 1], all.weeks.length ? all.weeks[all.weeks.length - 1] : weeks[N - 1]);
+    var span = Math.max(1, last - first);
+    lineX = function (week) { return L + (w - L - R) * (week - first) / span; };
+    // The key moments. Each name goes in the first row where it does not run into another.
+    var rowEnd = [], placed = [];
+    DATA.marks.forEach(function (m) {
+      var label = svgEl("text", { "class": "label" }, s);
+      label.textContent = m.label;
+      var tw = label.getComputedTextLength ? label.getComputedTextLength() : m.label.length * 7;
+      var x = lineX(m.week);
+      var x0 = Math.max(2, x + 4 + tw > w - R ? x - 4 - tw : x + 4);   // near the right edge: left of its line
+      var row = 0;
+      while (rowEnd[row] != null && x0 < rowEnd[row] + 8) row++;
+      rowEnd[row] = x0 + tw;
+      label.setAttribute("x", x0);
+      label.setAttribute("y", 11 + 14 * row);
+      placed.push(x);
+    });
+    var T = 8 + 14 * Math.max(1, rowEnd.length), h = T + 70 + B;
+    s.setAttribute("viewBox", "0 0 " + w + " " + h);
+    s.setAttribute("height", h);
+    lineY = function (v) { return T + (h - T - B) * (1 - v); };
+    [0, 0.5, 1].forEach(function (v) {
+      svgEl("line", { x1: L, x2: w - R, y1: lineY(v), y2: lineY(v), stroke: "var(--grid)", "stroke-width": 1 }, s);
+      svgEl("text", { x: L - 6, y: lineY(v) + 4, "text-anchor": "end" }, s).textContent = (v * 100) + "%";
+    });
+    var step = 50;                                  // years between labels: far enough apart to read
+    [20, 10, 5, 2, 1].forEach(function (years) { if ((w - L - R) * years * YEAR / span >= 60) step = years; });
+    for (var y = step; y * YEAR <= last; y += step) {
+      if (y * YEAR < first || lineX(y * YEAR) > w - R - 18) continue;
+      svgEl("text", { x: lineX(y * YEAR), y: h - 6, "text-anchor": "middle" }, s).textContent = "Year " + y;
+    }
+    var fail = DATA.run.fail;
+    svgEl("line", { x1: L, x2: w - R, y1: lineY(fail), y2: lineY(fail), stroke: "var(--text-secondary)",
+                    "stroke-width": 1, "stroke-dasharray": "5 4" }, s);
+    svgEl("text", { x: L + 4, y: lineY(fail) + 13, "class": "label" }, s).textContent =
+      C.pct(fail) + ": the town fails";
+    placed.forEach(function (x) {
+      svgEl("line", { x1: x, x2: x, y1: T - 3, y2: h - B, stroke: "var(--axis)", "stroke-width": 1 }, s);
+    });
+    var d = "";
+    all.unhappy.forEach(function (v, i) {
+      d += (i ? "L" : "M") + lineX(all.weeks[i]).toFixed(1) + " " + lineY(v).toFixed(1);
+    });
+    svgEl("path", { d: d, fill: "none", stroke: "var(--ink-series)", "stroke-width": 2,
+                    "stroke-linejoin": "round", "stroke-linecap": "round" }, s);
+    cursor = svgEl("line", { y1: T - 3, y2: h - B, stroke: "var(--text-primary)", "stroke-width": 1.5 }, s);
+    cursorDot = svgEl("circle", { r: 4, fill: "var(--text-primary)", stroke: "var(--surface-1)", "stroke-width": 2 }, s);
+    var dragging = false;
+    function toWeek(evt) {
+      var rect = s.getBoundingClientRect(), x = (evt.clientX - rect.left) * w / rect.width;
+      seek(C.indexAt(weeks, Math.round(first + span * Math.max(0, Math.min(1, (x - L) / (w - L - R))))));
+    }
+    s.addEventListener("pointerdown", function (evt) { dragging = true; s.setPointerCapture(evt.pointerId); toWeek(evt); });
+    s.addEventListener("pointermove", function (evt) { if (dragging) toWeek(evt); });
+    s.addEventListener("pointerup", function () { dragging = false; });
+    s.addEventListener("pointercancel", function () { dragging = false; });
+    $("seekwrap").style.padding = "0 " + (R - 8) + "px 0 " + (L - 8) + "px";
+    updateLine();
+  }
+  function updateLine() {
+    if (!cursor || frame < 0) return;
+    var x = lineX(weeks[frame]), v = series.unhappy.all[frame];
+    cursor.setAttribute("x1", x); cursor.setAttribute("x2", x);
+    cursorDot.setAttribute("cx", x);
+    cursorDot.setAttribute("cy", lineY(v == null ? 0 : v));
+  }
+
+  // --- pointing and picking ------------------------------------------------------------------
+  // What is under a point of the window: a person only if the pointer is on their dot, else
+  // the block, the name written above it, or the strip.
+  function hit(at) {
+    var rect = canvas.getBoundingClientRect(), mx = at.clientX - rect.left, my = at.clientY - rect.top;
+    var q = C.pickPerson(present, mx, my, dotSize() + 3);
+    if (q) return { type: "person", id: q.p.id };
+    var over = C.blockAt(mx / S - EDGE, my / S - EDGE, W, H);
+    if (!over) return null;
+    if (over.type === "strip") return { type: "strip" };
+    var spot = spotAt[over.x + "," + over.y];
+    if (spot == null || (over.name && spotName(spot) === "")) return null;
+    return { type: "spot", id: spot };
+  }
+  function nowParts(q) {
+    return [
+      KLASS[q.klass],
+      q.job >= 0 ? (ROLE[q.role] || ROLE[0]) + firmName(q.job) : q.klass === 2 ? "" : "No job",
+      q.home >= 0 ? (spotNow[q.home].u >= 0 ? "Rents from " + firmName(spotNow[q.home].u) : "Has a home") : "No home",
+      MOOD[q.mood],
+      q.rides ? "Pays for a ride" : "Walks"
+    ].filter(function (part) { return part !== ""; });
+  }
+  // A person's card (Jason, 13/11/2026): the same, with their money that week under their class.
+  function cardParts(q) {
+    var parts = nowParts(q);
+    return parts.slice(0, 1).concat(
+      [q.cash != null ? "Cash " + money(q.cash) : "", q.pay > 0 ? "Pay " + money(q.pay) + " a week" : "No pay"],
+      parts.slice(1));
+  }
+  function spotInfo(h) {
+    if (h.type === "strip") {
+      var n = series.homeless[frame];
+      return ["No home", [(n == null ? "People" : count(n, "person has", "people have")) + " no home this week.",
+                          "The model gives them no place on the map, so they are drawn here."]];
+    }
+    var st = spotNow[h.id], week = weeks[frame];
+    if (st.k === 1) {
+      return ["Homes", [st.u >= 0 ? "Landlord: " + firmName(st.u) : "Landlord not recorded this week",
+                        count(st.n, "home", "homes") + ", " + st.lived + " lived in"]];
+    }
+    if (st.k === 2 && firms[st.u]) {
+      var f = firms[st.u], price = C.at(f.p, week);
+      return [f.name, [cap(f.need) + " firm, founded in year " + yearOf(f.founded),
+                       (C.at(f.n, week) || 0) + " staff, " + count(C.at(f.c, week) || 0, "customer", "customers"),
+                       price != null ? "Price " + money(price / 100) + " a week" : ""]];
+    }
+    if (st.k === 3) {
+      return spots[h.id].label === "broker"
+        ? ["Share broker", ["Where shares are bought and sold. It charges nothing."]]
+        : ["Bank", ["Lends to firms and to people. It cannot fail."]];
+    }
+    return ["Empty land", ["Nothing stands here this week."]];
+  }
+  function showTip(at, title, lines) {
+    tip.textContent = "";
+    el("div", "when", tip, title);
+    lines.forEach(function (text) { if (text) el("div", null, tip, text); });
+    tip.style.display = "block";
+    var w = tip.offsetWidth, h = tip.offsetHeight, x = at.clientX + 14, y = at.clientY + 14;
+    if (x + w > window.innerWidth - 8) x = at.clientX - w - 14;
+    if (y + h > window.innerHeight - 8) y = at.clientY - h - 14;
+    tip.style.left = Math.max(8, x) + "px";
+    tip.style.top = Math.max(8, y) + "px";
+  }
+  function showHot() {
+    var q = hot && hot.type === "person" ? byPerson[hot.id] : null;
+    if (!hot || !pointer || (hot.type === "person" && !q)) { tip.style.display = "none"; return; }
+    if (q) {
+      showTip(pointer, "Person " + hot.id, cardParts(q).concat(["Click to follow"]));
+    } else {
+      var info = spotInfo(hot);
+      showTip(pointer, info[0], info[1]);
+    }
+  }
+  // The week has changed under a pointer that has not moved: say what is under it now.
+  function pointAgain() {
+    if (!pointer) return;
+    hot = hit(pointer);
+    showHot();
+  }
+  function select(h) {
+    sel = h;
+    if (h && h.type === "person") $("who").value = h.id;
+    renderDetail();
+    draw();
+  }
+
+  // --- one person's life ---------------------------------------------------------------------
+  // A small line of one number over the run, a point a quarter. The number beside it is the
+  // latest point at or before the week shown, and a dot marks that point on the line.
+  function spark(parent, label, values, q0, show, cutoff) {
+    var row = el("div", "spark", parent);
+    el("span", null, row, label);
+    var holder = el("div", null, row), value = el("b", null, row);
+    var w = 200, h = 34, first = weeks[0], span = Math.max(1, weeks[N - 1] - first);
+    var s = svgEl("svg", { viewBox: "0 0 " + w + " " + h, preserveAspectRatio: "none", role: "img",
+                           "aria-label": label + " over their time in town" }, holder);
+    var top = cutoff != null ? 100 : Math.max.apply(null, values.concat([1]));
+    function X(week) { return 1 + (w - 2) * (week - first) / span; }
+    function Y(v) { return h - 3 - (h - 6) * v / top; }
+    svgEl("line", { x1: 0, x2: w, y1: Y(0), y2: Y(0), stroke: "var(--grid)", "stroke-width": 1 }, s);
+    if (cutoff != null) {
+      svgEl("line", { x1: 0, x2: w, y1: Y(cutoff), y2: Y(cutoff), stroke: "var(--muted)", "stroke-width": 1,
+                      "stroke-dasharray": "3 3", "vector-effect": "non-scaling-stroke" }, s);
+    }
+    var d = "";
+    values.forEach(function (v, j) { d += (j ? "L" : "M") + X(DATA.qweeks[q0 + j]).toFixed(1) + " " + Y(v).toFixed(1); });
+    svgEl("path", { d: d, fill: "none", stroke: "var(--ink-series)", "stroke-width": 1.5,
+                    "stroke-linejoin": "round", "vector-effect": "non-scaling-stroke" }, s);
+    var mark = svgEl("line", { y1: 0, y2: h, stroke: "var(--axis)", "stroke-width": 1,
+                               "vector-effect": "non-scaling-stroke" }, s);
+    var dot = svgEl("ellipse", { rx: 2.2, ry: 3, fill: "var(--text-primary)" }, s);
+    return function (week) {
+      mark.setAttribute("x1", X(week)); mark.setAttribute("x2", X(week));
+      var j = C.sampleAt(DATA.qweeks, q0, values.length, week);
+      value.textContent = j < 0 ? "" : show(values[j]);
+      dot.setAttribute("visibility", j < 0 ? "hidden" : "visible");
+      if (j >= 0) { dot.setAttribute("cx", X(DATA.qweeks[q0 + j])); dot.setAttribute("cy", Y(values[j])); }
+    };
+  }
+  function renderDetail() {
+    var host = $("detail");
+    host.textContent = "";
+    lifeUI = null;
+    if (!sel) {
+      el("p", "hint", host, "Click a person on the map, or pick one by number, to follow them. "
+                           + "Point at a person to see their cash and pay that week. "
+                           + "Point at a building, or at the name above a firm, to see whose it is.");
+      return;
+    }
+    var head = el("div", "who", host);
+    var title = el("span", null, head);
+    el("button", null, head, "Clear").addEventListener("click", function () { select(null); });
+    if (sel.type !== "person") {
+      var info = spotInfo(sel);
+      title.textContent = info[0];
+      info[1].forEach(function (text) { if (text) el("p", "nowline", host, text); });
+      return;
+    }
+    var p = people[personAt[sel.id]], life = p.life, came = life.events[0];
+    title.textContent = "Person " + p.id;
+    el("p", "nowline", host, came && DATA.kinds[came[1]] === "arrival"
+       ? C.lifeText(came, TELL).replace("Arrived", "Arrived in year " + yearOf(p.arrived) + " (week " + p.arrived + ")") + "."
+       : "Arrived in year " + yearOf(p.arrived) + " (week " + p.arrived + ").");
+    var now = el("p", "nowline now", host);
+    function ratio(v) { return (v / 100).toFixed(2); }
+    var charts = [
+      spark(host, "Cash", life.cash, life.q0, money),
+      spark(host, "Weekly pay", life.pay, life.q0, money),
+      spark(host, "Debt", life.loan, life.q0, money),
+      spark(host, "Shares", life.shares, life.q0, money),
+      spark(host, "Wellbeing", life.well, life.q0, ratio, DATA.run.cutoff * 100),
+      spark(host, "Security", life.sec, life.q0, ratio, 100)
+    ];
+    var asat = el("p", "fine asat", host);
+    el("p", "fine", host, "Each line runs from the start of the run to its end, with one point a quarter. "
+                         + "The dashes on Wellbeing mark where unhappy begins.");
+    el("div", "card-title", host, "What happened to them (" + life.events.length + ")");
+    var list = el("ol", "life", host), rows = [];
+    life.events.forEach(function (e) {
+      var li = el("li", null, list), b = el("button", null, li);
+      el("span", "date", b, "Year " + yearOf(e[0]) + ", week " + e[0]);
+      el("span", null, b, C.lifeText(e, TELL));
+      b.addEventListener("click", function () { seek(C.indexFrom(weeks, e[0])); });   // by then it has happened
+      rows.push({ week: e[0], li: li });
+    });
+    lifeUI = { p: p, now: now, asat: asat, charts: charts, rows: rows, list: list, shown: -2 };
+    updateDetail();
+  }
+  function updateDetail() {
+    if (!lifeUI) {
+      if (sel && sel.type !== "person") renderDetail();       // a place: say what it is this week
+      return;
+    }
+    var week = weeks[frame], q = byPerson[lifeUI.p.id], life = lifeUI.p.life;
+    lifeUI.now.textContent = q ? "Now: " + nowParts(q).join(". ") + "." : "Not in town yet in week " + week + ".";
+    lifeUI.charts.forEach(function (update) { update(week); });
+    var point = C.sampleAt(DATA.qweeks, life.q0, life.cash.length, week);
+    lifeUI.asat.textContent = point >= 0
+      ? "The number beside each line is its latest point, at week " + DATA.qweeks[life.q0 + point] + "."
+      : life.cash.length ? "No point yet. The first is at week " + DATA.qweeks[life.q0] + "." : "";
+    var k = -1;
+    for (var i = 0; i < lifeUI.rows.length && lifeUI.rows[i].week <= week; i++) k = i;
+    if (k === lifeUI.shown) return;
+    lifeUI.rows.forEach(function (row, j) { row.li.className = j > k ? "later" : j === k ? "latest" : ""; });
+    lifeUI.shown = k;
+    if (k >= 0) {
+      var li = lifeUI.rows[k].li, list = lifeUI.list;
+      list.scrollTop = Math.max(0, li.offsetTop - list.clientHeight / 2);     // the list is the offset parent
+    }
+  }
+
+  // --- wiring --------------------------------------------------------------------------------
+  SPEEDS.forEach(function (sp, i) {
+    var b = el("button", null, $("speeds"), sp.name);
+    b.setAttribute("title", sp.note);
+    b.addEventListener("click", function () { setSpeed(i); });
+  });
+  $("play").addEventListener("click", function () { setPlaying(!playing); });
+  $("back").textContent = STEP === 1 ? "Back a week" : "Back " + STEP + " weeks";
+  $("fwd").textContent = STEP === 1 ? "Forward a week" : "Forward " + STEP + " weeks";
+  $("back").addEventListener("click", function () { seek(frame - 1); });
+  $("fwd").addEventListener("click", function () { seek(frame + 1); });
+  $("seek").max = N - 1;
+  $("seek").addEventListener("input", function () { seek(+this.value); });
+  Array.prototype.forEach.call(document.querySelectorAll("[data-mode]"), function (b) {
+    b.addEventListener("click", function () { mode = b.getAttribute("data-mode"); buildLegend(); draw(); });
+  });
+  $("who").max = people.length ? people[people.length - 1].id : 1;
+  function pick() {
+    var id = parseInt($("who").value, 10);
+    if (personAt[id] != null) { select({ type: "person", id: id }); return; }
+    select(null);                                   // nobody is followed any more
+    $("detail").textContent = "";
+    el("p", "hint", $("detail"), "There is no person " + ($("who").value || "with that number")
+       + ". People are numbered from " + people[0].id + " to " + people[people.length - 1].id + ".");
+  }
+  $("go").addEventListener("click", pick);
+  $("who").addEventListener("keydown", function (evt) { if (evt.key === "Enter") pick(); });
+  $("any").addEventListener("click", function () {
+    if (present.length) select({ type: "person", id: present[Math.floor(Math.random() * present.length)].p.id });
+  });
+  canvas.addEventListener("pointermove", function (evt) {
+    pointer = { clientX: evt.clientX, clientY: evt.clientY };
+    hot = hit(pointer); showHot();
+    if (!playing) draw();
+  });
+  canvas.addEventListener("pointerleave", function () {
+    pointer = null; hot = null; tip.style.display = "none";
+    if (!playing) draw();
+  });
+  canvas.addEventListener("click", function (evt) { select(hit(evt)); });
+  // Space and the arrows work wherever the focus is, except while typing a person's number.
+  document.addEventListener("keydown", function (evt) {
+    var tag = (evt.target && evt.target.tagName || "").toLowerCase();
+    if (tag === "input" || tag === "textarea" || tag === "select") return;
+    if (evt.key === " ") { evt.preventDefault(); setPlaying(!playing); }
+    else if (evt.key === "ArrowRight") seek(frame + 1);
+    else if (evt.key === "ArrowLeft") seek(frame - 1);
+  });
+  function resized() { layout(); buildLine(); locate(t - Math.floor(t)); draw(); }
+  window.addEventListener("resize", resized);
+  if (window.matchMedia) {
+    var scheme = window.matchMedia("(prefers-color-scheme: dark)");
+    if (scheme.addEventListener) scheme.addEventListener("change", function () { readColours(); draw(); });
+  }
+
+  readColours();
+  layout();
+  buildLegend();
+  buildLine();
+  setPlaying(false);
+  setSpeed(speed);
+  renderDetail();
+})();
+</script>
+</body>
+</html>

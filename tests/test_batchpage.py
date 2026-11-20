@@ -847,3 +847,58 @@ def test_the_step_chart_runs_the_whole_of_the_years_the_towns_were_given(page):
     ends = [float(re.findall(r"H([\d.]+)", d)[-1]) for d in re.findall(r'<path class="series" d="([^"]+)"', chart_svg)]
     right_edge = max(float(x2) for x2 in re.findall(r'<line x1="[\d.]+" x2="([\d.]+)"', chart_svg))
     assert ends == [right_edge, right_edge]                   # each line is carried level to the last year given
+
+
+# --- stage 3 of the RTR world: its measures across a batch (20 November 2026) ----------------
+
+RTR_PAIR = ["world=rtr", "population_cap=60", "years=3"]
+RTR_MEASURES = ("town/wage_offer", "town/homes_lived_in_by_owner", "town/homes_let_private",
+                "town/homes_foreclosed", "town/sets_owned", "town/home_loans", "town/makers",
+                "town/small_businesses")
+
+
+@pytest.fixture(scope="module")
+def rtr_pair(tmp_path_factory):
+    plan = batch.make_plan("rtrpair", [3, 9], base=RTR_PAIR)
+    batch_dir = batch.run_batch(plan, out_root=tmp_path_factory.mktemp("rtrbatch"), jobs=1, quiet=True)
+    batch.collect(batch_dir)
+    return batch_dir
+
+
+def test_an_rtr_batch_keeps_its_own_measures_every_year(rtr_pair):
+    con = sqlite3.connect(rtr_pair / "batch.sqlite")
+    try:
+        kept = {(seed, year, f"{scope}/{metric}"): value for seed, year, scope, metric, value in con.execute(
+            "SELECT seed, year, scope, metric, value FROM yearly")}
+        folders = dict(con.execute("SELECT seed, folder FROM towns"))
+    finally:
+        con.close()
+    for seed in (3, 9):
+        for year in (1, 2, 3):
+            for measure in RTR_MEASURES:
+                assert (seed, year, measure) in kept, (seed, year, measure)
+        town = sqlite3.connect(rtr_pair / folders[seed] / "run.sqlite")
+        week = {m: v for m, v in town.execute(
+            "SELECT metric, value FROM series WHERE scope='town' AND week=104")}
+        town.close()
+        assert kept[(seed, 2, "town/homes_lived_in_by_owner")] == week["homes_owned"] - week["homes_let_private"]
+        assert kept[(seed, 2, "town/wage_offer")] == week["wage_offer"]
+        assert kept[(seed, 2, "town/makers")] == week["makers"]
+
+
+def test_an_rtr_batch_page_draws_its_own_measures(rtr_pair):
+    html = build_batch_page(rtr_pair).read_text(encoding="utf-8")
+    for measure in RTR_MEASURES:
+        assert chart(html, 0, measure), measure
+    assert "Homes lived in by their owner" in chart(html, 0, "town/homes_lived_in_by_owner")
+
+
+def test_an_rtr_batch_made_before_these_measures_still_builds(rtr_pair, tmp_path):
+    old = tmp_path / "old"
+    shutil.copytree(rtr_pair, old)
+    con = sqlite3.connect(old / "batch.sqlite")
+    con.execute("DELETE FROM yearly WHERE metric IN ('wage_offer', 'homes_lived_in_by_owner', 'makers')")
+    con.commit()
+    con.close()
+    html = build_batch_page(old).read_text(encoding="utf-8")
+    assert not chart(html, 0, "town/wage_offer") and chart(html, 0, "town/sets_owned")

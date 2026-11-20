@@ -4,7 +4,7 @@ A town belongs to a world, and is run from that world's folder: `wef/run.py` and
 `rtr/run.py` for one town, `batch.py` beside each for many. Those scripts call `world_main`
 here, which takes the world's own settings and keeps its runs in its folder.
 
-`python -m engine` alone only reads what a run left: batch-report | dashboard | town | info."""
+`python -m engine` alone only reads what a run left: batch-report | dashboard | town | compare | info."""
 
 from __future__ import annotations
 
@@ -93,6 +93,11 @@ def main(argv=None, world: str | None = None, home=None) -> int:
     p = sub.add_parser("town", help="rebuild the town view for a run: the map, with people moving")
     p.add_argument("run_dir")
 
+    p = sub.add_parser("compare", help="the WEF world and the RTR world on the same seeds, side by side")
+    p.add_argument("wef_batch", help="a batch of the WEF world")
+    p.add_argument("rtr_batch", help="a batch of the RTR world, on the same seeds")
+    p.add_argument("--out", help="the folder for compare.html (default: the RTR batch's folder)")
+
     p = sub.add_parser("info", help="a few lines about a run")
     p.add_argument("run_dir")
 
@@ -142,6 +147,14 @@ def main(argv=None, world: str | None = None, home=None) -> int:
             _say(world, "this run has no map, so there is no town to draw")
             return 1
         print(path)
+        return 0
+    if args.command == "compare":
+        from .comparepage import CompareError, build_compare_page
+        try:
+            print(build_compare_page(args.wef_batch, args.rtr_batch, out_dir=args.out))
+        except (CompareError, FileNotFoundError) as err:
+            _say(None, str(err))
+            return 2
         return 0
     print(info(args.run_dir))
     return 0
