@@ -850,7 +850,31 @@ towns, fourteen years, the mean share of people with no job:
   same two towns let go 307, and 36% were back within four weeks.
 
 As it stands the rule leaves small towns about where they were before it.
-What it does in full towns is not yet known.
+
+**Forty full towns on the rule as it stands**, sixty years, no weekly checks:
+none crashed. Four reached the failure line, all late (one in year 52, three
+in year 59). The other thirty-six ended sixty years with staff paid $390 to
+$928 a week on average (middle $715), a rate offered to newcomers of $111 to
+$907 (middle $552), 0% with no job in the middle town and 23% at most, and 32%
+to 88% unhappy (middle 75%).
+
+| | reached the failure line | ended on a working wage |
+|---|---|---|
+| the home loan ruling, 18 November, forty towns | 28 of 40 | none |
+| the morning's rulings, stopped at twenty-seven towns | 1 of 27 | 26 of 27 |
+| the morning's rulings and this rule, forty towns | 4 of 40 | 36 of 40 |
+
+**Three of them again under the weekly checks** (seeds 1, 2, 3): every check
+clean in every one of 3,120 weeks, and each the same town as in the forty. At
+year 60: staff paid $755, $685 and $787; offered to newcomers $500, $438 and
+$594; with no job 7%, 21% and 0%; unhappy 85%, 86% and 70%.
+
+The best this world has done, across all forty towns, and still not a working
+town by any measure but the failure line: in the middle town three in four
+are unhappy at year 60, and newcomers are offered far less than the staff
+beside them are paid. Nothing here is traced. The figures and the one check
+left out (a check that assumes a cap on people, which this world does not
+have) are in the ledger.
 
 The reviewer also found that an executive put back on the staff was being
 treated as the firm's newest hand, so the true longest-serving was often
