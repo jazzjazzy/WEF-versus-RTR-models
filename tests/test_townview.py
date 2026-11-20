@@ -970,3 +970,53 @@ def test_a_class_is_the_same_colour_on_the_town_view_and_the_dashboard():
 
     assert colours(townpage.TEMPLATE) == colours(dashboard.TEMPLATE)
     assert len(colours(townpage.TEMPLATE)) == 3                # light, dark by the system, dark by choice
+
+
+# --- stage 3 of the RTR world: owners and side hustles on the town view (20 November 2026) -----
+
+RTR_TOWN = ["world=rtr", "population_cap=60", "years=4", "seed=3"]
+
+
+@pytest.fixture(scope="module")
+def rtr_view(tmp_path_factory):
+    run_dir = run(load_config(None, RTR_TOWN), out_root=tmp_path_factory.mktemp("rtrview"), quiet=True)
+    con = sqlite3.connect(run_dir / "run.sqlite")
+    data = townview.town_data(con)
+    return run_dir, con, data
+
+
+def test_in_the_rtr_world_each_person_says_whether_they_live_in_a_home_they_own(rtr_view):
+    _, con, data = rtr_view
+    people = {p["id"]: p for p in data["people"]}
+    owners_seen = 0
+    for week, agent, firm, unit in con.execute("SELECT week, agent, home_firm, home_unit FROM agent_snap"):
+        owns = firm is None and unit is not None
+        assert at(people[agent]["ow"], week) == (1 if owns else 0), (week, agent)
+        owners_seen += owns
+    assert owners_seen > 1000
+    for week, occupant in con.execute(          # the homes' own record agrees, every week it was taken
+            "SELECT week, occupant FROM units WHERE need = 'housing' AND owner IS NOT NULL AND owner = occupant"):
+        assert at(people[occupant]["ow"], week) == 1, (week, occupant)
+
+
+def test_in_the_rtr_world_each_person_says_whether_they_have_a_side_hustle(rtr_view):
+    _, con, data = rtr_view
+    people = {p["id"]: p for p in data["people"]}
+    started = con.execute("SELECT week, agent FROM events WHERE kind = 'hustle_started'").fetchall()
+    ended = con.execute("SELECT week, agent FROM events WHERE kind IN ('hustle_stopped', 'maker_company')").fetchall()
+    assert len(started) > 5 and ended
+    for week, agent in started:
+        assert at(people[agent]["hu"], week) == 1
+    for week, agent in ended:
+        if (week, agent) not in started:          # a hustle given up and another started the same week
+            assert at(people[agent]["hu"], week) == 0
+    never = [p for p in data["people"] if p["id"] not in {a for _, a in started}]
+    assert never and all(not any(p["hu"][1::2]) for p in never)
+
+
+def test_in_the_wef_world_nobody_carries_the_rtr_marks(tmp_path):
+    run_dir = run(load_config(None, ["population_cap=40", "years=2", "seed=9"]), out_root=tmp_path, quiet=True)
+    con = sqlite3.connect(run_dir / "run.sqlite")
+    data = townview.town_data(con)
+    con.close()
+    assert all("ow" not in p and "hu" not in p for p in data["people"])

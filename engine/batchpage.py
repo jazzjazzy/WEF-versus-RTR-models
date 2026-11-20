@@ -79,7 +79,7 @@ def _yearly(con, setting: int) -> dict:
     of a year has a record for that year: it is left out, because it is not still standing.
     A class with nobody in it has no number that year, so that town is left out of that
     class's figure."""
-    from .batch import MEASURES
+    from .batch import MEASURES, RTR_MEASURES
     ended = {seed: (failed, year_weeks) for seed, failed, year_weeks in con.execute(
         "SELECT seed, failed_week, year_weeks FROM towns WHERE setting = ?", (setting,))}
     values: dict[tuple, dict[int, float]] = {}
@@ -90,7 +90,7 @@ def _yearly(con, setting: int) -> dict:
             continue                                 # it had failed by the end of that year
         values.setdefault((scope, metric, year), {})[seed] = value
     out: dict[str, list] = {}
-    for scope, metric in MEASURES:
+    for scope, metric in MEASURES + RTR_MEASURES:
         rows = []
         for year in sorted(y for s, m, y in values if (s, m) == (scope, metric)):
             towns = values[(scope, metric, year)]
@@ -448,6 +448,22 @@ CHARTS = (
     ("town/loans_firms", "Loans to firms", "money", "ink", "What firms owe the bank."),
     ("town/loans_people", "Loans to people", "money", "ink", "What people owe the bank."),
 )
+# The RTR world's own (stage 3, 20/11/2026): a batch of the WEF world keeps none, so draws none.
+RTR_CHARTS = (
+    ("town/wage_offer", "The rate for someone taken on now", "money", "ink",
+     "What a firm offers someone it takes on now. Staff keep the pay they were taken on at."),
+    ("town/homes_lived_in_by_owner", "Homes lived in by their owner", "count", "ink",
+     "Homes owned by the person who lives in them."),
+    ("town/homes_let_private", "Homes let by a small landlord", "count", "ink",
+     "Homes a person owns and lets to someone else."),
+    ("town/homes_foreclosed", "Homes taken back by the bank", "count", "ink",
+     "Homes the bank has taken back and not yet sold."),
+    ("town/sets_owned", "Appliance sets owned", "count", "ink", "Appliance sets people own rather than rent."),
+    ("town/home_loans", "Loans against homes", "money", "ink", "What people owe the bank on homes they bought or built."),
+    ("town/makers", "People with a side hustle", "count", "ink",
+     "People selling their own work or making things on the side."),
+    ("town/small_businesses", "Small businesses", "count", "ink", "Side hustles grown into businesses with staff."),
+)
 
 
 def _fan_svg(rows: list[dict], unit: str, colour: str, title: str) -> str:
@@ -525,7 +541,7 @@ def _fan_card(setting: dict, measure: str, title: str, unit: str, colour, note: 
 
 
 def _fans(setting: dict) -> str:
-    cards = "".join(_fan_card(setting, *spec) for spec in CHARTS)
+    cards = "".join(_fan_card(setting, *spec) for spec in CHARTS + RTR_CHARTS)
     return f'<div class="grid">{cards}</div>' if cards else '<p class="empty">No town under this setting was still standing at the end of a year.</p>'
 
 

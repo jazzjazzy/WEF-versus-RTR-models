@@ -24,7 +24,7 @@ import pathlib
 import sqlite3
 
 from .config import WORLD_NAMES
-from .townpage import CORE_JS, PAGE_JS, TEMPLATE
+from .townpage import CORE_JS, PAGE_JS, RTR_MARKS, TEMPLATE
 
 NONE = -1
 KLASS = {"owner": 0, "working": 1, "out": 2}
@@ -55,7 +55,7 @@ def mood_step(happy, wellbeing: float, cutoff: float) -> int:
     return 0 if wellbeing < cutoff / 2.0 else 1
 
 
-def _people(con, cutoff: float, weeks: list[int] | None = None) -> list[dict]:
+def _people(con, cutoff: float, weeks: list[int] | None = None, rtr: bool = False) -> list[dict]:
     """Every person, with a change list for each thing the page draws about them.
 
     Their money, for the card (Jason, 13/11/2026): `w` is their weekly pay as a change list,
@@ -86,7 +86,29 @@ def _people(con, cutoff: float, weeks: list[int] | None = None) -> list[dict]:
             p["c0"] = number[week]
         held.extend(held[-1:] * (number[week] - p["c0"] - len(held)))   # a week with no record of them: as it was
         held.append(round((cash or 0) / 100))
+    if rtr:
+        _owners_and_hustles(con, people)
     return [people[agent] for agent in sorted(people)]
+
+
+def _owners_and_hustles(con, people: dict) -> None:
+    """The RTR world (stage 3, 20/11/2026): `ow`, whether a person lives in a home they own (no landlord
+    and a home of their own), and `hu`, whether they have a side hustle, each a change list from
+    their first recorded week. A WEF person has neither, so the WEF page's data is as it was."""
+    first: dict[int, int] = {}
+    for week, agent, firm, unit in con.execute(
+            "SELECT week, agent, home_firm, home_unit FROM agent_snap ORDER BY week, agent"):
+        p = people[agent]
+        p.setdefault("ow", [])
+        _push(p["ow"], week, 1 if firm is None and unit is not None else 0)
+        first.setdefault(agent, week)
+    for agent, week in first.items():
+        people[agent]["hu"] = [week, 0]
+    for week, kind, agent in con.execute(
+            "SELECT week, kind, agent FROM events WHERE kind IN ('hustle_started', 'hustle_stopped', "
+            "'maker_company') ORDER BY id"):
+        if agent in first:
+            _push(people[agent]["hu"], max(week, first[agent]), 1 if kind == "hustle_started" else 0)
 
 
 def _weeks(con) -> list[int]:
@@ -377,7 +399,7 @@ def town_data(con) -> dict | None:
     cfg = json.loads(meta.get("config") or "{}")
     cutoff = cfg.get("happy_cutoff", 0.5)
     quarter = cfg.get("quarter_weeks", 13)
-    people = _people(con, cutoff, weeks)
+    people = _people(con, cutoff, weeks, rtr=cfg.get("world") == "rtr")
     data = {
         "run": {
             "id": meta.get("run_id", ""), "seed": int(meta.get("seed") or 0),
@@ -517,6 +539,10 @@ def build_town_view(run_dir) -> pathlib.Path | None:
             .replace("__CORE__", CORE_JS)
             .replace("__PAGE__", PAGE_JS)
             .replace("__DATA__", payload))
+    if json.loads(meta.get("config", "{}")).get("world") == "rtr":
+        for before, after in RTR_MARKS:
+            assert page.count(before) == 1, before
+            page = page.replace(before, after)
     out = run_dir / "town.html"
     out.write_text(page, encoding="utf-8")
     return out
