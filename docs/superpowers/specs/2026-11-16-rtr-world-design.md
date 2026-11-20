@@ -448,7 +448,15 @@ WEF world keeps the rule as it was.
   overturned by counts the same day (a hold on hiring; any firm with a loss): the ledger has
   them.
 
-Stage 3 is not built.
+**Stage 3, seeing, is built (20 November).** An RTR town's dashboard has a section of its own
+(who holds the homes; what staff are paid beside the rate for someone taken on now; side hustles;
+owning; loans against homes) and two tiles; a batch keeps eight measures of the RTR world and its
+page draws them; the town view marks someone who lives in a home they own (a line under them) and
+someone with a side hustle (a tick above), and says both on their card. The town view marks people,
+not homes, because the map draws a block of homes as one (C). `python3 -m engine compare <WEF batch>
+<RTR batch>` sets the two worlds side by side on the same seeds. A WEF world's pages are byte for
+byte what they were. The ledger is `docs/build-ledger-rtr-stage3-2026-11-20.md`. The WEF batch was
+made again with no cap on people, as this design asked, and both worlds were run on seeds 1 to 100.
 
 Left to the builder: every name in the code, the order of steps within a week, and
 how the new measures are drawn.

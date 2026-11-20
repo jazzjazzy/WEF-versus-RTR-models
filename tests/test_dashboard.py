@@ -172,3 +172,100 @@ def test_the_town_full_tile_says_what_full_means_with_and_without_a_cap(tmp_path
         run_dir = run(load_config(None, [f"population_cap={cap}", "years=1", "map_width=6", "map_height=6"]),
                       out_root=tmp_path / str(cap), quiet=True)
         assert words in (run_dir / "dashboard.html").read_text()
+
+
+# --- stage 3 of the RTR world: its own charts (20 November 2026) -----------------------------
+
+RTR_SMALL = ["world=rtr", "population_cap=60", "years=4", "seed=3"]   # owns, lets, hustles and starts a business
+RTR_CHARTS = ("Who holds the homes", "What staff are paid and what a newcomer is offered",
+              "Side hustles", "Owning", "Loans against homes")
+
+
+@pytest.fixture(scope="module")
+def rtr_built(tmp_path_factory):
+    run_dir = run(load_config(None, RTR_SMALL), out_root=tmp_path_factory.mktemp("rtr"), quiet=True)
+    return run_dir, (run_dir / "dashboard.html").read_text(encoding="utf-8")
+
+
+def _record(run_dir, metric):
+    con = sqlite3.connect(run_dir / "run.sqlite")
+    try:
+        return [v for _, v in con.execute("SELECT week, value FROM series WHERE scope='town' AND metric=? "
+                                          "AND week >= 1 ORDER BY week", (metric,))]
+    finally:
+        con.close()
+
+
+def _first_quarter(values):
+    return sum(values[:13]) / len(values[:13])
+
+
+def test_an_rtr_run_has_a_section_of_its_own_charts(rtr_built):
+    _, html = rtr_built
+    charts = {c["title"]: c for c in embedded(html)["charts"]}
+    for title in RTR_CHARTS:
+        assert title in charts, title
+        assert charts[title]["section"] == "owning"
+    assert '<section id="ownsec"><h2>Owning, letting and side hustles</h2>' in html
+    assert {s["name"] for s in charts["Who holds the homes"]["series"]} == {
+        "Homes standing", "Lived in by their owner", "Let by a small landlord", "Taken back by the bank"}
+    assert {s["name"] for s in charts["What staff are paid and what a newcomer is offered"]["series"]} == {
+        "Staff paid, on average", "The rate for someone taken on now"}
+    assert {s["name"] for s in charts["Side hustles"]["series"]} == {
+        "People with a side hustle", "Their customers", "Grown into small businesses"}
+    assert {s["name"] for s in charts["Owning"]["series"]} == {"Appliance sets owned", "Small landlords"}
+
+
+def test_the_rtr_charts_are_the_record(rtr_built):
+    run_dir, html = rtr_built
+    charts = {c["title"]: c for c in embedded(html)["charts"]}
+    homes = {s["name"]: s["values"] for s in charts["Who holds the homes"]["series"]}
+    owned, let = _record(run_dir, "homes_owned"), _record(run_dir, "homes_let_private")
+    assert homes["Lived in by their owner"][0] == pytest.approx(
+        _first_quarter([o - l for o, l in zip(owned, let)]), abs=0.01)
+    assert homes["Let by a small landlord"][0] == pytest.approx(_first_quarter(let), abs=0.01)
+    assert homes["Homes standing"][0] == pytest.approx(_first_quarter(_record(run_dir, "homes")), abs=0.01)
+    for q in range(len(homes["Homes standing"])):           # lived in, let and taken back are all homes standing
+        assert (homes["Lived in by their owner"][q] + homes["Let by a small landlord"][q]
+                + homes["Taken back by the bank"][q]) <= homes["Homes standing"][q] + 0.01
+    assert max(homes["Lived in by their owner"]) > 0 and max(homes["Let by a small landlord"]) > 0
+    pay = {s["name"]: s["values"] for s in charts["What staff are paid and what a newcomer is offered"]["series"]}
+    # a line ends on the final week itself
+    assert pay["The rate for someone taken on now"][-1] == pytest.approx(_record(run_dir, "wage_offer")[-1] / 100, abs=0.01)
+    assert pay["Staff paid, on average"][-1] == pytest.approx(_record(run_dir, "wage")[-1] / 100, abs=0.01)
+    assert pay["Staff paid, on average"][0] == pytest.approx(_first_quarter(_record(run_dir, "wage")) / 100, abs=0.01)
+    hustles = {s["name"]: s["values"] for s in charts["Side hustles"]["series"]}
+    assert max(hustles["People with a side hustle"]) > 0 and max(hustles["Grown into small businesses"]) > 0
+    loans = charts["Loans against homes"]["series"][0]["values"]
+    assert loans[-1] == pytest.approx(_record(run_dir, "home_loans")[-1] / 100, abs=0.01)
+
+
+def test_an_rtr_run_has_two_tiles_of_its_own(rtr_built):
+    run_dir, html = rtr_built
+    assert "Homes lived in by their owner" in html
+    assert "People with a side hustle" in html
+    owned, let = _record(run_dir, "homes_owned")[-1], _record(run_dir, "homes_let_private")[-1]
+    assert f'<div class="tile-value">{int(owned - let):,}</div>' in html
+
+
+def test_a_wef_run_has_none_of_the_rtr_charts(built):
+    _, html = built
+    titles = {c["title"] for c in embedded(html)["charts"]}
+    assert not titles & set(RTR_CHARTS)
+    assert "ownsec" not in html and "Homes lived in by their owner" not in html
+
+
+def test_an_rtr_record_missing_a_measure_still_builds_and_leaves_that_chart_out(rtr_built, tmp_path):
+    import shutil
+    run_dir, _ = rtr_built
+    old = tmp_path / "old"
+    shutil.copytree(run_dir, old)
+    con = sqlite3.connect(old / "run.sqlite")
+    con.execute("DELETE FROM series WHERE metric IN ('wage_offer', 'makers')")
+    con.commit()
+    con.close()
+    html = build_dashboard(old).read_text(encoding="utf-8")
+    titles = {c["title"] for c in embedded(html)["charts"]}
+    assert "What staff are paid and what a newcomer is offered" not in titles
+    assert "Side hustles" not in titles
+    assert "Who holds the homes" in titles

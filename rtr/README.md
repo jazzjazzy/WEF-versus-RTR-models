@@ -9,10 +9,10 @@ The opposite world to WEF, designed with Jason on 16 November 2026
 people may rent or buy, build and repair their own, everything created is open,
 new things come from people, and a side hustle can grow into a business.
 
-> **Untuned, and only part built.** Stage 1 (owning) and stage 2 (side hustles,
-> ideas, small businesses) are built. Stage 3 (the pages, and the two worlds side
-> by side) is not. The starting values have not been tested. Nothing here is a
-> finding yet.
+> **Untuned.** All three stages are built: owning (stage 1), side hustles, ideas
+> and small businesses (stage 2), and the pages and the two worlds side by side
+> (stage 3, 20 November). The starting values have not been tested. Nothing here
+> is a finding yet.
 
 ## Run it
 
@@ -879,3 +879,57 @@ have) are in the ledger.
 The reviewer also found that an executive put back on the staff was being
 treated as the firm's newest hand, so the true longest-serving was often
 passed over. Fixed: they go back in their place by when they joined.
+
+## Stage 3: the two worlds side by side, 20 November 2026
+
+The last stage of the design: the RTR world's own measures on the pages, then
+both worlds on the same hundred seeds. The ledger is
+[docs/build-ledger-rtr-stage3-2026-11-20.md](../docs/build-ledger-rtr-stage3-2026-11-20.md).
+No rule of either world changed.
+
+**On the pages.** An RTR town's dashboard has a section "Owning, letting and
+side hustles": who holds the homes, what staff are paid beside the rate for
+someone taken on now, side hustles and the small businesses grown from them,
+appliance sets owned and small landlords, and loans against homes. A batch
+page draws the same across its towns. On the town view a line under someone
+means they live in a home they own, and a tick above means they have a side
+hustle. The WEF world's pages are exactly as they were.
+
+**Side by side:** `python3 -m engine compare <WEF batch> <RTR batch>` writes
+`compare.html`. Run from the top folder after:
+
+```bash
+cd wef && python3 batch.py stage3-wef --seeds 1-100 && cd ..
+cd rtr && python3 batch.py stage3-rtr --seeds 1-100 && cd ..
+python3 -m engine compare wef/batches/stage3-wef rtr/batches/stage3-rtr
+```
+
+**What a hundred towns of each world did**, each as it ships, sixty years:
+
+| | WEF world | RTR world |
+|---|---|---|
+| reached the failure line | 100 of 100 | 7 of 100 |
+| when | years 14.5 to 22.2; half by year 17.75 | years 52 to 59.6 |
+| seed by seed, lasted longer | 0 | 100 |
+
+The WEF towns, when they failed, had 30% of people with no job in the middle
+town (15% to 49%). The 93 RTR towns that stood had, at year 60, 0% with no job
+in the middle town (30% at most), staff paid $725 a week (from $1,000 at the
+start) and newcomers offered $583, and 74% unhappy (32% to 88%). They were
+getting worse when the run stopped: the middle town was 11% unhappy at year
+20, 60% at year 45 and 74% at year 60, and 27 of the 93 were at 80% or more.
+Under the line at sixty years is not a working town. Six towns of the two,
+run again under the weekly checks, were clean in every week. A fresh reviewer
+recounted the comparison from the towns' own records and found no wrong count.
+
+**One measure misleads in the RTR world: the basket.** It is the cheapest
+asking price of each of the four needs. At year 60, landlord firms had no
+tenants at all in 92 of the 93 RTR towns standing, and kept raising the rent
+they asked; the middle town's basket was 71% that asking rent and 14% the
+asking price of appliance sets, which few rent either. So "Basket against the
+staff wage" in the RTR world, a middle 11,200% at year 60, is asking prices
+nobody is paying. The pages say so. Whether the RTR world should measure what
+people do pay is Jason's to decide.
+
+Nothing here is traced: not why the WEF towns fall between years 14 and 22,
+nor what pulls the RTR towns down slowly.

@@ -1020,6 +1020,22 @@ PAGE_JS = r"""
 })();
 """
 
+# The RTR world's marks (stage 3, 20/11/2026): who lives in a home they own, and who has a side hustle.
+# Put into the page only for an RTR town, so that a WEF town's page is the page it was, byte for byte.
+# Each mark is a short line in the text colour, at a width no other stroke on the map has.
+RTR_MARKS = (
+    ('fun: at(p.e, week), day: 0 };',
+     'fun: at(p.e, week), day: 0, owns: at(p.ow, week) === 1, hustle: at(p.hu, week) === 1 };'),
+    ('q.home >= 0 ? (spotNow[q.home].u >= 0 ? "Rents from "',
+     'q.home >= 0 ? (q.owns ? "Lives in a home they own" : spotNow[q.home].u >= 0 ? "Rents from "'),
+    ('      MOOD[q.mood],\n      q.rides ? "Pays for a ride" : "Walks"',
+     '      MOOD[q.mood],\n      q.hustle ? "Runs a side hustle" : "",\n      q.rides ? "Pays for a ride" : "Walks"'),
+    ('      } else {\n        ctx.stroke();\n      }\n    }\n  }\n  function fit(text, most) {',
+     '      } else {\n        ctx.stroke();\n      }\n      if (q.owns || q.hustle) {                    // the RTR world: a line under an owner, a tick for a hustle\n        ctx.strokeStyle = col.text;\n        if (q.owns) {\n          ctx.lineWidth = 1.5; ctx.beginPath();\n          ctx.moveTo(q.x - r, q.y + r * 1.7); ctx.lineTo(q.x + r, q.y + r * 1.7); ctx.stroke();\n        }\n        if (q.hustle) {\n          ctx.lineWidth = 1.1; ctx.beginPath();\n          ctx.moveTo(q.x + r * 1.1, q.y - r * 1.1); ctx.lineTo(q.x + r * 1.9, q.y - r * 1.9); ctx.stroke();\n        }\n        ctx.lineWidth = 0.75; ctx.strokeStyle = col.surface;\n      }\n    }\n  }\n  function fit(text, most) {'),
+    ('times as fast as walking.");',
+     'times as fast as walking.");\n    el("li", "note", ul, "A line under someone: they live in a home they own.");\n    el("li", "note", ul, "A tick above someone: they have a side hustle.");'),
+)
+
 TEMPLATE = r"""<!doctype html>
 <html lang="en">
 <head>

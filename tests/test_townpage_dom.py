@@ -713,3 +713,50 @@ def test_the_key_shows_the_shapes_in_both_colourings(page):
     for found in (got["mood"], got["klass"]):
         assert [c.split()[-1] for c in found] == ["owner", "working", "out"]
     assert "A dark outline is someone riding" in got["text"]
+
+
+# --- stage 3 of the RTR world: owners and side hustles, drawn and said (20 November 2026) ---------
+
+@pytest.fixture(scope="module")
+def rtr_page(tmp_path_factory):
+    cfg = load_config(None, ["world=rtr", "population_cap=60", "years=4", "seed=3"])
+    run_dir = run(cfg, out_root=tmp_path_factory.mktemp("rtrruns"), quiet=True)
+    return Page(run_dir, tmp_path_factory.mktemp("rtrnode"))
+
+
+def _owners_and_hustlers(rtr_page, week):
+    owners = {a for a, in rtr_page.rows("SELECT agent FROM agent_snap WHERE week = ? AND home_firm IS NULL "
+                                        "AND home_unit IS NOT NULL", week)}
+    hustling = set()
+    for kind, agent in rtr_page.rows("SELECT kind, agent FROM events WHERE kind IN ('hustle_started', "
+                                     "'hustle_stopped', 'maker_company') AND week <= ? ORDER BY id", week):
+        (hustling.add if kind == "hustle_started" else hustling.discard)(agent)
+    return owners, hustling
+
+
+def test_an_rtr_card_says_who_lives_in_a_home_they_own_and_who_has_a_side_hustle(rtr_page):
+    week = 180
+    got = rtr_page.js(f"T.speed(2); T.go({week}); {EVERY_DOT}")
+    owners, hustling = _owners_and_hustlers(rtr_page, week)
+    assert owners and hustling
+    said_own = {int(lines[0].split()[1]) for lines in got if "Lives in a home they own" in lines}
+    said_hustle = {int(lines[0].split()[1]) for lines in got if "Runs a side hustle" in lines}
+    assert said_own == owners
+    assert said_hustle == hustling
+    assert not any("Has a home" in lines and "Lives in a home they own" in lines for lines in got)
+
+
+def test_an_rtr_map_marks_owners_and_side_hustles_with_a_shape_and_says_so_in_the_key(rtr_page):
+    week = 180
+    got = rtr_page.js(f"""T.speed(2); T.go({week});
+        // the marks are drawn in the text colour, each at a width of its own (1.5 and 1.1) that no
+        // other stroke on the map has
+        var marks = T.frame.strokes.filter(function (s) {{ return s.shape === "line" && s.stroke === "--text-primary"; }});
+        ({{ own: marks.filter(function (s) {{ return s.width === 1.5; }}).length,
+            hustle: marks.filter(function (s) {{ return s.width === 1.1; }}).length,
+            key: T.text("legend") }})""")
+    owners, hustling = _owners_and_hustlers(rtr_page, week)
+    assert got["own"] == 2 * len(owners)            # each mark is one stroke from one point to another
+    assert got["hustle"] == 2 * len(hustling)
+    assert "A line under someone: they live in a home they own." in got["key"]
+    assert "A tick above someone: they have a side hustle." in got["key"]
