@@ -130,9 +130,49 @@ As it stands the rule leaves small towns about where they were before it. The re
 - The whole-town test's seeds picked again from those sixty: 16 and 30 on the map, 2 and 29 with no map. Between them they reach every rule asked of them (with no map, all but a block made into plots), and none has more than half its people out of work for more than 73 of its 728 weeks.
 - Broken on purpose in a scratch copy: **228 breaks, all caught** (196 from before this rule; 20 for the letting go, 8 for who goes first, 4 for the place of someone put back on the staff). One slipped through on the last pass and got an assertion: a firm in debt noting something to cover in a quarter it made money.
 
+## Full towns on the rule as it stands (19 and 20 November)
+
+Committed on Jason's word ("Yes, publish it") as `7d7788f`, merged into `develop` as `644c166`. Run from that commit on his second machine, which has 32 processors; his word on the load there: "Can you do more than one processor? You've got 32 and 128 gigs of RAM". The tests pass there too: 1,156 in 3 minutes 8 seconds, on Python 3.13.
+
+**Forty full towns** (seeds 1 to 40, the world as it ships, no cap on people, sixty years, thirty at a time, no weekly checks; `python3 batch.py debt1911 --seeds 1-40 --jobs 30 --quiet`): none crashed. 4 reached the 90% line, all late: seed 23 in year 52.0, seeds 24 and 5 in year 59.3, seed 27 in year 59.6. 36 never did. Those 36 at year 60:
+
+| | lowest | middle town | highest |
+|---|---|---|---|
+| staff paid a week, on average (`wage`) | $390 | $715 | $928 |
+| the rate offered to someone new (`wage_offer`) | $111 | $552 | $907 |
+| share with no job | 0% | 0% | 23% |
+| share unhappy | 32% | 75% | 88% |
+
+Beside the runs before:
+
+| | reached the 90% line | ended on a working wage |
+|---|---|---|
+| the home loan ruling (18 November, evening), forty towns | 28 of 40 | none |
+| the morning's rulings, stopped at twenty-seven towns | 1 of 27 | 26 of 27 |
+| the morning's rulings and this rule, forty towns | 4 of 40 | 36 of 40 |
+
+Towns followed since 18 November, at year 60: town 4, $30 a week the evening of 18 November, now $553 paid, 0% with no job, 68% unhappy; town 9, $50, now $672, 13%, 77%; town 15, $24, now $773, 0%, 75%; town 31, failed in year 53, now $928, 0%, 87%.
+
+Town 9 was run again in full to look at on the town view. Its first jump in people with no job, 0% to 19% in year 4, was traced in its record: the map's last empty spot went in week 200; with nothing left to build, the landlord firms went from 277 staff in week 196 to 118 in week 220 (137 builders let go in weeks 204 to 222); jobs open fell from over 300 to none by week 204; no newcomer came after week 203; 1,074 missed payments, 331 missed home loan payments and 79 homes taken back followed in those eighteen weeks. The rule of this ledger let nobody go in those weeks. It is the end of the building boom, not this rule.
+
+**Three full towns under the weekly checks** (seeds 1, 2 and 3, sixty years, the same settings): every check clean, all 3,120 weeks, in all three. Each is the same town as in the forty: the same people, pay, share with no job and outcome. None reached the line. At year 60:
+
+| | seed 1 | seed 2 | seed 3 |
+|---|---|---|---|
+| people | 919 | 924 | 900 |
+| staff paid, on average | $755 | $685 | $787 |
+| the rate offered to someone new | $500 | $438 | $594 |
+| with no job | 7% | 21% | 0% |
+| unhappy | 85% | 86% | 70% |
+| the morning's rulings, before this rule | $622; 0%; 66% | $740; 0%; 62% | $720; 0%; 72% |
+
+Three towns are too few to lay the change on this rule. Nothing here is traced, nothing is tuned, and "never reached the line" is not "works": in the middle town of the forty, three in four are unhappy at year 60, and the gap between what staff are paid and what a newcomer is offered is wide (town 9: $672 against $242).
+
+- Ruling: the weekly checks of a full town skip only "population above the cap" when the cap is 0 ; 0 means no cap, Jason's rule of 16 November, and that check (`tests/test_town_invariants.py::check_week`) assumes a cap: on the first try it called every week a fault and the script stopped at week 51 ; if wrong, a town over a cap would pass, but these towns have none. Every other check was made. The suite's own check never meets a town with no cap, since every test town has one. Teaching it that 0 means no cap is a change to a test, left for Jason's word.
+
 ## Still to do
 
-Nothing is committed. Waiting on Jason: the commit. Then, on his other machine and on his word: three full towns under the weekly checks, and the forty full towns, on this rule. Not run on the desktop: four processes held it at 85 to 91°C.
+For Jason, when he chooses: whether the longest-serving should go first for want of work and at small businesses too, or only at a firm in debt; whether "in debt" should be owing the bank anything, as built, or owing more than the firm has in cash; the count above that the second build, the revolving door, left fewer people out of work in towns with no map than his rule as it stands; and the weekly check that assumes a cap.
 
 For Jason, when he chooses: whether the longest-serving should go first for want of work and at small businesses too, or only at a firm in debt; whether "in debt" should be owing the bank anything, as built, or owing more than the firm has in cash; and the count above that the second build, the revolving door, left fewer people out of work in towns with no map than his rule as it stands.
 
