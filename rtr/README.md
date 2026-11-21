@@ -1078,3 +1078,46 @@ Seen, not traced: with the floor, those running a small business are more
 often unhappy (14% against 4% at year 60 in the 27 towns), and those on a side
 hustle (52% against 26%).
 
+
+## A job beside a business of their own, 22 November 2026
+
+Traced in 27 towns at year 60: with the floor, someone out of work running a
+small business of their own would not take a job that paid less than their
+basics, though taking a job does not close the business. Of the 241 unhappy
+business owners, 74% would take nothing below a figure above the going wage,
+and the middle one had been out of work for 454 weeks.
+
+Put to Jason as Mia (basics $900 a week, a business bringing in $620, a job at
+$790, and the business perhaps $200 on the hours left beside the job): take the
+job when its pay and what the business would still bring in cover her basics.
+His words: "Yes, that makes a lot more logical sense." (J)
+
+**What was built.** The least someone out of work will take is now their basics
+less what a business of their own would still bring in beside a job (dial
+`floor_counts_kept_business`). What it would still bring in is the builder's
+reckoning (C): its takings less goods over the last quarter, in proportion to the
+hours it would have beside a job (the owner's week less the job, the road and the
+upkeep of their own things, and its staff's hours) against the hours it used,
+less what its staff are paid. A fresh review found two faults in the first
+version (staff wages scaled down with the hours; last week's hours used for
+someone just let go); both were fixed before the towns were run.
+
+The hundred RTR towns (`rtr/batches/floorbiz-rtr` against
+`rtr/batches/ownwork-rtr`), the middle town:
+
+| | Year 60 before | after |
+|---|---|---|
+| unhappy | 19.9% | 18.6% |
+| no employer | 8.1% | 6.2% |
+| running a small business | 7.1% | 5.5% |
+| rate offered someone new | $810 | $758 |
+
+All 100 towns survived, as before. The rate offered someone new fell a little:
+more people now stand in the line for a job.
+
+**Not fixed by it.** In the 27 towns the share of business owners out of work
+who are unhappy did not fall (14% before, 16% after). Most of those left have
+basics measured far above the going wage (in the middle $2,297 a week, against
+$709 for a happy business owner). The prices behind that look wrong: for
+someone going without appliances, the lowest price on record was $5,214 to
+$33,568 a week in 22 of the 27 towns. Not traced yet.

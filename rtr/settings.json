@@ -214,6 +214,7 @@
   "owners_judge_by_what_they_pay": true,
   "going_without_at_lowest_price": true,
   "reservation_covers_basket": true,
+  "floor_counts_kept_business": true,
   "jobless_leaves_out_own_work": true,
   "unhappy_makers_apply": true,
   "maker_margin": 0.1,
