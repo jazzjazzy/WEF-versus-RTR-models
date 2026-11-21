@@ -236,6 +236,22 @@ def remember_loans(town) -> None:
         hustle.loan_top = max(hustle.loan_top, hustle.loan) if hustle.loan > 0 else 0
 
 
+def kept_with_a_job(town, hustle) -> int:
+    """What a side hustle or small business would still bring in a week if its owner took a job (C,
+    22/11/2026). Its takings less goods over the last quarter follow the hours it would have, never more
+    than it used then: the owner's own beside a job (their week less the job, the road and the upkeep of
+    their own things) and its staff's. Its staff's wages do not shrink with the hours. The road to the
+    job itself is left out."""
+    cfg = town.cfg
+    if hustle.gross_week <= 0:
+        return 0
+    owner = hustle.owner
+    own = max(0.0, cfg.free_hours - owner.travel_hours - cfg.job_hours - upkeep_hours(town, owner))
+    with_job = own + cfg.job_hours * len(hustle.staff)
+    share = 1.0 if hustle.used_week <= 0 else min(1.0, with_job / hustle.used_week)
+    return max(0, int(hustle.gross_week * share) - wages_due(cfg, hustle))
+
+
 def least_wage(town, agent, reservation: int) -> int:
     """The least a job must pay for someone out of work to take it. For anyone, their
     reservation. Someone with a side hustle takes a job only if it pays more than the side
@@ -424,6 +440,9 @@ def quarter(town) -> None:
     cfg = town.cfg
     for hustle in list(town.hustles):
         hustle.profit_week = max(0, (hustle.q_revenue - hustle.q_goods - hustle.q_wages) // cfg.quarter_weeks)
+        hustle.gross_week = max(0, (hustle.q_revenue - hustle.q_goods) // cfg.quarter_weeks)
+        sold_hours = hustle.q_sold if hustle.spec is None else hustle.q_sold * hours_per_customer(cfg, hustle.spec)
+        hustle.used_week = sold_hours / cfg.quarter_weeks
         whole = town.week - hustle.started >= cfg.quarter_weeks
         if whole and hustle.q_could <= 0:
             stop(town, hustle, "no hours")

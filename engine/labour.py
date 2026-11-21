@@ -91,7 +91,8 @@ def reservation_wage(cfg, agent, town=None, cheapest=None) -> int:
     """The least someone out of work would take with nothing else to live on: what they last
     earned, less for feeling insecure, less for every week out of work. In the RTR world, given
     the town, never less than what their own basics cost them a week, the home loan payment left
-    out (C, 21/11/2026); but someone who owes a large loan "take[s] the first job offered"
+    out (C, 21/11/2026), less what a business of their own would still bring in beside a job (Jason,
+    22/11/2026); but someone who owes a large loan "take[s] the first job offered"
     (Jason, 19/11/2026), so for them there is no floor."""
     least = int(agent.last_wage * agent.security
                 * max(0.0, 1.0 - cfg.reservation_decay * agent.weeks_out))
@@ -99,7 +100,11 @@ def reservation_wage(cfg, agent, town=None, cheapest=None) -> int:
         from .household import basket_cost
         from .rtr_makers import owes_a_large_loan
         if not owes_a_large_loan(agent, cfg.home_loan_presses):
-            least = max(least, basket_cost(town, agent, cheapest, loan=False))
+            floor = basket_cost(town, agent, cheapest, loan=False)
+            if cfg.floor_counts_kept_business and agent.hustle is not None:
+                from .rtr_makers import kept_with_a_job       # (J, 22/11/2026): the business goes on beside the job
+                floor = max(0, floor - kept_with_a_job(town, agent.hustle))
+            least = max(least, floor)
     return least
 
 
