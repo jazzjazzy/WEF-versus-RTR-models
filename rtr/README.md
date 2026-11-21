@@ -1030,3 +1030,51 @@ going unfilled at 22 of 24 counts: the jobs did not grow with the town (seed 91,
 pay falling; it does not make work. Why those towns have fewer jobs than under
 the old rule is not traced.
 
+*Corrected the same day, by the trace below:* they did not have fewer jobs. The
+jobless rate counted everyone with no employer, and most of the rise was people
+running a small business of their own.
+
+## Who counts as jobless, 21 November 2026
+
+The ledger is
+[docs/build-ledger-rtr-jobless-own-work-2026-11-21.md](../docs/build-ledger-rtr-jobless-own-work-2026-11-21.md).
+
+Jason asked why those towns had fewer jobs, and to fix it. Counted in 27 towns
+with the floor and without it, at year 60, as a share of the town:
+
+| | With the floor | Without |
+|---|---|---|
+| counted with no job (no employer) | 8.2% | 4.3% |
+| of whom no work at all | 0.4% | 0.2% |
+| of whom running a small business | 6.8% | 3.5% |
+| of whom running a side hustle | 0.9% | 0.4% |
+| working for a firm | 57.3% | 56.5% |
+| working for a small business | 34.5% | 39.2% |
+
+Nobody lost work. The jobless rate counted everyone who works for nobody else,
+so someone running a business of their own was counted as having no job. With
+the floor, more people run a business than work for one.
+
+**The fix (the builder's call, C): a measure only.** In the RTR world the
+jobless rate now counts those with no job and no small business or side hustle
+of their own. The old figure is kept beside it as "No employer", with "Running a
+small business" (both charts on the batch page) and the share on a side hustle.
+Nothing a firm or a person does reads it, and the towns did the same: the
+hundred towns run again made the same events as before, town for town. The WEF
+world is not changed: nobody there works for themselves.
+
+The hundred RTR towns (`rtr/batches/ownwork-rtr`), the middle town:
+
+| | Year 20 | Year 40 | Year 60 |
+|---|---|---|---|
+| jobless (no work at all) | 0.1% | 0.1% | 0.1% |
+| no employer (the old figure) | 6.2% | 8.8% | 8.1% |
+| running a small business | 4.1% | 6.9% | 7.0% |
+| on a side hustle | 1.9% | 1.0% | 0.6% |
+
+At year 60 the highest is 9.9% (seed 55); 3 towns are over 5%.
+
+Seen, not traced: with the floor, those running a small business are more
+often unhappy (14% against 4% at year 60 in the 27 towns), and those on a side
+hustle (52% against 26%).
+

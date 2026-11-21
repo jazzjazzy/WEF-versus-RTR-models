@@ -466,6 +466,11 @@ RTR_CHARTS = (
     ("town/makers", "People with a side hustle", "count", "ink",
      "People selling their own work or making things on the side."),
     ("town/small_businesses", "Small businesses", "count", "ink", "Side hustles grown into businesses with staff."),
+    ("town/no_employer_rate", "No employer", "pct", "ink",
+     "The share of people who work for nobody else. In the RTR world the jobless rate leaves out those running a "
+     "small business or side hustle of their own; this counts them in, as the jobless rate did before 21 November 2026."),
+    ("town/own_business_rate", "Running a small business", "pct", "ink",
+     "The share of people whose work is a small business of their own, with no job besides."),
 )
 
 
