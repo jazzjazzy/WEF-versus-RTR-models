@@ -595,14 +595,15 @@ def run_as_shipped(seeds, place, years=14):
     return problems, seen
 
 
-SHIPPED = (("map", (1, 22), ["map_width=7", "map_height=7"]), ("no map", (1, 27), ["map_width=0"]))
+SHIPPED = (("map", (1, 23), ["map_width=7", "map_height=7"]), ("no map", (1, 27), ["map_width=0"]))
 
 
 @pytest.fixture(scope="module")
 def towns_of_today():
     """Towns of 200 run for fourteen years under the weekly checks exactly as the RTR world ships:
-    seeds 1 and 22 on a 7 by 7 map, seeds 1 and 27 with no map (picked on 21 November, after the rulings
-    that an owner is judged on what they actually pay and going without at the lowest price asked, from thirty of each, all sixty clean under the
+    seeds 1 and 23 on a 7 by 7 map, seeds 1 and 27 with no map (picked on 21 November, after the rulings
+    that an owner is judged on what they actually pay and going without at the lowest price asked, and
+    the floor under what someone out of work will take, from thirty of each, all sixty clean under the
     checks, for reaching the rules of the stages before as well and for not being towns that stop; the
     seeds of 18 and 19 November, 16 and 30 and 2 and 29 on the 19th, were picked the same way). For each kind: (what the checks found, what
     was reached)."""
@@ -1355,7 +1356,8 @@ def test_it_cuts_when_more_than_a_twentieth_of_the_town_would_take_the_lower_wag
 def test_a_firm_with_a_job_going_does_not_cut_its_rate_however_long_the_line(world):
     from conftest import empty_town
     from engine.corporate import review_firm
-    town = empty_town(f"world={world}", "hustle_rate=0.0", "hustle_rate_struggling=0.0", "idea_rate=0.0")
+    town = empty_town(f"world={world}", "hustle_rate=0.0", "hustle_rate_struggling=0.0", "idea_rate=0.0",
+                      "reservation_covers_basket=false")                       # $784 is under an empty town's basket
     firm = shop_short_of_profit(town, pays=80_000)
     for _ in range(6):
         a = town.add_agent()

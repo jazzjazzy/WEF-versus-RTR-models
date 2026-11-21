@@ -983,5 +983,50 @@ Under both rules the middle town is still getting worse: 5% unhappy at year 20,
 14% at year 40, 24% at year 60. At year 60, 49% of those out of work are
 unhappy, 24% of those with a job and 4% of those who live on their shares. The
 unhappiest towns are poor ones: in seed 15, 51% unhappy and staff paid $230 a
-week; in seed 49, 61% and $462. Not traced.
+week; in seed 49, 61% and $462. Traced below.
+
+## The least someone out of work will take, 21 November 2026
+
+The ledger is
+[docs/build-ledger-rtr-reservation-floor-2026-11-21.md](../docs/build-ledger-rtr-reservation-floor-2026-11-21.md).
+
+Jason asked why pay fell so low in those towns, and to fix it. The trace of
+seeds 15 and 49: the least someone out of work would take fell 5% a week of
+their spell, with nothing under it, so after twenty weeks it was nothing. Nearly
+everyone out of work would take any pay (215 of 222 in seed 15 at year 30). So
+the line for a job stayed over 5% of the town, and under Jason's rule of cutting
+when there is a queue each firm short of profit cut its rate 2% a quarter, for
+decades: in seed 15 from about $950 a week to about $110. The 5% a week, the 2%
+and the 5% of the town are the builder's numbers (C), not his.
+
+**The rule (C).** Someone out of work will not take a job that pays less than
+their own basics cost them a week (their basket, as he ruled on 20 and 21
+November), leaving out a payment on a home loan. Someone who owes a large loan
+has no floor, as he ruled: they take the first job offered. A dial,
+`reservation_covers_basket`, in the RTR world only. The WEF world is not
+changed.
+
+**A hundred RTR towns**, the same seeds, the middle town at year 60:
+
+| | Before | With the floor |
+|---|---|---|
+| reached the failure line | 0 of 100 | 0 of 100 |
+| unhappy | 24% | 20% |
+| towns over 30% unhappy | 27 | 13 |
+| with no job | 3.4% | 8.1% |
+| towns over 15% with no job | 2 | 16 |
+| the rate a firm offers someone new | $698 | $810 |
+| the lowest such rate in any town | $110 | $598 |
+| staff paid | $827 | $858 |
+| towns with staff paid under $500 | 3 | 0 |
+
+Seed 15: 51% unhappy and staff paid $230 before, 25% and $720 after. Seed 49:
+61% and $462 before, 22% and $842 after.
+
+The cost is more people out of work, and nearly all of them are unhappy. In the
+two worst towns (seeds 91 and 89, 33% and 28% with no job) there was no job
+going unfilled at 22 of 24 counts: the jobs did not grow with the town (seed 91,
+633 jobs for 783 people at year 5, 582 for 900 at year 60). The floor stops the
+pay falling; it does not make work. Why those towns have fewer jobs than under
+the old rule is not traced.
 

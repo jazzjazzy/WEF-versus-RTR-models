@@ -213,6 +213,7 @@
   "longest_serving_first": true,
   "owners_judge_by_what_they_pay": true,
   "going_without_at_lowest_price": true,
+  "reservation_covers_basket": true,
   "unhappy_makers_apply": true,
   "maker_margin": 0.1,
   "hustle_min_hours": 10.0,

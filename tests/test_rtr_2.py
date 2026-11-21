@@ -6,7 +6,10 @@ from test_rtr import map_rtr_town, rtr_town  # noqa: F401
 
 from engine.config import load_config
 
-NOBODY_STARTS = ("hustle_rate=0.0", "hustle_rate_struggling=0.0", "idea_rate=0.0")
+# A hand-built town tests one rule at a time. Its jobs pay what each test sets, which is often less than an empty
+# town's basket ($880), so the floor of 21 November under what someone out of work will take is off here; its own
+# tests (test_rtr_reservation_floor.py) turn it on.
+NOBODY_STARTS = ("hustle_rate=0.0", "hustle_rate_struggling=0.0", "idea_rate=0.0", "reservation_covers_basket=false")
 
 
 def quiet_town(*overrides):

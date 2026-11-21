@@ -87,11 +87,20 @@ def demote(town, firm, agent) -> None:
     town.event("demotion", agent=agent, firm=firm, amount=agent.wage)
 
 
-def reservation_wage(cfg, agent) -> int:
+def reservation_wage(cfg, agent, town=None, cheapest=None) -> int:
     """The least someone out of work would take with nothing else to live on: what they last
-    earned, less for feeling insecure, less for every week out of work."""
-    return int(agent.last_wage * agent.security
-               * max(0.0, 1.0 - cfg.reservation_decay * agent.weeks_out))
+    earned, less for feeling insecure, less for every week out of work. In the RTR world, given
+    the town, never less than what their own basics cost them a week, the home loan payment left
+    out (C, 21/11/2026); but someone who owes a large loan "take[s] the first job offered"
+    (Jason, 19/11/2026), so for them there is no floor."""
+    least = int(agent.last_wage * agent.security
+                * max(0.0, 1.0 - cfg.reservation_decay * agent.weeks_out))
+    if town is not None and cfg.rtr and cfg.reservation_covers_basket:
+        from .household import basket_cost
+        from .rtr_makers import owes_a_large_loan
+        if not owes_a_large_loan(agent, cfg.home_loan_presses):
+            least = max(least, basket_cost(town, agent, cheapest, loan=False))
+    return least
 
 
 def in_the_line(town, wage: int) -> int:
@@ -100,10 +109,11 @@ def in_the_line(town, wage: int) -> int:
     side hustle brings in as much, "unless they're unhappy"."""
     cfg = town.cfg
     line = 0
+    cheapest = cheapest_prices(town) if cfg.rtr else None
     for agent in town.agents:
         if agent.role is not None or agent.klass == "owner":
             continue
-        least = reservation_wage(cfg, agent)
+        least = reservation_wage(cfg, agent, town, cheapest)
         if cfg.rtr and agent.hustle is not None:
             from .rtr_makers import least_wage
             least = least_wage(town, agent, least)
@@ -120,7 +130,7 @@ from .firmops import set_wage, sync_pay
 from .places import (dist, find_home, home_cost, home_spot, note_stranded, reach, rides,
                      time_cost, transport_fare, travel_hours, unit_rent)
 from .production import upkeep_need
-from .subscriptions import (ensure_transport, home_available, move_home, note_turned_away,
+from .subscriptions import (cheapest_prices, ensure_transport, home_available, move_home, note_turned_away,
                             settle_arrival)
 
 
@@ -314,8 +324,9 @@ def labour_market(town) -> None:
     # 2. residents out of work apply, best-paid vacancy first. Those living on dividends do not.
     seekers = [a for a in town.agents if a.role is None and a.klass != "owner"]
     rng.shuffle(seekers)
+    prices = cheapest_prices(town) if cfg.rtr and seekers else None
     for agent in seekers:
-        least = reservation = reservation_wage(cfg, agent)
+        least = reservation = reservation_wage(cfg, agent, town, prices)
         if cfg.rtr and agent.hustle is not None:     # RTR (Jason, 18/11/2026): a side hustle is weighed against the job
             from .rtr_makers import least_wage
             least = least_wage(town, agent, reservation)
