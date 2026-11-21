@@ -145,3 +145,10 @@ customers bring, so it is a question of what people buy, not of pay.
 Full tests on the tree committed: 1,216 of 1,217 passed. The one failure was
 `test_batch.py::test_ctrl_c_at_the_keyboard_stops_a_batch_running_several_towns`, which depends on timing (one
 town running instead of two when Ctrl-C landed) and fails on `develop` too; run again alone, it passed.
+
+## Corrected the same day
+
+"The jobs did not grow with the town" and "why these towns have fewer jobs ... not traced", above, were wrong.
+The trace in `docs/build-ledger-rtr-jobless-own-work-2026-11-21.md` found nobody had lost work: the jobless rate
+counted everyone with no employer, and most of the rise was people running a small business of their own. The
+probe above counted only staff of firms and small businesses as jobs.
