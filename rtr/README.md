@@ -1121,3 +1121,26 @@ basics measured far above the going wage (in the middle $2,297 a week, against
 $709 for a happy business owner). The prices behind that look wrong: for
 someone going without appliances, the lowest price on record was $5,214 to
 $33,568 a week in 22 of the 27 towns. Not traced yet.
+
+## Going without appliances, 22 November 2026
+
+The firm that rents out appliances loses nearly all its customers within ten
+years, as people own their own sets, and by his rule its price only rises: 3%
+every quarter it misses its profit target. In seed 1 its rent went from $76 a
+week at year 5 to $9,417 at year 60, with no customer, while owning a set cost
+about $20 to $24 a week. The few with no set (3 to 10 a town) were counted as if
+their basics included that rent.
+
+Put to Jason: should someone without a fridge count it at what owning one
+costs, about $23 a week, when renting costs more? "yes, go ahead with the fix"
+(J). Dial `going_without_appliances_at_owning`. Homes are not changed (the
+builder's call, C): owning a home takes a deposit and a loan.
+
+The hundred RTR towns (`rtr/batches/appliances-rtr`): all 100 survived. In the
+middle town at year 60, 20.8% unhappy against 18.6%, with 53 towns a little more
+unhappy and 42 a little less: about even, read as the towns going different ways
+rather than as the rule's effect.
+
+Found by the review, not fixed: a newcomer buying a home holds back four weeks
+of basics at the rents on offer, appliances at the firm's rent (about $37,700 at
+$9,417 a week). It may stop newcomers buying homes in old towns. Not traced.

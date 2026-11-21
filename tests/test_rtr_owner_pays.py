@@ -187,7 +187,7 @@ def test_going_without_counts_at_the_neighbours_price_when_it_is_the_lowest_even
     town, sam, firm, hustle = _going_without_entertainment()
     cheapest = cheapest_prices(town)
     assert cheapest["entertainment"] == 590_500                # what is on offer to buy this week: unchanged
-    others = sum(cheapest[n] for n, s in town.needs.items() if not s.invented and n != "entertainment")
+    others = sum(cheapest.lowest[n] for n, s in town.needs.items() if not s.invented and n != "entertainment")
     assert basket_cost(town, sam, cheapest) == others + 20_500
     assert basket_cost(town, sam) == others + 20_500
 
@@ -196,7 +196,7 @@ def test_going_without_counts_at_the_firms_price_when_that_is_the_lowest():
     town, sam, firm, hustle = _going_without_entertainment()
     hustle.price = 700_000
     cheapest = cheapest_prices(town)
-    others = sum(cheapest[n] for n, s in town.needs.items() if not s.invented and n != "entertainment")
+    others = sum(cheapest.lowest[n] for n, s in town.needs.items() if not s.invented and n != "entertainment")
     assert basket_cost(town, sam, cheapest) == others + 590_500
 
 
@@ -218,7 +218,7 @@ def test_someone_with_no_home_counts_the_lowest_rent_a_firm_or_a_neighbour_asks(
     a.lets.units.append(let)
     homeless = town.add_agent(cash=0)
     cheapest = cheapest_prices(town)
-    others = sum(cheapest[n] for n, s in town.needs.items() if not s.invented and n != "housing")
+    others = sum(cheapest.lowest[n] for n, s in town.needs.items() if not s.invented and n != "housing")
     assert basket_cost(town, homeless, cheapest) == others + 30_000
 
 
