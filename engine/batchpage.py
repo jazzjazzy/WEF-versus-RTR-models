@@ -458,6 +458,9 @@ RTR_CHARTS = (
      "Homes a person owns and lets to someone else."),
     ("town/homes_foreclosed", "Homes taken back by the bank", "count", "ink",
      "Homes the bank has taken back and not yet sold."),
+    ("town/basket_asking", "Asking basket", "money", "ink",
+     "The cheapest price on offer for each of the four needs, as firms ask it. In the RTR world a firm with no "
+     "tenants or customers can go on raising what it asks; the weekly basket is what people pay."),
     ("town/sets_owned", "Appliance sets owned", "count", "ink", "Appliance sets people own rather than rent."),
     ("town/home_loans", "Loans against homes", "money", "ink", "What people owe the bank on homes they bought or built."),
     ("town/makers", "People with a side hustle", "count", "ink",

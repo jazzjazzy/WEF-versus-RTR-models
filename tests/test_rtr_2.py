@@ -610,7 +610,7 @@ def test_a_repairers_hour_is_priced_again_each_quarter_too():
 def test_what_a_side_hustle_brings_in_is_income_and_half_a_basket_of_it_is_a_living():
     from engine.household import basket_cost, classify, update_agents
     from engine.rtr_makers import makes_a_living, quarter
-    town = quiet_town()
+    town = quiet_town("going_without_at_lowest_price=false")        # written before 21/11: a full maker's price moved nobody's basket
     shop(town, "entertainment", 9_500)                               # so the basket is the plain $880
     a, h = maker(town)
     h.capacity = 0                                                   # (no room: their own price is not on offer)

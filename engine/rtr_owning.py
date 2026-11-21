@@ -121,6 +121,15 @@ def own_cost_week(town, agent, need: str, build: bool = True) -> int:
     return int(round(goods * spec.import_price + labour * cfg.job_hours * town.hour_value))
 
 
+def own_upkeep_week(town, need: str, unit) -> int:
+    """What a unit of their own needs a week now, for their yardstick (Jason, 20/11/2026: "judged on what
+    they actually pay"): its upkeep at its age, at a standard unit's size, parts at the outside price and
+    their hours at what an hour is worth."""
+    cfg = town.cfg
+    labour, goods = upkeep_need(cfg, unit)
+    return int(round((goods * parts_price(town, need) + labour * cfg.job_hours * town.hour_value) / (unit.scale or 1.0)))
+
+
 def _bills(town, agent) -> int:
     from .household import dues
     return sum(d[3] for d in dues(town, agent))

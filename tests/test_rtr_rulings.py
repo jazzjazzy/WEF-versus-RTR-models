@@ -595,16 +595,16 @@ def run_as_shipped(seeds, place, years=14):
     return problems, seen
 
 
-SHIPPED = (("map", (16, 30), ["map_width=7", "map_height=7"]), ("no map", (2, 29), ["map_width=0"]))
+SHIPPED = (("map", (1, 22), ["map_width=7", "map_height=7"]), ("no map", (1, 27), ["map_width=0"]))
 
 
 @pytest.fixture(scope="module")
 def towns_of_today():
     """Towns of 200 run for fourteen years under the weekly checks exactly as the RTR world ships:
-    seeds 16 and 30 on a 7 by 7 map, seeds 2 and 29 with no map (picked on the afternoon of 19 November
-    from thirty of each, all sixty clean under the checks, run with that day's rulings, for reaching
-    the rules of the stages before as well and for not being towns that stop; the seeds of that
-    morning and of 18 November were picked the same way). For each kind: (what the checks found, what
+    seeds 1 and 22 on a 7 by 7 map, seeds 1 and 27 with no map (picked on 21 November, after the rulings
+    that an owner is judged on what they actually pay and going without at the lowest price asked, from thirty of each, all sixty clean under the
+    checks, for reaching the rules of the stages before as well and for not being towns that stop; the
+    seeds of 18 and 19 November, 16 and 30 and 2 and 29 on the 19th, were picked the same way). For each kind: (what the checks found, what
     was reached)."""
     return {kind: run_as_shipped(seeds, place) for kind, seeds, place in SHIPPED}
 
