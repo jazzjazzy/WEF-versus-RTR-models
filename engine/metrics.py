@@ -119,8 +119,15 @@ def weekly_series(town) -> list[tuple[str, str, float]]:
     if cfg.rtr:
         town_add("wage_offer", town.typical_wage())   # RTR: the going wage, what a job pays someone taken on now
     town_add("wage_index", wage / cfg.outside_wage if cfg.outside_wage else 0.0)
+    asking = basket
+    if cfg.rtr and cfg.owners_judge_by_what_they_pay and agents:
+        # RTR (J, 20/11/2026): "use what people actually pay": the average of its people's own baskets
+        from .household import basket_cost
+        basket = sum(basket_cost(town, a, cheapest) for a in agents) / len(agents)
     town_add("basket", basket)
-    town_add("price_index", basket / basket0 if basket0 else 0.0)
+    if cfg.rtr:
+        town_add("basket_asking", asking)         # the cheapest price on offer of each need, kept beside it
+    town_add("price_index", asking / basket0 if basket0 else 0.0)
     town_add("affordability", basket / wage if wage else 0.0)
     for s in base:
         town_add(f"price_{s.name}", cheapest.get(s.name, 0))

@@ -11,8 +11,9 @@ new things come from people, and a side hustle can grow into a business.
 
 > **Untuned.** All three stages are built: owning (stage 1), side hustles, ideas
 > and small businesses (stage 2), and the pages and the two worlds side by side
-> (stage 3, 20 November). The starting values have not been tested. Nothing here
-> is a finding yet.
+> (stage 3, 20 November). On 20 and 21 November Jason ruled that people are judged
+> on what they actually pay (the last section). The starting values have not been
+> tested. Nothing here is a finding yet.
 
 ## Run it
 
@@ -929,7 +930,58 @@ they asked; the middle town's basket was 71% that asking rent and 14% the
 asking price of appliance sets, which few rent either. So "Basket against the
 staff wage" in the RTR world, a middle 11,200% at year 60, is asking prices
 nobody is paying. The pages say so. Whether the RTR world should measure what
-people do pay is Jason's to decide.
+people do pay was Jason's to decide; he did, the next day (below).
 
 Nothing here is traced: not why the WEF towns fall between years 14 and 22,
 nor what pulls the RTR towns down slowly.
+
+## Jason's rulings of 20 and 21 November 2026: judged on what people actually pay
+
+The ledger is
+[docs/build-ledger-rtr-owner-pays-2026-11-20.md](../docs/build-ledger-rtr-owner-pays-2026-11-20.md).
+
+Each person measures how they are doing against a basket: what the four base
+needs cost them a week. It decides how secure they feel, and so how happy. In
+the RTR world that basket counted the asking prices of firms that hardly anyone
+used. A landlord firm with no tenants, or an entertainment firm whose customers
+had gone to their neighbours, falls short of profit every quarter and raises its
+price 3% each time (Jason's price rule), so its price climbs for decades. By
+year 60 in one town an owner's basket counted a rent of $12,649 a week for a
+home they owned, and someone without entertainment counted it at $5,905 a week,
+while their neighbours who bought it paid about $205.
+
+His words: "it should be judged on what they actually pay because they own it.
+The reason they want to own it is because they don't want to know what the firms
+are being priced at or they don't want to care." And: "happiness can be affected
+by the fact that you can't purchase entertainment. But unhappiness shouldn't be
+affected by not paying a $5,905 bill that no one is paying for. ... It will be
+the one that they could actually achieve, not the one that's way out of scope."
+
+**The rules.** A home or appliance set of your own counts at the upkeep it needs
+that week, at its age, plus the payment on a loan against a home. A need you go
+without counts at the lowest price a firm or a neighbour asks: a neighbour's
+side hustle, or a small landlord's rent. The town's basket is the average of its
+people's. The firms' asking prices are kept as a measure of their own, "Asking
+basket". What people shop with is not changed. The WEF world is not changed.
+
+**A hundred RTR towns under each rule**, the same seeds, sixty years, the middle
+town at year 60:
+
+| | Before | Owners' rule | Both rules |
+|---|---|---|---|
+| reached the failure line | 7 of 100 | 0 | 0 |
+| unhappy | 74% | 39% | 24% (15% to 61%) |
+| with no job | 0% | 2.7% | 3.4% |
+| staff paid | $725 | $821 | $827 |
+| basket against the staff wage | 11,200% | 793% | 128% |
+
+Three full towns under each rule, run again under the weekly checks, were clean
+in every week. The WEF world's hundred towns (made on 20 November) all failed,
+in years 14.5 to 22.2.
+
+Under both rules the middle town is still getting worse: 5% unhappy at year 20,
+14% at year 40, 24% at year 60. At year 60, 49% of those out of work are
+unhappy, 24% of those with a job and 4% of those who live on their shares. The
+unhappiest towns are poor ones: in seed 15, 51% unhappy and staff paid $230 a
+week; in seed 49, 61% and $462. Not traced.
+

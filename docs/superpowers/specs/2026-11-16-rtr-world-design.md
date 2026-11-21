@@ -289,6 +289,15 @@ building (section 7). The bank still cannot make anyone sell shares.
   - **The basket does not shrink when someone owns.** An owner's basket counts a
     home and an appliance set at the going rent, as it does for anyone going
     without one. Their real bills are lower, and what they save shows up as cash.
+    **Replaced by Jason's rulings of 20 and 21 November 2026 (J):** an owner is
+    judged on what they actually pay ("it should be judged on what they actually
+    pay because they own it"): a home or set of their own counts at its upkeep, at
+    its age, and the loan payment. Someone going without a need counts it at the
+    lowest price a firm or a neighbour asks ("the one that they could actually
+    achieve, not the one that's way out of scope"). The town's basket is the
+    average of its people's. Dials `owners_judge_by_what_they_pay` and
+    `going_without_at_lowest_price`; ledger
+    `docs/build-ledger-rtr-owner-pays-2026-11-20.md`.
   - **A loan against a home is not counted as debt while it is paid on time.** It is
     secured on the home. A missed payment is a blow, as a missed rent is, and
     foreclosure is a blow as eviction is.

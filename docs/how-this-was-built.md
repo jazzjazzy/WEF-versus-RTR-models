@@ -91,8 +91,9 @@ Test counts are the size of the test suite at the end of each stage.
 | 19 Nov | Jason's rulings on who is in the line for a job, and on staff keeping their pay | 1,130 | The builder's first version stopped small towns. The review caught it. See below |
 | 19 Nov | Jason's ruling that a firm in debt and losing money lets its longest-serving staff go | 1,156 | It took three builds. Counting how towns fare, and then a reviewer, overturned the builder's reading twice. See below |
 | 20 Nov | The RTR world, stage 3: its measures on the pages, and both worlds on the same hundred seeds, side by side | 1,183 | No rule changed; the WEF world's pages held byte for byte. A reviewer recounted the comparison from the 200 towns' own records and found no wrong count, but found the page said more than the counts did: "never" for towns stopped at sixty years and getting worse, and a cost of living made of asking prices nobody was paying. Both fixed |
+| 20 and 21 Nov | Jason's rulings that in the RTR world people are judged on what they actually pay: an owner on what owning costs them, and someone going without on the lowest price a firm or a neighbour asks | 1,206 | Two rules, each found by looking inside how towns fared: people were measuring themselves against the asking prices of firms nobody used. The review found the builder had counted an owner's upkeep as if every home were new. Fixed before the hundred towns were run. RTR towns reaching the failure line: 7 of 100 before, 0 after; unhappy in the middle town at year 60: 74% before, 24% after |
 
-The engine is about 13,200 lines of Python and the tests about 16,600. All
+The engine is about 13,300 lines of Python and the tests about 16,900. All
 three stages of the RTR world are built.
 
 ## What went wrong, and what it taught

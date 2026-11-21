@@ -228,11 +228,22 @@ def _charts(shape: _Shaper, cfg: dict, places: dict | None = None) -> list[dict]
           [{"name": "Cost of the basket", "color": 1, "values": shape.quarters(town("price_index"), 100.0)},
            {"name": "Staff wage", "color": 2, "values": shape.quarters(town("wage_index"), 100.0)}],
           zero=False, refs=[{"y": 100, "label": "where both started"}], section="town")
-    lines("Basket against the staff wage",
-          "The cost of the four base needs as a share of the average staff wage.", "pct",
-          [{"name": "Basket as a share of the wage", "color": 1,
-            "values": shape.quarters(town("affordability"), 100.0)}],
-          refs=[{"y": 100, "label": "the whole wage"}], section="town")
+    if cfg.get("world") == "rtr" and cfg.get("owners_judge_by_what_they_pay") and ("town", "basket_asking") in shape.series:
+        # RTR (Jason, 20/11/2026): an owner is judged on what they pay; the asking prices are kept beside it
+        asking = shape.ratio(town("basket_asking"), town("wage"))
+        lines("Basket against the staff wage",
+              "The four base needs as a share of the average staff wage: what people pay (a home or appliance "
+              "set of their own at its upkeep and loan payment), and beside it the asking prices of the firms.", "pct",
+              [{"name": "What people pay, as a share of the wage", "color": 1,
+                "values": shape.quarters(town("affordability"), 100.0)},
+               {"name": "Asking prices, as a share of the wage", "color": 2, "values": shape.quarters(asking, 100.0)}],
+              refs=[{"y": 100, "label": "the whole wage"}], section="town")
+    else:
+        lines("Basket against the staff wage",
+              "The cost of the four base needs as a share of the average staff wage.", "pct",
+              [{"name": "Basket as a share of the wage", "color": 1,
+                "values": shape.quarters(town("affordability"), 100.0)}],
+              refs=[{"y": 100, "label": "the whole wage"}], section="town")
     initial = {n["name"]: n["initial_price"] for n in cfg.get("needs", [])}
     lines("Prices of the four needs",
           "The cheapest price on offer for each need, with its starting price as 100.", "index",

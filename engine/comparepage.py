@@ -6,6 +6,7 @@ side."
 `python3 -m engine compare <WEF batch> <RTR batch>` writes `compare.html` beside the RTR batch,
 or in the folder given with `--out`."""
 
+import json
 import pathlib
 
 from .batchpage import (CHARTS, RTR_CHARTS, TEMPLATE, _axis, _count, _e, _fan_card, _fmt, _seeds_words,
@@ -18,6 +19,22 @@ COLOUR = {"wef": "var(--series-1)", "rtr": "var(--series-2)"}
 BASKET_NOTE = (" The basket is made of asking prices, and in the RTR world they may be the prices of firms with no "
                "tenants or customers: most people own their home and their appliances, and a firm left with nobody to "
                "serve can go on raising what it asks. See how to read this.")
+
+
+PAID_NOTE = (" In the RTR world the basket is what people pay: a home or appliance set of their own counts at its "
+             "upkeep and any loan payment, not a firm's asking price. In the WEF world it is the cheapest price on offer. "
+             "See how to read this.")
+
+
+def _owners_pay(batch_dir) -> bool:
+    """Was the RTR batch run with an owner judged on what they pay (Jason, 20 November 2026)? A batch made
+    before the rule has no such dial in its towns' settings, and its basket is asking prices."""
+    for path in sorted(pathlib.Path(batch_dir).glob("towns/*/*/config.json"))[:1]:
+        try:
+            return bool(json.loads(path.read_text(encoding="utf-8")).get("owners_judge_by_what_they_pay", False))
+        except (OSError, ValueError):
+            return False
+    return False
 
 
 class CompareError(ValueError):
@@ -81,7 +98,8 @@ def compare_data(wef_dir, rtr_dir) -> dict:
             for side, where, report in (("wef", wef_dir, wef), ("rtr", rtr_dir, rtr))}
     return {"names": {"wef": wef["batch"]["name"], "rtr": rtr["batch"]["name"]}, "seeds": seeds, "near_line": near,
             "wef": _world_side(w), "rtr": _world_side(r), "towns": towns, "cases": cases,
-            "yearly": {"wef": w["yearly"], "rtr": r["yearly"]}, "rtr_setting": r}
+            "yearly": {"wef": w["yearly"], "rtr": r["yearly"]}, "rtr_setting": r,
+            "owners_pay": _owners_pay(rtr_dir)}
 
 
 def _near_line(batch_dir, year: int, share: float = 0.8) -> dict:
@@ -125,9 +143,9 @@ def _pair_svg(rows: dict, unit: str, title: str) -> str:
     """The middle town of each world as a line, with the middle half of its towns as a band."""
     width, height, left, right, top, bottom = 420.0, 200.0, 54.0, 10.0, 8.0, 22.0
     plot_w, plot_h = width - left - right, height - top - bottom
-    years = sorted({row["year"] for side in rows.values() for row in side})
+    years = sorted({row["year"] for side in rows.values() for row in side or []})
     first, last = years[0], years[-1]
-    ticks = _ticks(max(row["q3"] for side in rows.values() for row in side), unit)
+    ticks = _ticks(max(row["q3"] for side in rows.values() for row in side or []), unit)
     ceiling, step = ticks[-1], ticks[1] - ticks[0]
 
     def x(year):
@@ -190,7 +208,7 @@ def _pair_card(data: dict, measure: str, title: str, unit: str, note: str) -> st
         body.append(f"<tr><td>{year}</td>{''.join(cells)}</tr>")
     return f"""<figure class="card" data-measure="{_e(measure)}">
 <div class="card-title">{_e(title)}</div>
-<div class="card-note">{_e(note)}{_e(BASKET_NOTE if measure in ("town/basket", "town/affordability") else "")} The line is the middle town still standing; the band, the middle half.</div>
+<div class="card-note">{_e(note)}{_e((PAID_NOTE if data.get("owners_pay") else BASKET_NOTE) if measure in ("town/basket", "town/affordability") else "")} The line is the middle town still standing; the band, the middle half.</div>
 <div class="plot">{_pair_svg(rows, unit, title)}</div>
 <details><summary>Table</summary><div class="tablewrap"><table>
 <thead><tr><th>Year</th><th>WEF towns standing</th><th>WEF middle town</th><th>RTR towns standing</th><th>RTR middle town</th></tr></thead>
@@ -275,7 +293,22 @@ town as a line, the middle half of the towns as a band, all of them as a paler b
 """
 
 
-def _read() -> str:
+PAID_READ = """<p><strong>The basket is not the same measure in the two worlds.</strong> In the WEF world it is the
+cheapest price on offer for each of the four needs; there people rent from the firms. In the RTR world it is what
+people pay, the average over everyone: someone who rents counts their rent, and a home or appliance set of their
+own counts at its upkeep and the loan payment, not a firm's asking price (Jason's rule, 20 November 2026: an owner
+is judged on what they actually pay). The RTR world's asking prices are kept as a measure of their own, "Asking
+basket", under what only the RTR world has.</p>"""
+
+
+ASKING_READ = """<p><strong>The basket is the cheapest price on offer</strong> for each of the four needs, the same measure
+in both worlds. In the RTR world most people who own their home pay no rent and own their appliances, so the
+basket is not what most of them pay. A landlord firm or an appliance firm with no tenants or customers at all, and
+often no homes, can go on raising the price it asks, and that asking price is the basket's. Read "Weekly basket" and
+"Basket against the staff wage" in the RTR world as asking prices, not costs.</p>"""
+
+
+def _read(owners_pay: bool = False) -> str:
     return """
 <section id="read"><footer><h2>How to read this</h2>
 <p><strong>Towns that fail drop out.</strong> A year's figures are over the towns still standing at the end of
@@ -285,21 +318,17 @@ count of towns standing, which each chart's table gives.</p>
 <p><strong>The failure line</strong> is the same in both worlds: the first week nine in ten people are unhappy
 (Jason's rule). A town that never reached it is not a town that works. Look at what its people are paid, how many
 have no job and how many are unhappy.</p>
-<p><strong>The basket is the cheapest price on offer</strong> for each of the four needs, the same measure
-in both worlds. In the RTR world most people who own their home pay no rent and own their appliances, so the
-basket is not what most of them pay. A landlord firm or an appliance firm with no tenants or customers at all, and
-often no homes, can go on raising the price it asks, and that asking price is the basket's. Read "Weekly basket" and
-"Basket against the staff wage" in the RTR world as asking prices, not costs.</p>
+{basket}
 <p><strong>The same seed</strong> starts the same in both worlds, then the rules part them. One seed is one town's
 luck; read the counts across all of them.</p>
 </footer></section>
-"""
+""".replace("{basket}", PAID_READ if owners_pay else ASKING_READ)
 
 
 def build_compare_page(wef_dir, rtr_dir, out_dir=None) -> pathlib.Path:
     """Write `compare.html` beside the RTR batch, or in `out_dir`. Returns its path."""
     data = compare_data(wef_dir, rtr_dir)
-    body = _header(data) + _answer(data) + _towns(data) + _measures(data) + _rtr_only(data) + _read()
+    body = _header(data) + _answer(data) + _towns(data) + _measures(data) + _rtr_only(data) + _read(data["owners_pay"])
     page = TEMPLATE.replace("__TITLE__", _e("The WEF world and the RTR world")).replace("__BODY__", body)
     out = pathlib.Path(out_dir if out_dir is not None else rtr_dir) / "compare.html"
     out.parent.mkdir(parents=True, exist_ok=True)
