@@ -25,7 +25,7 @@ WORK_RIDE_PRIORITY = 0.5   # (J) 16/11/2026: a ride to work is paid after food a
 
 
 # --- costs ------------------------------------------------------------------------------------
-def basket_cost(town, agent, cheapest=None) -> int:
+def basket_cost(town, agent, cheapest=None, loan: bool = True) -> int:
     """A week of the four base needs at standard size: what they pay for each, or the
     cheapest price on offer for one they are going without. In the RTR world a home or set of
     their own counts at its upkeep, with the loan payment on a home (Jason, 20/11/2026). Invented needs, bigger plans and
@@ -44,7 +44,7 @@ def basket_cost(town, agent, cheapest=None) -> int:
             total += own_upkeep_week(town, name, agent.unit[name])
         else:                                    # going without: in the RTR world the lowest a firm or neighbour asks
             total += getattr(cheapest, "lowest", cheapest).get(name, 0)
-    if paid and agent.home_loan > 0:             # and the loan against a home, as their bills count it
+    if paid and loan and agent.home_loan > 0:    # and the loan against a home, as their bills count it
         total += (round(agent.home_loan * town.cfg.firm_rate / town.cfg.weeks_per_year)
                   + min(agent.home_loan, agent.home_pay))
     return total

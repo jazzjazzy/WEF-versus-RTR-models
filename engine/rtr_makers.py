@@ -741,6 +741,7 @@ def hire_staff(town) -> None:
     if not businesses:
         return
     wage = town.typical_wage()
+    prices = cheapest_prices(town)                                # once, for everyone's floor (the review, 21/11/2026)
     for hustle in businesses:
         hustle.wage = wage
         for agent in hustle.staff:
@@ -758,7 +759,7 @@ def hire_staff(town) -> None:
                     break
                 if agent.role is not None or agent.klass == "owner" or agent is hustle.owner:
                     continue
-                if wage >= least_wage(town, agent, reservation_wage(cfg, agent)) and can_get_to(town, agent, hustle):
+                if wage >= least_wage(town, agent, reservation_wage(cfg, agent, town, prices)) and can_get_to(town, agent, hustle):
                     hire(town, hustle, agent, "resident")              # (someone with a side hustle of their own weighs it)
                     in_hand -= wage
         _set_hours(town, hustle, hustle.owner.spare_hours)       # this week's hours, with the staff it now has
