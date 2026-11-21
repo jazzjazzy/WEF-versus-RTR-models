@@ -118,7 +118,7 @@ not of this rule. Fixed: `test_a_measure_only_one_world_has_any_of_is_drawn_for_
 
 Full tests after the review: 1,199 passed.
 
-## The second rule: going without (21 November 2026, Canberra time)
+## The second rule: going without (21 November 2026)
 
 The batch under the first rule (`rtr/batches/ownerpays-rtr`, after the review fix): RTR 0 of 100 failed (7 before);
 year 60, middle town: unhappy 38.8% (74% before), no town at 80% or more, no job 2.7%. Three checked full towns,
@@ -158,5 +158,10 @@ out (passed at first: a WEF town has no makers or lets; a test added, then it fa
 left out; makers left out. All failed a test. The flaky Ctrl-C test (`test_batch.py`) failed twice in full runs;
 alone it passed 4 of 4 with the change and failed 1 of 3 on `develop` without it. Full tests: 1,206 passed.
 
-Running from 12:15pm Canberra time: `rtr/batches/lowest-rtr` (100 towns, 27 at a time) and three checked full towns
-(`rtr/batches/checked-lowest/`).
+Then `rtr/batches/lowest-rtr` (100 towns) and three checked full towns (`rtr/batches/checked-lowest/`, seeds 1 to
+3: clean, sixty years). RTR 0 of 100 failed. Year 60, middle town: unhappy 23.7% (14.9% to 61.2%), no job 3.4%,
+staff paid $827, offered $698, basket $1,006 a week, 128% of the staff wage (asking basket $96,831). At year 60 across
+the towns: 49% of those out of work unhappy, 24% of those with a job, 4% of the owner class. The unhappiest towns:
+seed 49 (61%, staff paid $462), seed 88 (54%, $828), seed 15 (51%, $230). Not traced.
+
+On his word ("yes"): the documents, then committed and merged into `develop`.
