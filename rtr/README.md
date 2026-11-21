@@ -983,5 +983,164 @@ Under both rules the middle town is still getting worse: 5% unhappy at year 20,
 14% at year 40, 24% at year 60. At year 60, 49% of those out of work are
 unhappy, 24% of those with a job and 4% of those who live on their shares. The
 unhappiest towns are poor ones: in seed 15, 51% unhappy and staff paid $230 a
-week; in seed 49, 61% and $462. Not traced.
+week; in seed 49, 61% and $462. Traced below.
 
+## The least someone out of work will take, 21 November 2026
+
+The ledger is
+[docs/build-ledger-rtr-reservation-floor-2026-11-21.md](../docs/build-ledger-rtr-reservation-floor-2026-11-21.md).
+
+Jason asked why pay fell so low in those towns, and to fix it. The trace of
+seeds 15 and 49: the least someone out of work would take fell 5% a week of
+their spell, with nothing under it, so after twenty weeks it was nothing. Nearly
+everyone out of work would take any pay (215 of 222 in seed 15 at year 30). So
+the line for a job stayed over 5% of the town, and under Jason's rule of cutting
+when there is a queue each firm short of profit cut its rate 2% a quarter, for
+decades: in seed 15 from about $950 a week to about $110. The 5% a week, the 2%
+and the 5% of the town are the builder's numbers (C), not his.
+
+**The rule (C).** Someone out of work will not take a job that pays less than
+their own basics cost them a week (their basket, as he ruled on 20 and 21
+November), leaving out a payment on a home loan. Someone who owes a large loan
+has no floor, as he ruled: they take the first job offered. A dial,
+`reservation_covers_basket`, in the RTR world only. The WEF world is not
+changed.
+
+**A hundred RTR towns**, the same seeds, the middle town at year 60:
+
+| | Before | With the floor |
+|---|---|---|
+| reached the failure line | 0 of 100 | 0 of 100 |
+| unhappy | 24% | 20% |
+| towns over 30% unhappy | 27 | 13 |
+| with no job | 3.4% | 8.1% |
+| towns over 15% with no job | 2 | 16 |
+| the rate a firm offers someone new | $698 | $810 |
+| the lowest such rate in any town | $110 | $598 |
+| staff paid | $827 | $858 |
+| towns with staff paid under $500 | 3 | 0 |
+
+Seed 15: 51% unhappy and staff paid $230 before, 25% and $720 after. Seed 49:
+61% and $462 before, 22% and $842 after.
+
+The cost is more people out of work, and nearly all of them are unhappy. In the
+two worst towns (seeds 91 and 89, 33% and 28% with no job) there was no job
+going unfilled at 22 of 24 counts: the jobs did not grow with the town (seed 91,
+633 jobs for 783 people at year 5, 582 for 900 at year 60). The floor stops the
+pay falling; it does not make work. Why those towns have fewer jobs than under
+the old rule is not traced.
+
+*Corrected the same day, by the trace below:* they did not have fewer jobs. The
+jobless rate counted everyone with no employer, and most of the rise was people
+running a small business of their own.
+
+## Who counts as jobless, 21 November 2026
+
+The ledger is
+[docs/build-ledger-rtr-jobless-own-work-2026-11-21.md](../docs/build-ledger-rtr-jobless-own-work-2026-11-21.md).
+
+Jason asked why those towns had fewer jobs, and to fix it. Counted in 27 towns
+with the floor and without it, at year 60, as a share of the town:
+
+| | With the floor | Without |
+|---|---|---|
+| counted with no job (no employer) | 8.2% | 4.3% |
+| of whom no work at all | 0.4% | 0.2% |
+| of whom running a small business | 6.8% | 3.5% |
+| of whom running a side hustle | 0.9% | 0.4% |
+| working for a firm | 57.3% | 56.5% |
+| working for a small business | 34.5% | 39.2% |
+
+Nobody lost work. The jobless rate counted everyone who works for nobody else,
+so someone running a business of their own was counted as having no job. With
+the floor, more people run a business than work for one.
+
+**The fix (the builder's call, C): a measure only.** In the RTR world the
+jobless rate now counts those with no job and no small business or side hustle
+of their own. The old figure is kept beside it as "No employer", with "Running a
+small business" (both charts on the batch page) and the share on a side hustle.
+Nothing a firm or a person does reads it, and the towns did the same: the
+hundred towns run again made the same events as before, town for town. The WEF
+world is not changed: nobody there works for themselves.
+
+The hundred RTR towns (`rtr/batches/ownwork-rtr`), the middle town:
+
+| | Year 20 | Year 40 | Year 60 |
+|---|---|---|---|
+| jobless (no work at all) | 0.1% | 0.1% | 0.1% |
+| no employer (the old figure) | 6.2% | 8.8% | 8.1% |
+| running a small business | 4.1% | 6.9% | 7.0% |
+| on a side hustle | 1.9% | 1.0% | 0.6% |
+
+At year 60 the highest is 9.9% (seed 55); 3 towns are over 5%.
+
+Seen, not traced: with the floor, those running a small business are more
+often unhappy (14% against 4% at year 60 in the 27 towns), and those on a side
+hustle (52% against 26%).
+
+
+## A job beside a business of their own, 22 November 2026
+
+Traced in 27 towns at year 60: with the floor, someone out of work running a
+small business of their own would not take a job that paid less than their
+basics, though taking a job does not close the business. Of the 241 unhappy
+business owners, 74% would take nothing below a figure above the going wage,
+and the middle one had been out of work for 454 weeks.
+
+Put to Jason as Mia (basics $900 a week, a business bringing in $620, a job at
+$790, and the business perhaps $200 on the hours left beside the job): take the
+job when its pay and what the business would still bring in cover her basics.
+His words: "Yes, that makes a lot more logical sense." (J)
+
+**What was built.** The least someone out of work will take is now their basics
+less what a business of their own would still bring in beside a job (dial
+`floor_counts_kept_business`). What it would still bring in is the builder's
+reckoning (C): its takings less goods over the last quarter, in proportion to the
+hours it would have beside a job (the owner's week less the job, the road and the
+upkeep of their own things, and its staff's hours) against the hours it used,
+less what its staff are paid. A fresh review found two faults in the first
+version (staff wages scaled down with the hours; last week's hours used for
+someone just let go); both were fixed before the towns were run.
+
+The hundred RTR towns (`rtr/batches/floorbiz-rtr` against
+`rtr/batches/ownwork-rtr`), the middle town:
+
+| | Year 60 before | after |
+|---|---|---|
+| unhappy | 19.9% | 18.6% |
+| no employer | 8.1% | 6.2% |
+| running a small business | 7.1% | 5.5% |
+| rate offered someone new | $810 | $758 |
+
+All 100 towns survived, as before. The rate offered someone new fell a little:
+more people now stand in the line for a job.
+
+**Not fixed by it.** In the 27 towns the share of business owners out of work
+who are unhappy did not fall (14% before, 16% after). Most of those left have
+basics measured far above the going wage (in the middle $2,297 a week, against
+$709 for a happy business owner). The prices behind that look wrong: for
+someone going without appliances, the lowest price on record was $5,214 to
+$33,568 a week in 22 of the 27 towns. Not traced yet.
+
+## Going without appliances, 22 November 2026
+
+The firm that rents out appliances loses nearly all its customers within ten
+years, as people own their own sets, and by his rule its price only rises: 3%
+every quarter it misses its profit target. In seed 1 its rent went from $76 a
+week at year 5 to $9,417 at year 60, with no customer, while owning a set cost
+about $20 to $24 a week. The few with no set (3 to 10 a town) were counted as if
+their basics included that rent.
+
+Put to Jason: should someone without a fridge count it at what owning one
+costs, about $23 a week, when renting costs more? "yes, go ahead with the fix"
+(J). Dial `going_without_appliances_at_owning`. Homes are not changed (the
+builder's call, C): owning a home takes a deposit and a loan.
+
+The hundred RTR towns (`rtr/batches/appliances-rtr`): all 100 survived. In the
+middle town at year 60, 20.8% unhappy against 18.6%, with 53 towns a little more
+unhappy and 42 a little less: about even, read as the towns going different ways
+rather than as the rule's effect.
+
+Found by the review, not fixed: a newcomer buying a home holds back four weeks
+of basics at the rents on offer, appliances at the firm's rent (about $37,700 at
+$9,417 a week). It may stop newcomers buying homes in old towns. Not traced.

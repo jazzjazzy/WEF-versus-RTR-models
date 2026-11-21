@@ -20,7 +20,8 @@ FIFTH_IN_CASH = ["mortgage_ltv=0.8"]
 # let nobody go for a loss, and the last hired went first.
 # On 20 November he ruled that an owner is judged on what they actually pay: before it, a home or set of
 # their own counted in their basket at the cheapest asking rent.
-BEFORE_OWNERS_PAY = ["owners_judge_by_what_they_pay=false", "going_without_at_lowest_price=false"]
+BEFORE_OWNERS_PAY = ["owners_judge_by_what_they_pay=false", "going_without_at_lowest_price=false",
+                     "reservation_covers_basket=false"]
 BEFORE_THE_SHEDDING = ["loss_sheds_staff=false", "longest_serving_first=false"] + BEFORE_OWNERS_PAY
 BEFORE_THE_LINE = ["staff_keep_pay=false", "line_is_who_would_take=false", "unhappy_makers_apply=false"] + BEFORE_THE_SHEDDING
 # The RTR world as stage 2 was merged, before any of Jason's rulings of 18 and 19 November: for whole

@@ -430,7 +430,8 @@ MEASURES = (
 # `homes_lived_in_by_owner` is worked out: the homes a person owns (`homes_owned`) less those they let.
 RTR_MEASURES = tuple(("town", metric) for metric in (
     "wage_offer", "homes_lived_in_by_owner", "homes_let_private", "homes_foreclosed", "sets_owned",
-    "home_loans", "makers", "small_businesses", "basket_asking"))
+    "home_loans", "makers", "small_businesses", "basket_asking", "no_employer_rate", "own_business_rate",
+    "own_hustle_rate"))
 
 TABLES = """
 CREATE TABLE batch (key TEXT PRIMARY KEY, value TEXT);

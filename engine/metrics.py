@@ -111,8 +111,20 @@ def weekly_series(town) -> list[tuple[str, str, float]]:
     town_add("staff", sum(len(f.staff) for f in firms))
     town_add("execs", sum(len(f.execs) for f in firms))
     town_add("vacancies", sum(f.vacancies for f in firms))
-    town_add("jobless", sum(1 for a in agents if a.role is None))
-    town_add("jobless_rate", town.jobless_share())
+    no_employer = [a for a in agents if a.role is None]
+    if cfg.rtr and cfg.jobless_leaves_out_own_work:
+        # RTR (C, 21/11/2026): someone running a small business or side hustle of their own works
+        jobless = [a for a in no_employer if a.hustle is None]
+        town_add("jobless", len(jobless))
+        town_add("jobless_rate", len(jobless) / population if population else 0.0)
+    else:
+        town_add("jobless", len(no_employer))
+        town_add("jobless_rate", town.jobless_share())
+    if cfg.rtr:
+        share = (lambda k: k / population) if population else (lambda k: 0.0)
+        town_add("no_employer_rate", share(len(no_employer)))
+        town_add("own_business_rate", share(sum(1 for a in no_employer if a.hustle is not None and a.hustle.business)))
+        town_add("own_hustle_rate", share(sum(1 for a in no_employer if a.hustle is not None and not a.hustle.business)))
     town_add("unhappy_share", town.unhappy_share())
     town_add("destitute", sum(1 for a in agents if a.destitute))
     town_add("wage", wage)

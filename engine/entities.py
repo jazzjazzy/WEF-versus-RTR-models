@@ -208,6 +208,8 @@ class Hustle:
         self.q_sold = 0.0             # customers served (or hours sold), summed over the quarter's weeks
         self.q_could = 0.0            # and how many it could have
         self.profit_week = 0          # what it brought in a week over the last quarter
+        self.gross_week = 0           # its takings less goods a week over the last quarter (RTR, 22/11/2026)
+        self.used_week = 0.0          # and the hours a week it used to serve them
         self.asked = []               # ids of those it turned away last week
         # a small business: it has borrowed on its profit and may take on staff
         self.business = False
