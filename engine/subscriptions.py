@@ -78,6 +78,12 @@ def cheapest_prices(town) -> dict[str, int]:
                 for unit in agent.lets.units:
                     if 0 < unit.rent < lowest.get("housing", unit.rent + 1):
                         lowest["housing"] = unit.rent
+        if cfg.going_without_appliances_at_owning and "appliances" in town.needs:
+            # RTR (J, 22/11/2026): a set they could own, at what owning one costs a week, when no rent is lower
+            from .rtr_owning import own_cost_week
+            owning = own_cost_week(town, None, "appliances")
+            if owning < lowest.get("appliances", owning + 1):
+                lowest["appliances"] = owning
     return out
 
 
