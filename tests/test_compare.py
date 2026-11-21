@@ -136,24 +136,50 @@ def test_a_batch_with_no_table_yet_is_collected_first(pair, tmp_path):
     assert len(compare_data(pair[0], copy)["towns"]) == 6
 
 
-def test_the_page_warns_that_the_basket_is_posted_prices_not_what_owners_pay(pair, tmp_path):
-    html = build_compare_page(*pair, out_dir=tmp_path).read_text(encoding="utf-8")
-    read = re.search(r'<section id="read".*?</section>', html, re.S).group(0)
+@pytest.fixture(scope="module")
+def older_rtr(tmp_path_factory):
+    """An RTR batch as the world was before 20 November 2026, when an owner counted the asking rent."""
+    plan = batch.make_plan("rtrolder", SEEDS, base=["world=rtr", *BASE, "owners_judge_by_what_they_pay=false"])
+    batch_dir = batch.run_batch(plan, out_root=tmp_path_factory.mktemp("older"), jobs=1, quiet=True)
+    batch.collect(batch_dir)
+    return batch_dir
+
+
+def _section(html, name):
+    return " ".join(re.search(rf'<section id="{name}".*?</section>', html, re.S).group(0).split())
+
+
+def _card(html, measure):
+    return re.search(rf'<figure class="card"[^>]*data-measure="{re.escape(measure)}".*?</figure>', html, re.S).group(0)
+
+
+def test_a_batch_made_before_the_owners_rule_still_warns_that_its_basket_is_asking_prices(pair, older_rtr, tmp_path):
+    html = build_compare_page(pair[0], older_rtr, out_dir=tmp_path).read_text(encoding="utf-8")
+    read = _section(html, "read")
     assert "The basket is the cheapest price on offer" in read
     assert "people who own their home pay no rent" in read
+    assert "no tenants" in read and "appliance" in read and "few tenants left" not in read
+    for measure in ("town/basket", "town/affordability"):
+        card = _card(html, measure)
+        assert "asking prices" in card and "no tenants or customers" in card, measure
+
+
+def test_under_the_owners_rule_the_page_says_the_rtr_basket_is_what_people_pay(pair, tmp_path):
+    html = build_compare_page(*pair, out_dir=tmp_path).read_text(encoding="utf-8")
+    read = _section(html, "read")
+    assert "The basket is not the same measure in the two worlds" in read
+    assert "what people pay" in read and "cheapest price on offer" in read
+    assert "Jason" in read and "20 November 2026" in read
+    assert "The basket is the cheapest price on offer" not in read
+    for measure in ("town/basket", "town/affordability"):
+        card = _card(html, measure)
+        assert "what people pay" in card and "no tenants or customers" not in card, measure
+    asking = _card(html, "town/basket_asking")                     # the asking prices, kept as their own measure
+    assert "asking" in asking.lower()
+    assert "—" not in html
 
 
 # --- after the review (20 November 2026) -------------------------------------------------------------
-
-def test_the_basket_cards_themselves_say_they_are_asking_prices_nobody_may_be_paying(pair, tmp_path):
-    html = build_compare_page(*pair, out_dir=tmp_path).read_text(encoding="utf-8")
-    for measure in ("town/basket", "town/affordability"):
-        card = re.search(rf'<figure class="card" data-measure="{re.escape(measure)}".*?</figure>', html, re.S).group(0)
-        assert "asking prices" in card and "no tenants or customers" in card, measure
-    read = re.search(r'<section id="read".*?</section>', html, re.S).group(0)
-    assert "no tenants" in read and "appliance" in read
-    assert "few tenants left" not in read
-
 
 def test_the_answer_says_the_horizon_and_never_says_never(pair, tmp_path):
     data = compare_data(*pair)
@@ -171,3 +197,10 @@ def test_the_answer_says_the_horizon_and_never_says_never(pair, tmp_path):
         if ended[seed] is None or ended[seed] > near["year"] * 52]
     con.close()
     assert near["standing"] == len(shares) and near["at_80"] == sum(1 for v in shares if v >= 0.8)
+
+
+def test_a_measure_only_one_world_has_any_of_is_drawn_for_that_world_alone():
+    from engine.comparepage import _pair_svg
+    row = {"year": 2, "n": 3, "min": 0.1, "q1": 0.2, "median": 0.3, "q3": 0.4, "max": 0.5}
+    svg = _pair_svg({"wef": [row, {**row, "year": 3}], "rtr": None}, "pct", "Unhappy: out of work")
+    assert 'data-world="wef"' in svg and 'data-world="rtr"' not in svg

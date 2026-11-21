@@ -12,7 +12,7 @@ from __future__ import annotations
 from .labour import separate
 from .metrics import RANK
 from .rtr_makers import makes_a_living
-from .rtr_owning import borrowable, owns
+from .rtr_owning import borrowable, own_upkeep_week, owns
 from .places import (cut_off_from_food, dist, find_home, home_cost, home_spot, needs_ride, reach, ride_for_work,
                      rides, transport_fare, travel_hours, unit_rent, wants_transport)
 from .subscriptions import (all_told, cheapest_prices, ensure_transport, find_provider, free_better_home,
@@ -27,15 +27,26 @@ WORK_RIDE_PRIORITY = 0.5   # (J) 16/11/2026: a ride to work is paid after food a
 # --- costs ------------------------------------------------------------------------------------
 def basket_cost(town, agent, cheapest=None) -> int:
     """A week of the four base needs at standard size: what they pay for each, or the
-    cheapest price on offer for one they are going without. Invented needs, bigger plans and
+    cheapest price on offer for one they are going without. In the RTR world a home or set of
+    their own counts at its upkeep, with the loan payment on a home (Jason, 20/11/2026). Invented needs, bigger plans and
     better homes are left out on purpose, so that taking up a luxury or moving up does not
     move the yardstick the agent measures their income, cushion and security against."""
     if cheapest is None:
         cheapest = cheapest_prices(town)
+    paid = town.cfg.rtr and town.cfg.owners_judge_by_what_they_pay
     total = 0
     for name, spec in town.needs.items():
-        if not spec.invented:
-            total += standard_price(agent, name) if name in agent.subs else cheapest.get(name, 0)
+        if spec.invented:
+            continue
+        if name in agent.subs:
+            total += standard_price(agent, name)
+        elif paid and owns(agent, name):         # RTR (J, 20/11/2026): what owning it costs them, not a firm's asking rent
+            total += own_upkeep_week(town, name, agent.unit[name])
+        else:                                    # going without: in the RTR world the lowest a firm or neighbour asks
+            total += getattr(cheapest, "lowest", cheapest).get(name, 0)
+    if paid and agent.home_loan > 0:             # and the loan against a home, as their bills count it
+        total += (round(agent.home_loan * town.cfg.firm_rate / town.cfg.weeks_per_year)
+                  + min(agent.home_loan, agent.home_pay))
     return total
 
 

@@ -269,3 +269,15 @@ def test_an_rtr_record_missing_a_measure_still_builds_and_leaves_that_chart_out(
     assert "What staff are paid and what a newcomer is offered" not in titles
     assert "Side hustles" not in titles
     assert "Who holds the homes" in titles
+
+
+# --- an owner judged on what they pay (Jason, 20 November 2026) ----------------------------------------
+def test_an_rtr_runs_basket_says_it_is_what_people_pay_and_shows_the_asking_basket_beside_it(rtr_built):
+    run_dir, html = rtr_built
+    charts = {c["title"]: c for c in embedded(html)["charts"]}
+    basket = charts["Basket against the staff wage"]
+    assert "what people pay" in basket["note"] and "asking" in basket["note"]
+    names = [s["name"] for s in basket["series"]]
+    assert names == ["What people pay, as a share of the wage", "Asking prices, as a share of the wage"]
+    asking, wage = _record(run_dir, "basket_asking"), _record(run_dir, "wage")
+    assert basket["series"][1]["values"][0] == pytest.approx(100 * _first_quarter([a / w for a, w in zip(asking, wage)]))

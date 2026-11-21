@@ -398,12 +398,14 @@ def _owner(cash=0):
 
 
 @pytest.mark.fifth_in_cash
-def test_owning_does_not_shrink_the_basket_and_what_they_could_borrow_counts_as_cushion():
+def test_owning_did_not_shrink_the_basket_and_what_they_could_borrow_counts_as_cushion():
     from engine.household import basket_cost, update_agents
     from engine.rtr_owning import borrowable
     town, a, unit = _owner()
     renter = town.add_agent()
+    town.cfg.owners_judge_by_what_they_pay = False                           # the rule until 20/11 (test_rtr_owner_pays.py)
     assert basket_cost(town, a) == basket_cost(town, renter)                 # both at the going rent
+    town.cfg.owners_judge_by_what_they_pay = True
     assert borrowable(town, a) == 4_320_000 and borrowable(town, renter) == 0
     a.home_loan = 4_000_000
     assert borrowable(town, a) == 320_000

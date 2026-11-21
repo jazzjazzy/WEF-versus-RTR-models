@@ -324,6 +324,8 @@ class Config:
     staff_keep_pay: bool = True           # (J) 19/11/2026: "Old staff members still stay on the same pay rate": a cut in a firm's wage is for those hired after it
     loss_sheds_staff: bool = True         # (J) 19/11/2026: "we will sack the oldest staff member until the value of the total wages is less than the debt. Before we hire new staff": a firm in debt that lost money over the quarter lets its longest-serving staff go until their pay covers the loss ("No, only if in debt"); then it hires as it needs
     longest_serving_first: bool = True    # (J) 19/11/2026: "the oldest staff member": whoever an employer has to let go, the longest-serving goes first
+    owners_judge_by_what_they_pay: bool = True   # (J) 20/11/2026: "it should be judged on what they actually pay because they own it. The reason they want to own it is because they don't want to know what the firms are being priced at": a home or appliance set of their own counts in their basket at its upkeep (and the loan payment), not the cheapest asking rent; the town's basket is the average of its people's
+    going_without_at_lowest_price: bool = True   # (J) 21/11/2026: "The price that they can't afford should always be the one that's the lowest out of the possible two. neighbours entertainment or firms Entertainment. It will be the one that they could actually achieve, not the one that's way out of scope": in a person's basket a need they go without counts at the lowest price a firm or a neighbour asks (a maker's price, full or not; a small landlord's rent), not only what is on offer this week
     unhappy_makers_apply: bool = True     # (J) 19/11/2026: "Unless they're unhappy. and wanted to get out of this hard hustle": unhappy on a side hustle, they take a job as anyone out of work does
     maker_margin: float = 0.10            # (C) "cost plus a little": what a person making or letting adds to their cost
     # stage 2: makers. A side hustle is one person selling their own spare time to others.
@@ -403,7 +405,7 @@ MAKER_TOOLS = ("tools_entertainment", "tools_invented", "tools_food", "tools_rep
 RTR_ONLY = ("free_hours", "job_hours", "mortgage_ltv", "mortgage_weeks", "mortgage_income_share",
             "foreclosed_price_drop", "empty_sale_weeks", "newcomers_buy", "owners_pay_any_price", "makers_weigh_jobs", "home_loan_presses", "makers_buy_in_town", "town_goods_premium",
             "line_is_who_would_take", "unhappy_makers_apply", "staff_keep_pay", "loss_sheds_staff", "longest_serving_first",
-            "maker_margin",
+            "owners_judge_by_what_they_pay", "going_without_at_lowest_price", "maker_margin",
             "hustle_min_hours", "hustle_loan_weeks", "hustle_loan_term_weeks", "idea_hours") + MAKER_SHARES + MAKER_TOOLS
 AT_LEAST_ONE = ("snapshot_every", "register_every", "years", "quarter_weeks", "weeks_per_year",
                 "mortgage_weeks", "hustle_loan_term_weeks")

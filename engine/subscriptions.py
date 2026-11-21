@@ -27,11 +27,17 @@ def standard_price(agent, need_name: str) -> int:
     return agent.subs[need_name].price
 
 
+class Prices(dict):
+    """The cheapest price on offer for each need, and beside it (`lowest`) the lowest any firm or
+    neighbour asks, which in the RTR world is what someone going without measures themselves by."""
+    lowest: dict
+
+
 def cheapest_prices(town) -> dict[str, int]:
     """The cheapest price on offer for each need. A base need that nobody sells at the
     moment keeps the last price it had, so the basket does not look cheaper because a
     firm closed. An invented need is in the result only while someone sells it."""
-    out: dict[str, int] = {}
+    out: dict[str, int] = Prices()
     for firm in town.firms:
         if firm.alive and (firm.need not in out or firm.price < out[firm.need]):
             out[firm.need] = firm.price
@@ -59,6 +65,19 @@ def cheapest_prices(town) -> dict[str, int]:
     for name, spec in town.needs.items():
         if not spec.invented and name not in out:
             out[name] = town.last_price.get(name, spec.initial_price)
+    out.lowest = dict(out)
+    cfg = town.cfg
+    if cfg.rtr and cfg.going_without_at_lowest_price:
+        # RTR (J, 21/11/2026): "the lowest out of the possible two", the one they could actually achieve
+        lowest = out.lowest
+        for need, price in (made.items() if town.hustles else ()):
+            if price < lowest.get(need, price + 1):
+                lowest[need] = price
+        for agent in town.agents:
+            if agent.lets is not None:
+                for unit in agent.lets.units:
+                    if 0 < unit.rent < lowest.get("housing", unit.rent + 1):
+                        lowest["housing"] = unit.rent
     return out
 
 
