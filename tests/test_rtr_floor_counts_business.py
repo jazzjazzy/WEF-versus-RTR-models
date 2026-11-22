@@ -24,7 +24,11 @@ DIAL = "floor_counts_kept_business"
 
 
 def quiet_town(*overrides):
-    return _quiet_town("reservation_covers_basket=true", f"{DIAL}=true", *overrides)
+    """The floor as it stood when this rule was built. Later that day he ruled that the floor holds only while
+    what comes in pays the basics on its own (test_floor_needs_money_coming_in.py): Mia's $620 does not, so
+    under that rule she takes any offer; here it is held off to test this rule's own reckoning."""
+    return _quiet_town("reservation_covers_basket=true", f"{DIAL}=true", "floor_needs_money_coming_in=false",
+                       *overrides)
 
 
 def mia(town, gross=62_000, used=60.0, staff_wages=(), own_hours=None):

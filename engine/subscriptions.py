@@ -67,8 +67,8 @@ def cheapest_prices(town) -> dict[str, int]:
             out[name] = town.last_price.get(name, spec.initial_price)
     out.lowest = dict(out)
     cfg = town.cfg
-    if cfg.rtr and cfg.going_without_at_lowest_price:
-        # RTR (J, 21/11/2026): "the lowest out of the possible two", the one they could actually achieve
+    if cfg.going_without_at_lowest_price:
+        # Both worlds (J, 21/11/2026; the WEF world 22/11/2026, where only firms ask a price): "the lowest out of the possible two", the one they could actually achieve
         lowest = out.lowest
         for need, price in (made.items() if town.hustles else ()):
             if price < lowest.get(need, price + 1):
@@ -78,7 +78,7 @@ def cheapest_prices(town) -> dict[str, int]:
                 for unit in agent.lets.units:
                     if 0 < unit.rent < lowest.get("housing", unit.rent + 1):
                         lowest["housing"] = unit.rent
-        if cfg.going_without_appliances_at_owning and "appliances" in town.needs:
+        if cfg.rtr and cfg.going_without_appliances_at_owning and "appliances" in town.needs:
             # RTR (J, 22/11/2026): a set they could own, at what owning one costs a week, when no rent is lower
             from .rtr_owning import own_cost_week
             owning = own_cost_week(town, None, "appliances")

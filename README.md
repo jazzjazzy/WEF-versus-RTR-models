@@ -88,7 +88,7 @@ was begun are run again and must match.
 | `engine/townview.py`, `townpage.py` | The town view: what it reads from the record, and the page itself |
 | `engine/batch.py`, `batchpage.py` | Many towns: planning and running a batch, the table of all its towns, and the page built from that table |
 | `engine/__main__.py` | The command line the world folders' scripts call |
-| `tests/` | 1,265 tests. The ones that matter most run a whole town and check the accounts and the places every week. `test_rtr*.py` are the RTR world's; `test_worlds.py` holds the two apart. |
+| `tests/` | 1,309 tests. The ones that matter most run a whole town and check the accounts and the places every week. `test_rtr*.py` are the RTR world's; `test_worlds.py` holds the two apart. |
 | `docs/` | How each part was designed and built: design notes, plans, and a ledger of every call made while building. They were written as the work was done and are kept as written; see [docs/README.md](docs/README.md) for names that have since changed. |
 
 ## How this was made

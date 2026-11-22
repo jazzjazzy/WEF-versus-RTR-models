@@ -248,11 +248,22 @@ def test_an_rtr_run_has_two_tiles_of_its_own(rtr_built):
     assert f'<div class="tile-value">{int(owned - let):,}</div>' in html
 
 
+PAY_CHART = "What staff are paid and what a newcomer is offered"   # both worlds from 22/11/2026: staff keep their pay
+
+
 def test_a_wef_run_has_none_of_the_rtr_charts(built):
     _, html = built
     titles = {c["title"] for c in embedded(html)["charts"]}
-    assert not titles & set(RTR_CHARTS)
+    assert not titles & (set(RTR_CHARTS) - {PAY_CHART})
     assert "ownsec" not in html and "Homes lived in by their owner" not in html
+
+
+def test_a_wef_run_shows_what_staff_are_paid_beside_what_a_newcomer_is_offered(built, tmp_path):
+    _, html = built
+    assert PAY_CHART in {c["title"] for c in embedded(html)["charts"]}
+    run_dir = run(small("seed=9", "staff_keep_pay=false"), out_root=tmp_path, quiet=True)
+    titles = {c["title"] for c in embedded((run_dir / "dashboard.html").read_text(encoding="utf-8"))["charts"]}
+    assert PAY_CHART not in titles                                  # one rate for all: one number
 
 
 def test_an_rtr_record_missing_a_measure_still_builds_and_leaves_that_chart_out(rtr_built, tmp_path):

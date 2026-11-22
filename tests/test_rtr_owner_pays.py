@@ -177,10 +177,10 @@ def _going_without_entertainment(*overrides):
     return town, sam, firm, hustle
 
 
-def test_the_rule_is_on_in_the_rtr_world_and_is_the_rtr_worlds_own():
+def test_the_rule_is_on_in_both_worlds():
     assert load_config(None, ["world=rtr"]).going_without_at_lowest_price is True
     assert load_config("rtr/settings.json").going_without_at_lowest_price is True
-    assert LOWEST in RTR_ONLY
+    assert LOWEST not in RTR_ONLY                              # both worlds from 22/11/2026 (Jason)
 
 
 def test_going_without_counts_at_the_neighbours_price_when_it_is_the_lowest_even_if_they_are_full():
@@ -233,9 +233,8 @@ def test_a_wef_town_keeps_going_without_at_the_price_on_offer():
     assert basket_cost(town, a, cheapest) == expected
 
 
-def test_outside_the_rtr_world_a_neighbours_price_never_lowers_the_yardstick():
+def test_with_the_rule_off_a_neighbours_price_never_lowers_the_yardstick():
     town, sam, firm, hustle = _going_without_entertainment()
-    town.cfg.world = "wef"
-    assert not town.cfg.rtr
+    town.cfg.going_without_at_lowest_price = False             # (the WEF world has no neighbours who sell)
     cheapest = cheapest_prices(town)
     assert cheapest.lowest == dict(cheapest)

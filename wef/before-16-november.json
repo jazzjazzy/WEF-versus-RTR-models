@@ -5,5 +5,11 @@
   "fare_first_for_work": false,
   "shops_near_unserved": false,
   "well_off_income": 0,
+  "reservation_covers_basket": false,
+  "line_is_who_would_take": false,
+  "staff_keep_pay": false,
+  "loss_sheds_staff": false,
+  "longest_serving_first": false,
+  "going_without_at_lowest_price": false,
   "needs": {"housing": {"initial_units": 120}}
 }

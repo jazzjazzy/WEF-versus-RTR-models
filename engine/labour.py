@@ -53,9 +53,10 @@ def separate(town, agent, reason: str) -> None:
 
 
 def first_to_go(cfg, staff):
-    """Whoever an employer has to let go: the last hired; in the RTR world the longest-serving
-    (Jason, 19/11/2026: "we will sack the oldest staff member"). Staff are kept in order of hiring."""
-    return staff[0] if cfg.rtr and cfg.longest_serving_first else staff[-1]
+    """Whoever an employer has to let go: the longest-serving (Jason, 19/11/2026: "we will sack the
+    oldest staff member"; in both worlds from 22/11/2026), or with the dial off the last hired. Staff
+    are kept in order of hiring."""
+    return staff[0] if cfg.longest_serving_first else staff[-1]
 
 
 def promote(town, firm, agent) -> None:
@@ -71,7 +72,7 @@ def promote(town, firm, agent) -> None:
 def demote(town, firm, agent) -> None:
     firm.execs.remove(agent)
     cfg = town.cfg
-    if cfg.rtr and cfg.longest_serving_first:
+    if cfg.longest_serving_first:
         # Where the longest-serving goes first the list is read as the order people joined, so
         # someone put back takes their place by when they joined, not the newest's (the fresh
         # review, 19/11/2026: added at the end, the oldest hand was passed over as the newest).
@@ -89,19 +90,22 @@ def demote(town, firm, agent) -> None:
 
 def reservation_wage(cfg, agent, town=None, cheapest=None) -> int:
     """The least someone out of work would take with nothing else to live on: what they last
-    earned, less for feeling insecure, less for every week out of work. In the RTR world, given
-    the town, never less than what their own basics cost them a week, the home loan payment left
-    out (C, 21/11/2026), less what a business of their own would still bring in beside a job (Jason,
-    22/11/2026); but someone who owes a large loan "take[s] the first job offered"
-    (Jason, 19/11/2026), so for them there is no floor."""
+    earned, less for feeling insecure, less for every week out of work. In both worlds, given the
+    town, never less than what their own basics cost them a week, the home loan payment left out
+    (C, 21/11/2026), less what a business of their own would still bring in beside a job (Jason,
+    22/11/2026, RTR); but only while what they have coming in pays those basics on its own: with
+    less, "he will take any offer that is put forward to him" (Jason, 22/11/2026). Someone who owes
+    a large loan "take[s] the first job offered" (Jason, 19/11/2026), so for them there is no floor."""
     least = int(agent.last_wage * agent.security
                 * max(0.0, 1.0 - cfg.reservation_decay * agent.weeks_out))
-    if town is not None and cfg.rtr and cfg.reservation_covers_basket:
+    if town is not None and cfg.reservation_covers_basket:        # both worlds (Jason, 22/11/2026)
         from .household import basket_cost
         from .rtr_makers import owes_a_large_loan
         if not owes_a_large_loan(agent, cfg.home_loan_presses):
             floor = basket_cost(town, agent, cheapest, loan=False)
-            if cfg.floor_counts_kept_business and agent.hustle is not None:
+            if cfg.floor_needs_money_coming_in and agent.income_estimate() < floor:
+                floor = 0                                     # (J, 22/11/2026): what comes in does not pay them: any offer
+            elif cfg.rtr and cfg.floor_counts_kept_business and agent.hustle is not None:
                 from .rtr_makers import kept_with_a_job       # (J, 22/11/2026): the business goes on beside the job
                 floor = max(0, floor - kept_with_a_job(town, agent.hustle))
             least = max(least, floor)
@@ -114,7 +118,7 @@ def in_the_line(town, wage: int) -> int:
     side hustle brings in as much, "unless they're unhappy"."""
     cfg = town.cfg
     line = 0
-    cheapest = cheapest_prices(town) if cfg.rtr else None
+    cheapest = cheapest_prices(town) if cfg.rtr or cfg.reservation_covers_basket else None
     for agent in town.agents:
         if agent.role is not None or agent.klass == "owner":
             continue
@@ -329,7 +333,7 @@ def labour_market(town) -> None:
     # 2. residents out of work apply, best-paid vacancy first. Those living on dividends do not.
     seekers = [a for a in town.agents if a.role is None and a.klass != "owner"]
     rng.shuffle(seekers)
-    prices = cheapest_prices(town) if cfg.rtr and seekers else None
+    prices = cheapest_prices(town) if (cfg.rtr or cfg.reservation_covers_basket) and seekers else None
     for agent in seekers:
         least = reservation = reservation_wage(cfg, agent, town, prices)
         if cfg.rtr and agent.hustle is not None:     # RTR (Jason, 18/11/2026): a side hustle is weighed against the job

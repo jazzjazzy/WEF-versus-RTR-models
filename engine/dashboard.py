@@ -338,7 +338,7 @@ def _charts(shape: _Shaper, cfg: dict, places: dict | None = None) -> list[dict]
               [{"name": "Staff paid, on average", "color": 1, "values": shape.quarters(town("wage"), 0.01)},
                {"name": "The rate for someone taken on now", "color": 2,
                 "values": shape.quarters(town("wage_offer"), 0.01)}],
-              section="owning")
+              section="owning" if has("homes_owned") else "town")   # the WEF world records it too, from 22/11/2026
     if has("makers"):
         lines("Side hustles",
               "People selling their own work or making things on the side, the customers they serve, "

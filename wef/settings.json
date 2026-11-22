@@ -303,5 +303,12 @@
       "invented": false,
       "salt": 0.0
     }
-  ]
+  ],
+  "line_is_who_would_take": true,
+  "staff_keep_pay": true,
+  "loss_sheds_staff": true,
+  "longest_serving_first": true,
+  "reservation_covers_basket": true,
+  "floor_needs_money_coming_in": true,
+  "going_without_at_lowest_price": true
 }

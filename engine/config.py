@@ -320,17 +320,18 @@ class Config:
     home_loan_presses: bool = False       # (J) 18/11/2026: "No, stay": the loan against a home is not the large loan that sends a maker to the first job
     makers_buy_in_town: bool = True       # (J) 18/11/2026: a maker buys goods outside only if the town has none at a reasonable price
     town_goods_premium: float = 0.10      # (C) "reasonable": this much over the outside price at most (J: $200 for $189 yes, $298 no)
-    line_is_who_would_take: bool = True   # (J) 19/11/2026: "they wouldn't even apply for the job": the line that lets a firm cut its wage is those out of work who would take the job
-    staff_keep_pay: bool = True           # (J) 19/11/2026: "Old staff members still stay on the same pay rate": a cut in a firm's wage is for those hired after it
-    loss_sheds_staff: bool = True         # (J) 19/11/2026: "we will sack the oldest staff member until the value of the total wages is less than the debt. Before we hire new staff": a firm in debt that lost money over the quarter lets its longest-serving staff go until their pay covers the loss ("No, only if in debt"); then it hires as it needs
-    longest_serving_first: bool = True    # (J) 19/11/2026: "the oldest staff member": whoever an employer has to let go, the longest-serving goes first
+    line_is_who_would_take: bool = True   # (J) 19/11/2026: "they wouldn't even apply for the job": the line that lets a firm cut its wage is those out of work who would take the job; in both worlds from 22/11/2026, his "all six of these issues should be the same on both" (J)
+    staff_keep_pay: bool = True           # (J) 19/11/2026: "Old staff members still stay on the same pay rate": a cut in a firm's wage is for those hired after it; in both worlds from 22/11/2026, his "all six of these issues should be the same on both" (J)
+    loss_sheds_staff: bool = True         # (J) 19/11/2026: "we will sack the oldest staff member until the value of the total wages is less than the debt. Before we hire new staff": a firm in debt that lost money over the quarter lets its longest-serving staff go until their pay covers the loss ("No, only if in debt"); then it hires as it needs; in both worlds from 22/11/2026, his "all six of these issues should be the same on both" (J)
+    longest_serving_first: bool = True    # (J) 19/11/2026: "the oldest staff member": whoever an employer has to let go, the longest-serving goes first; in both worlds from 22/11/2026, his "all six of these issues should be the same on both" (J)
     owners_judge_by_what_they_pay: bool = True   # (J) 20/11/2026: "it should be judged on what they actually pay because they own it. The reason they want to own it is because they don't want to know what the firms are being priced at": a home or appliance set of their own counts in their basket at its upkeep (and the loan payment), not the cheapest asking rent; the town's basket is the average of its people's
     going_without_appliances_at_owning: bool = True   # (J) 22/11/2026, of a fridge renting at $9,417 a week from a firm nobody rents from, against about $23 a week to own a set: "yes, go ahead with the fix": someone going without appliances counts them at what owning a set costs a week (rtr_owning.own_cost_week) when no rent asked is lower; appliances only, not a home (C); it sits inside going_without_at_lowest_price and is off when that is off
     arrivals_own_appliances: bool = True   # (J) 22/11/2026, "Who would pay $9,000 if they could pay $23": a newcomer offered appliances to rent for more than owning a set costs a week does not rent them; they start a set of their own if they can pay for the parts, or go without until they can; a newcomer buying a home holds back appliances at no more than owning costs
-    reservation_covers_basket: bool = True   # (C) 21/11/2026, at Jason's "fix the issue" of pay falling to $100 a week: the least someone out of work will take never falls below what their own basics cost them a week (their basket); before it, it fell 5% a week to nothing, so the line never shrank and firms cut for decades
+    reservation_covers_basket: bool = True   # (C) 21/11/2026, at Jason's "fix the issue" of pay falling to $100 a week: the least someone out of work will take never falls below what their own basics cost them a week (their basket); before it, it fell 5% a week to nothing, so the line never shrank and firms cut for decades; in both worlds from 22/11/2026, his "all six of these issues should be the same on both" (J)
+    floor_needs_money_coming_in: bool = True   # (J) 22/11/2026, of Sam a year out of work with no income, basics $1,494, offered $1,445: "he can pay off most of his expenses"; and "If there is no money coming in, he will take any offer that is put forward to him": then, of Sam with $5 a week from shares, put as "he takes any offer unless the money he already has coming in pays his basics on its own": "Yes, that's right": the floor holds only while what they have coming in (Agent.income_estimate: dividends, rents of let homes, a side hustle's takings) pays their basics on its own; both worlds
     floor_counts_kept_business: bool = True   # (J) 22/11/2026, of Mia (basics $900, a business bringing in $620, a job at $790): "Yes, that makes a lot more logical sense": someone out of work with a business of their own takes a job when its pay and what the business would still bring in cover their basics; what it would still bring in is (C): rtr_makers.kept_with_a_job
     jobless_leaves_out_own_work: bool = True   # (C) 21/11/2026, at Jason's "trace why those towns have fewer jobs and Implement the fix": a measure only; the jobless rate counts those with no job and no small business or side hustle of their own (the trace: 27 towns at year 60, 8.2% with no employer but 0.4% with no work at all); the old figure is kept as no_employer_rate
-    going_without_at_lowest_price: bool = True   # (J) 21/11/2026: "The price that they can't afford should always be the one that's the lowest out of the possible two. neighbours entertainment or firms Entertainment. It will be the one that they could actually achieve, not the one that's way out of scope": in a person's basket a need they go without counts at the lowest price a firm or a neighbour asks (a maker's price, full or not; a small landlord's rent), not only what is on offer this week
+    going_without_at_lowest_price: bool = True   # (J) 21/11/2026: "The price that they can't afford should always be the one that's the lowest out of the possible two. neighbours entertainment or firms Entertainment. It will be the one that they could actually achieve, not the one that's way out of scope": in a person's basket a need they go without counts at the lowest price a firm or a neighbour asks (a maker's price, full or not; a small landlord's rent), not only what is on offer this week; in both worlds from 22/11/2026, his "all six of these issues should be the same on both" (J)
     unhappy_makers_apply: bool = True     # (J) 19/11/2026: "Unless they're unhappy. and wanted to get out of this hard hustle": unhappy on a side hustle, they take a job as anyone out of work does
     maker_margin: float = 0.10            # (C) "cost plus a little": what a person making or letting adds to their cost
     # stage 2: makers. A side hustle is one person selling their own spare time to others.
@@ -393,8 +394,12 @@ class Config:
 
 # The settings that give the model as it was built before Jason's rulings of 16/11/2026.
 # With them a town gives the same record as it did then, event for event.
+# Six rules built for the RTR world that hold in the WEF world from 22/11/2026 (Jason: "all six of these
+# issues should be the same on both"). Off, a WEF town is the town it was before that.
+BEFORE_SHARED_RULES = ["reservation_covers_basket=false", "line_is_who_would_take=false", "staff_keep_pay=false",
+                       "loss_sheds_staff=false", "longest_serving_first=false", "going_without_at_lowest_price=false"]
 OLD_RULES = ["population_cap=1000", "habit_weeks=0", "needs.housing.initial_units=120", "transport_can_close=true",
-             "fare_first_for_work=false", "shops_near_unserved=false", "well_off_income=0"]
+             "fare_first_for_work=false", "shops_near_unserved=false", "well_off_income=0"] + BEFORE_SHARED_RULES
 
 CHOICES = {"price_rule": ("ratchet", "search"), "world": ("wef", "rtr")}
 
@@ -409,8 +414,8 @@ MAKER_TOOLS = ("tools_entertainment", "tools_invented", "tools_food", "tools_rep
                "tools_home_building")
 RTR_ONLY = ("free_hours", "job_hours", "mortgage_ltv", "mortgage_weeks", "mortgage_income_share",
             "foreclosed_price_drop", "empty_sale_weeks", "newcomers_buy", "owners_pay_any_price", "makers_weigh_jobs", "home_loan_presses", "makers_buy_in_town", "town_goods_premium",
-            "line_is_who_would_take", "unhappy_makers_apply", "staff_keep_pay", "loss_sheds_staff", "longest_serving_first",
-            "owners_judge_by_what_they_pay", "going_without_at_lowest_price", "going_without_appliances_at_owning", "arrivals_own_appliances", "reservation_covers_basket", "floor_counts_kept_business", "jobless_leaves_out_own_work", "maker_margin",
+            "unhappy_makers_apply",
+            "owners_judge_by_what_they_pay", "going_without_appliances_at_owning", "arrivals_own_appliances", "floor_counts_kept_business", "jobless_leaves_out_own_work", "maker_margin",
             "hustle_min_hours", "hustle_loan_weeks", "hustle_loan_term_weeks", "idea_hours") + MAKER_SHARES + MAKER_TOOLS
 AT_LEAST_ONE = ("snapshot_every", "register_every", "years", "quarter_weeks", "weeks_per_year",
                 "mortgage_weeks", "hustle_loan_term_weeks")
