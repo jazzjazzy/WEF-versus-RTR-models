@@ -127,7 +127,9 @@ def test_they_hold_back_four_weeks_of_the_other_base_needs_at_the_cheapest_price
     cheapest = cheapest_prices(town)
     assert cheapest["transport"] > 0 and cheapest["housing"] > 0
     keep = newcomer_keeps(town)
-    assert keep == 4 * sum(price for name, price in cheapest.items()
+    from engine.rtr_owning import own_cost_week
+    owning = own_cost_week(town, None, "appliances")                         # (22/11/2026) a set at no more than owning costs
+    assert keep == 4 * sum(min(price, owning) if name == "appliances" else price for name, price in cheapest.items()
                            if name != "housing" and not town.needs[name].invented) > 0
     newcomers_bring(town, keep + 100_000)
     b = new_worker(town, shop)
@@ -595,17 +597,17 @@ def run_as_shipped(seeds, place, years=14):
     return problems, seen
 
 
-SHIPPED = (("map", (1, 23), ["map_width=7", "map_height=7"]), ("no map", (1, 27), ["map_width=0"]))
+SHIPPED = (("map", (3, 9), ["map_width=7", "map_height=7"]), ("no map", (21, 27), ["map_width=0"]))
 
 
 @pytest.fixture(scope="module")
 def towns_of_today():
     """Towns of 200 run for fourteen years under the weekly checks exactly as the RTR world ships:
-    seeds 1 and 23 on a 7 by 7 map, seeds 1 and 27 with no map (picked on 21 November, after the rulings
-    that an owner is judged on what they actually pay and going without at the lowest price asked, and
-    the floor under what someone out of work will take, from thirty of each, all sixty clean under the
-    checks, for reaching the rules of the stages before as well and for not being towns that stop; the
-    seeds of 18 and 19 November, 16 and 30 and 2 and 29 on the 19th, were picked the same way). For each kind: (what the checks found, what
+    seeds 3 and 9 on a 7 by 7 map, seeds 21 and 27 with no map (picked on 22 November, after the ruling
+    that a newcomer does not rent appliances that cost more than owning a set, from thirty of each, all
+    sixty clean under the checks, for reaching the rules of the stages before as well and for not being
+    towns that stop; the seeds of 21 November, 1 and 23 and 1 and 27, and of 18 and 19 November, 16 and 30
+    and 2 and 29 on the 19th, were picked the same way). For each kind: (what the checks found, what
     was reached)."""
     return {kind: run_as_shipped(seeds, place) for kind, seeds, place in SHIPPED}
 

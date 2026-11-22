@@ -1144,3 +1144,27 @@ rather than as the rule's effect.
 Found by the review, not fixed: a newcomer buying a home holds back four weeks
 of basics at the rents on offer, appliances at the firm's rent (about $37,700 at
 $9,417 a week). It may stop newcomers buying homes in old towns. Not traced.
+
+## A newcomer and appliances, 22 November 2026
+
+A newcomer signed up for every base need at the cheapest firm, whatever it
+charged, so in an old town they took on the appliance firm's runaway rent; and
+a newcomer buying a home held back four weeks of it (about $37,700). Jason:
+"Who would pay $9,000 if they could pay $23." (J)
+
+Now (dial `arrivals_own_appliances`): a newcomer for whom owning a set is
+clearly cheaper than renting one builds their own on arrival if they can pay
+for the parts. If not, the week's review rents them one only if they can
+afford it, as for anyone in town. Nobody rents while building a set. A buyer
+holds back appliances at no more than owning costs.
+
+The review found the first version's newcomers rented anyway at the week's
+review, some while building a set; fixed before the towns were run. The rule as
+first put to Jason said they would "go without until they can"; read literally,
+most newcomers would have had no set from the first week, though the opening
+rent is $55, so they rent what they can afford instead (the builder's call, C,
+put to him).
+
+The hundred RTR towns (`rtr/batches/arrivals-rtr`): all 100 survived; the
+middle town at year 60 is 20.5% unhappy against 20.8%, with 50 towns up and 50
+down.
