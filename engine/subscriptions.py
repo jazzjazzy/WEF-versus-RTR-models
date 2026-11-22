@@ -320,7 +320,24 @@ def sign_up_for_the_rest(town, agent) -> None:
             continue
         firm = find_provider(town, agent, name)
         if firm is not None:
+            if name == "appliances" and _owns_instead(town, agent, firm):
+                continue
             subscribe(town, agent, firm, "arrival")
+
+
+def _owns_instead(town, agent, firm) -> bool:
+    """RTR (Jason, 22/11/2026): "Who would pay $9,000 if they could pay $23." A newcomer offered a set to
+    rent for clearly more than owning one costs a week does not sign up for it on arrival: they start a set
+    of their own if they can pay for the parts; if not, the week's review rents them one only if they can
+    afford it, as for anyone in town (C)."""
+    cfg = town.cfg
+    if not (cfg.rtr and cfg.arrivals_own_appliances):
+        return False
+    from .rtr_owning import _start_set, own_cost_week
+    if own_cost_week(town, agent, "appliances") >= firm.price * (1.0 - cfg.switch_friction):
+        return False
+    _start_set(town, agent)
+    return True
 
 
 def note_turned_away(town) -> None:

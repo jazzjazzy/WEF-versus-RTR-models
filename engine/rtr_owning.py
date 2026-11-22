@@ -711,9 +711,16 @@ def sell_foreclosed(town) -> None:
 # --- Jason, 18/11/2026: a newcomer may buy --------------------------------------------------------------
 def newcomer_keeps(town) -> int:
     """The cash a newcomer holds back when they buy: four weeks of the base needs other than a
-    home at the cheapest prices on offer, as a resident holds back four weeks of their bills."""
+    home at the cheapest prices on offer, as a resident holds back four weeks of their bills. In
+    the RTR world appliances count at no more than owning a set costs (Jason, 22/11/2026)."""
     cheapest = cheapest_prices(town)
-    return 4 * sum(cheapest.get(name, 0) for name, spec in town.needs.items()
+    cfg = town.cfg
+    def week_of(name):
+        price = cheapest.get(name, 0)
+        if name == "appliances" and cfg.rtr and cfg.arrivals_own_appliances:   # (J, 22/11/2026) a set of their own
+            price = min(price, own_cost_week(town, None, "appliances"))
+        return price
+    return 4 * sum(week_of(name) for name, spec in town.needs.items()
                    if not spec.invented and name != "housing")
 
 
