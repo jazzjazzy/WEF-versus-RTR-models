@@ -974,7 +974,7 @@ def test_a_class_is_the_same_colour_on_the_town_view_and_the_dashboard():
 
 # --- stage 3 of the RTR world: owners and side hustles on the town view (20 November 2026) -----
 
-RTR_TOWN = ["world=rtr", "population_cap=60", "years=4", "seed=3"]
+RTR_TOWN = ["world=rtr", "population_cap=60", "years=4", "seed=9"]   # seed 3 until 22/11/2026: no side hustle stopped there once newcomers built their own sets
 
 
 @pytest.fixture(scope="module")

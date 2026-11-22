@@ -546,6 +546,9 @@ def _take_up(town, agent, spec, budget, cheapest) -> None:
     name = spec.name
     if name not in cheapest or not wants(agent, spec) or owns(agent, name):
         return
+    if (name == "appliances" and agent.set_hours_left is not None
+            and cfg.rtr and cfg.arrivals_own_appliances):
+        return                                   # RTR (22/11/2026): building a set of their own, they rent none meanwhile
     if name == "housing" and agent.well_off:
         better = free_better_home(town, max_rent=budget.available)
         if better is not None and subscribe(town, agent, better.firm, "signup", unit=better):
