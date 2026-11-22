@@ -1182,3 +1182,21 @@ own; "Yes, that's right" (J).
 The hundred RTR towns (`rtr/batches/shared-rtr`, against `arrivals-rtr`): all
 100 survived; the middle town at year 60 is 20.3% unhappy against 20.5%, with 53
 towns up and 47 down; out of work 0.0% against 0.1%.
+
+## Empty homes, 22 November 2026
+
+A town of about 800 has about 1,240 homes, and a third stand empty from year 5
+(the middle town of `rtr/batches/shared-rtr`). Traced in seed 1, they are not a
+landlord building into empty homes (decision 17 of the WEF world): about nine in
+ten residents built a home of their own and left the home they rented, after a
+boom in years 3 to 5 when 480 homes were being built at once for a town that
+filled that year. Landlord firms all but stop building once the town is full.
+
+One part of the boom is a herd: one newcomer turned away in a quarter is the
+sign for every resident who can afford it to start a home to let, all in the
+same quarter. A fix (C) that counted the homes empty and being built before
+starting one stopped building to let altogether and left the empty homes much as
+they were (seed 1, year 10: 291 against 336; seed 2: 448 against 363). Jason:
+"Yes, drop it and write it up". It was not committed. The trace:
+[docs/empty-homes-trace-2026-11-22.md](../docs/empty-homes-trace-2026-11-22.md).
+

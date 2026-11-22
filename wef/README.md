@@ -474,8 +474,8 @@ Why this is still not a finding:
   more about those two rules than about a world where everything is rented. The
   next batches vary the price rule and the four other dials named under "The
   rules".
-- The model still builds homes while homes stand empty (decision 17, ruled a
-  fault). On this map land limits it.
+- Decision 17 (homes built while homes stand empty, ruled a fault) does not
+  happen on this map: land limits it. Checked again on 22 November 2026 (below).
 - The other open points under "First runs without the map" still stand: jobs for
   about nine in ten once the town is full, and rich and poor buying the same
   things.
@@ -730,11 +730,23 @@ later, 23 sooner. At year 15 the middle town has 24.7% out of work against
 newcomer is offered $830. Details in
 [the ledger](../docs/build-ledger-wef-shared-rules-2026-11-22.md).
 
+## Empty homes, 22 November 2026
+
+Jason asked for decision 17's fault to be fixed first ("ok, fix the empty homes
+fault first"). In the hundred towns of `wef/batches/shared-wef` it does not
+happen: homes keep pace with people until the land runs out, about year 10, and
+after that homes stand empty only as people who cannot pay are put out of them
+(in the middle town at year 18, 319 homes empty and 364 people homeless). No
+landlord builds into empty homes. A fix was tried in the RTR world, where the
+empty homes come from elsewhere, and dropped on his word. The trace:
+[docs/empty-homes-trace-2026-11-22.md](../docs/empty-homes-trace-2026-11-22.md).
+
 ## What is still to come
 
 Stage 4, tuning and checking the starting values, was begun and then set aside
-on 13 November: one check is done ("Why the wage falls on the map" above), the
-fault of decision 17 is still in the model, and nothing is tuned.
+on 13 November: one check is done ("Why the wage falls on the map" above), and
+nothing is tuned. The fault of decision 17 does not happen in the towns as they
+ship ("Empty homes" below).
 
 Stage 5 has started with the batch runs: many towns per setting ("Many towns"
 above) and the first batch of 100. Next are batches that vary one dial at a
