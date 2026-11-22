@@ -49,7 +49,7 @@ def line_share(town, wage: int) -> float:
     "cutting when there is a queue"). RTR (Jason, 19/11/2026): only those who would take a
     job at this wage; someone who would turn it down "wouldn't even apply"."""
     cfg = town.cfg
-    if cfg.rtr and cfg.line_is_who_would_take and town.agents:
+    if cfg.line_is_who_would_take and town.agents:              # both worlds (Jason, 22/11/2026)
         return in_the_line(town, wage) / len(town.agents)
     return town.jobless_share()
 
@@ -107,8 +107,8 @@ def review_firm(town, firm) -> None:
             if line_share(town, lower) > cfg.wage_cut_unemployment:
                 set_wage(town, firm, lower, "queue")
 
-        if cfg.rtr and cfg.loss_sheds_staff:
-            # RTR (Jason, 19/11/2026): a firm in debt that lost money over the quarter lets its
+        if cfg.loss_sheds_staff:
+            # Both worlds (Jason, 19/11/2026; for the WEF world too 22/11/2026): a firm in debt that lost money over the quarter lets its
             # longest-serving staff go until their pay covers a week's share of the loss. Here the
             # week's share is noted (rounded up); the letting go is the first thing in the next
             # week's hiring (`labour.let_go_for_loss`). "In debt" is owing the bank anything.

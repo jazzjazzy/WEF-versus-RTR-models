@@ -162,7 +162,7 @@ def check_week(town, before_money, before_pop, seen_ids):
         if f.alive:
             if sum(f.holders.values()) != f.shares_out or f.shares_out <= 0:
                 bad.append(f"week {week}: firm {f.id} shares do not add up")
-            keeps = town.cfg.rtr and town.cfg.staff_keep_pay     # (Jason, 19/11/2026) staff keep the rate they were hired on
+            keeps = town.cfg.staff_keep_pay     # (Jason, 19/11/2026) staff keep the rate they were hired on; both worlds 22/11/2026
             if f.own_rates != keeps:
                 bad.append(f"week {week}: firm {f.id} does not know whether its staff keep their pay")
             for a in f.staff:
@@ -177,7 +177,7 @@ def check_week(town, before_money, before_pop, seen_ids):
         else:
             if f.cash != 0 or f.loan != 0 or f.shares_out != 0 or f.staff or f.execs or f.ceo or f.subs:
                 bad.append(f"week {week}: closed firm {f.id} still holds something")
-    if town.cfg.rtr and town.cfg.staff_keep_pay:
+    if town.cfg.staff_keep_pay:
         # nobody who stayed on the same staff since last week is paid less than they were
         last = town.__dict__.setdefault("_pay_last_checked", {})
         now = {}

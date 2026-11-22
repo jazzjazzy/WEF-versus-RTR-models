@@ -1168,3 +1168,17 @@ put to him).
 The hundred RTR towns (`rtr/batches/arrivals-rtr`): all 100 survived; the
 middle town at year 60 is 20.5% unhappy against 20.8%, with 50 towns up and 50
 down.
+
+## The floor needs money coming in, 22 November 2026
+
+When the six RTR rules on jobs and pay were opened to the WEF world on Jason's
+word, the floor on what someone out of work will take was found to hold out
+people with nothing coming in. Jason: "If there is no money coming in, he will
+take any offer that is put forward to him." Now (dial
+`floor_needs_money_coming_in`, in both worlds) the floor holds only while what
+someone has coming in (dividends, rents, a side hustle) pays their basics on its
+own; "Yes, that's right" (J).
+
+The hundred RTR towns (`rtr/batches/shared-rtr`, against `arrivals-rtr`): all
+100 survived; the middle town at year 60 is 20.3% unhappy against 20.5%, with 53
+towns up and 47 down; out of work 0.0% against 0.1%.

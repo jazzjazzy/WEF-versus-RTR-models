@@ -7,13 +7,14 @@ import sqlite3
 import pytest
 from conftest import empty_town, map_town, what_happened
 
-from engine.config import load_config
+from engine.config import BEFORE_SHARED_RULES, load_config
 from engine.town import Town
 
-# Records made by the code at 958d19f, before any of RTR was built (ledger of 16/11).
+# Records made by the code at 958d19f, before any of RTR was built (ledger of 16/11). From 22/11/2026 six
+# rules of the RTR world hold in the WEF world too (Jason); with them off it is the town it was.
 WEF_PINS = [
-    (["seed=1", "stop_on_failure=false"], ("889a87a96629fed5", 14113)),
-    (["seed=5", "stop_on_failure=false", "founder_arrival_rate=0.25", "resident_founder_rate=0.2"],
+    (["seed=1", "stop_on_failure=false"] + BEFORE_SHARED_RULES, ("889a87a96629fed5", 14113)),
+    (["seed=5", "stop_on_failure=false", "founder_arrival_rate=0.25", "resident_founder_rate=0.2"] + BEFORE_SHARED_RULES,
      ("f92ac66689bf0bc5", 25843)),
 ]
 

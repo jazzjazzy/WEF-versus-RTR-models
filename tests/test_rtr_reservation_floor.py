@@ -26,15 +26,18 @@ def quiet_town(*overrides):
 
 
 def out_of_work(town, weeks_out=100, last_wage=100_000, security=0.5):
+    """With dividends that pay their basics: from 22/11/2026 the floor holds only while what comes in pays the
+    basics on its own (Jason; test_floor_needs_money_coming_in.py)."""
     a = town.add_agent(cash=0)
     a.role, a.last_wage, a.weeks_out, a.security = None, last_wage, weeks_out, security
+    a.div_quarters = [10_400_000]                                   # $2,000 a week: more than their basics
     return a
 
 
-def test_the_dial_is_on_in_the_rtr_world_and_is_the_rtr_worlds_own():
+def test_the_dial_is_on_in_the_rtr_world_and_from_22_november_in_both():
     assert load_config(None, ["world=rtr"]).reservation_covers_basket is True
     assert load_config("rtr/settings.json").reservation_covers_basket is True
-    assert DIAL in RTR_ONLY
+    assert DIAL not in RTR_ONLY                                     # Jason: "the same on both"
 
 
 def test_long_out_of_work_they_still_will_not_take_less_than_their_basics_cost():
@@ -53,11 +56,10 @@ def test_recently_out_of_work_they_hold_out_for_more_as_before():
     assert reservation_wage(town.cfg, a, town) == alone
 
 
-@pytest.mark.parametrize("world", ["dial off", "wef"])
-def test_with_the_dial_off_or_in_the_wef_world_there_is_no_floor(world):
-    town = quiet_town(f"{DIAL}=false") if world == "dial off" else quiet_town()
-    if world == "wef":
-        town.cfg.world = "wef"
+@pytest.mark.parametrize("world", ["rtr", "wef"])
+def test_with_the_dial_off_there_is_no_floor(world):
+    town = quiet_town(f"{DIAL}=false")
+    town.cfg.world = world
     a = out_of_work(town, weeks_out=100)
     assert reservation_wage(town.cfg, a, town) == 0
 

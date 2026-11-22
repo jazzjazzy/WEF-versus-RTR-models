@@ -93,7 +93,7 @@ class Town:
     def typical_wage(self) -> int:
         """The going wage in town: the average of its firms' wages, each counted once for every
         one of its staff; the outside wage if nobody is employed. It is what a job pays
-        someone taken on now. Where staff keep rates of their own (RTR) what they are paid is
+        someone taken on now. Where staff keep rates of their own what they are paid is
         `staff_pay`."""
         total = count = 0
         for f in self.firms:
@@ -152,7 +152,7 @@ class Town:
         f = Firm(firm_id, name or f"{need_name.title()} {firm_id}", spec, self.week,
                  founder.id if founder is not None else None)
         f.wage = self.cfg.outside_wage
-        f.own_rates = self.cfg.rtr and self.cfg.staff_keep_pay
+        f.own_rates = self.cfg.staff_keep_pay                  # both worlds (Jason, 22/11/2026)
         f.share_price = self.cfg.share_par
         self.firms.append(f)
         self._firms[f.id] = f
@@ -267,6 +267,8 @@ class Town:
         if cfg.rtr:
             rtr_owning.start_week(self)                      #    RTR: everyone's spare hours for the week
             rtr_makers.start_week(self)                      #    and the hours each side hustle has for customers
+        elif cfg.reservation_covers_basket:
+            rtr_makers.remember_loans(self)                  #    WEF: the most owed on each loan, for the floor (the review, 22/11)
         maybe_arrive_founder(self)                       # 1. a founder may arrive
         labour_market(self)                              # 2. layoffs, promotions, hiring, arrivals
         if cfg.rtr:
