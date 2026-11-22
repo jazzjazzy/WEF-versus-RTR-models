@@ -128,8 +128,10 @@ def weekly_series(town) -> list[tuple[str, str, float]]:
     town_add("unhappy_share", town.unhappy_share())
     town_add("destitute", sum(1 for a in agents if a.destitute))
     town_add("wage", wage)
-    if cfg.rtr:
-        town_add("wage_offer", town.typical_wage())   # RTR: the going wage, what a job pays someone taken on now
+    if cfg.rtr or cfg.staff_keep_pay:
+        # the going wage, what a job pays someone taken on now; where staff keep their pay (both worlds
+        # from 22/11/2026) it differs from what staff are paid (C: a measure only)
+        town_add("wage_offer", town.typical_wage())
     town_add("wage_index", wage / cfg.outside_wage if cfg.outside_wage else 0.0)
     asking = basket
     if cfg.rtr and cfg.owners_judge_by_what_they_pay and agents:

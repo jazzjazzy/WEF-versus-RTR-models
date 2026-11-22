@@ -159,7 +159,8 @@ def test_no_wage_rise_when_the_block_is_housing(town):
     assert firm.wage == 100_000
 
 
-def test_layoff_is_last_hired_first(town):
+def test_layoff_is_last_hired_first():
+    town = empty_town("longest_serving_first=false")     # the rule before 22/11/2026: test_wef_shared_rules has today's
     firm = town.add_firm("food")
     firm.founded = -100
     staff = [town.add_agent() for _ in range(10)]
@@ -184,7 +185,8 @@ def test_executives_promoted_by_skill_one_per_25_staff(town):
     assert firm.execs == [] and len(firm.staff) == 22
 
 
-def test_secure_jobless_agent_holds_out_and_stressed_one_takes_the_job(town):
+def test_secure_jobless_agent_holds_out_and_stressed_one_takes_the_job():
+    town = empty_town("reservation_covers_basket=false")  # the formula alone: $800 is under an empty town's basket
     firm = busy_firm(town)
     firm.wage = 80_000
     secure = town.add_agent()
@@ -197,7 +199,8 @@ def test_secure_jobless_agent_holds_out_and_stressed_one_takes_the_job(town):
     assert len(refused) == 1 and refused[0]["agent"] == secure.id
 
 
-def test_reservation_wage_falls_with_weeks_out_of_work(town):
+def test_reservation_wage_falls_with_weeks_out_of_work():
+    town = empty_town("reservation_covers_basket=false")  # the formula alone, as above
     firm = busy_firm(town)
     firm.wage = 80_000
     a = town.add_agent()

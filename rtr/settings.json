@@ -216,6 +216,7 @@
   "going_without_appliances_at_owning": true,
   "arrivals_own_appliances": true,
   "reservation_covers_basket": true,
+  "floor_needs_money_coming_in": true,
   "floor_counts_kept_business": true,
   "jobless_leaves_out_own_work": true,
   "unhappy_makers_apply": true,

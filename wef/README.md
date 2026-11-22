@@ -705,6 +705,31 @@ model gives saved money a way back to the workers: it earns nothing, the bank
 does not lend it, and new firms are started only now and then. The accounts are
 right. Jason ruled that it is the world he means (decision 18: it sits).
 
+## Six rules shared with the RTR world, 22 November 2026
+
+Six rules about jobs, pay and basics had been built for the RTR world only,
+though none needs anyone to own anything. Jason: "From RTR world, all six of
+these issues should be the same on both." (J) They now hold here too: the
+least someone out of work will take covers their basics; the line that lets a
+firm cut its wage is those who would take the job; a cut is for those hired
+after it; a firm in debt that lost money lets staff go; the longest-serving
+goes first; going without counts at the cheapest firm's price.
+
+With the six alone, nine in ten were out of work by year 14 in two test towns:
+basics rose past every wage and everyone turned every offer down. Jason, of a
+man with no income and basics of $1,494 offered $1,445: "If there is no money
+coming in, he will take any offer that is put forward to him." And, of a few
+dollars of dividends, that he takes any offer unless what he has coming in pays
+his basics on its own: "Yes, that's right" (J, dial
+`floor_needs_money_coming_in`, in both worlds).
+
+The hundred WEF towns (`wef/batches/shared-wef`, against `stage3-wef`): all 100
+still reach the failure line, the middle town at year 19.0 against 17.8; 73
+later, 23 sooner. At year 15 the middle town has 24.7% out of work against
+25.7% and is 46.1% unhappy against 44.1%; staff are paid $967 against $853, a
+newcomer is offered $830. Details in
+[the ledger](../docs/build-ledger-wef-shared-rules-2026-11-22.md).
+
 ## What is still to come
 
 Stage 4, tuning and checking the starting values, was begun and then set aside

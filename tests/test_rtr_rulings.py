@@ -597,17 +597,18 @@ def run_as_shipped(seeds, place, years=14):
     return problems, seen
 
 
-SHIPPED = (("map", (3, 9), ["map_width=7", "map_height=7"]), ("no map", (21, 27), ["map_width=0"]))
+SHIPPED = (("map", (6, 9), ["map_width=7", "map_height=7"]), ("no map", (9, 12), ["map_width=0"]))
 
 
 @pytest.fixture(scope="module")
 def towns_of_today():
     """Towns of 200 run for fourteen years under the weekly checks exactly as the RTR world ships:
-    seeds 3 and 9 on a 7 by 7 map, seeds 21 and 27 with no map (picked on 22 November, after the ruling
-    that a newcomer does not rent appliances that cost more than owning a set, from thirty of each, all
-    sixty clean under the checks, for reaching the rules of the stages before as well and for not being
-    towns that stop; the seeds of 21 November, 1 and 23 and 1 and 27, and of 18 and 19 November, 16 and 30
-    and 2 and 29 on the 19th, were picked the same way). For each kind: (what the checks found, what
+    seeds 6 and 9 on a 7 by 7 map, seeds 9 and 12 with no map (picked on 22 November, after the ruling
+    that the floor on what someone out of work will take holds only while what comes in pays their basics,
+    from thirty of each, all sixty clean under the checks, for reaching the rules of the stages before as
+    well and for not being towns that stop; the seeds picked that morning after the ruling on newcomers and
+    appliances, 3 and 9 and 21 and 27, those of 21 November, 1 and 23 and 1 and 27, and of 18 and 19
+    November, 16 and 30 and 2 and 29 on the 19th, were picked the same way). For each kind: (what the checks found, what
     was reached)."""
     return {kind: run_as_shipped(seeds, place) for kind, seeds, place in SHIPPED}
 
@@ -1260,7 +1261,7 @@ def shop_short_of_profit(town, pays=80_000):
 def test_the_dials_for_the_line_are_on_and_are_the_rtr_worlds_own():
     from engine.config import RTR_ONLY, load_config
     cfg = load_config(None, ["world=rtr"])
-    assert cfg.line_is_who_would_take is True and "line_is_who_would_take" in RTR_ONLY
+    assert cfg.line_is_who_would_take is True and "line_is_who_would_take" not in RTR_ONLY   # both worlds, 22/11
     assert cfg.unhappy_makers_apply is True and "unhappy_makers_apply" in RTR_ONLY
 
 
@@ -1383,16 +1384,16 @@ def test_with_that_dial_off_everyone_without_a_job_is_counted_as_before():
     assert cuts(town) == [(80_000, 78_400)]
 
 
-def test_in_the_wef_world_everyone_without_a_job_is_counted():
+def test_in_the_wef_world_too_only_those_who_would_take_it_are_counted():
     from conftest import empty_town
     from engine.corporate import review_firm
-    town = empty_town("line_is_who_would_take=true")                         # given, and not read: there is no RTR world here
+    town = empty_town()                                                      # both worlds from 22/11/2026 (Jason)
     firm = shop_short_of_profit(town, pays=80_000)
     for _ in range(6):
         a = town.add_agent()
         a.last_wage, a.security = 200_000, 1.0                               # they would not work for under $2,000
     review_firm(town, firm)
-    assert cuts(town) == [(80_000, 78_400)]
+    assert cuts(town) == []
 
 
 def test_an_unhappy_maker_takes_a_job_that_pays_less_than_the_side_hustle():
@@ -1461,7 +1462,7 @@ def taken_on(town, firm):
 
 def test_the_dial_for_keeping_pay_is_on_and_is_one_of_the_rtr_worlds_own():
     from engine.config import RTR_ONLY, load_config
-    assert load_config(None, ["world=rtr"]).staff_keep_pay is True and "staff_keep_pay" in RTR_ONLY
+    assert load_config(None, ["world=rtr"]).staff_keep_pay is True and "staff_keep_pay" not in RTR_ONLY   # both, 22/11
 
 
 def test_a_cut_is_for_those_hired_after_it_and_staff_already_there_keep_their_pay():
@@ -1680,10 +1681,10 @@ def test_with_that_dial_off_a_cut_is_everyones_as_before():
     assert town.typical_wage() == 78_400
 
 
-def test_in_the_wef_world_a_cut_is_everyones():
+def test_with_the_dial_off_a_cut_is_everyones():
     from conftest import empty_town
     from engine.firmops import set_wage
-    town = empty_town("staff_keep_pay=true")                                 # given, and not read
+    town = empty_town("staff_keep_pay=false")                                # the WEF world before 22/11/2026
     firm, old = shop_and_staff(town, pays=80_000)
     set_wage(town, firm, 78_400, "queue")
     assert [a.wage for a in old] == [78_400] * 3
@@ -1774,12 +1775,13 @@ def test_staff_keep_their_pay_when_the_business_they_work_for_becomes_a_company(
 def test_the_record_keeps_what_staff_are_paid_and_what_a_job_pays_someone_new():
     """Since 19 November "the wage" of a town is two numbers. The record's `wage` (shown as the staff
     wage) is what staff are paid; `wage_offer` is the going wage, what a job pays someone taken on
-    now. The WEF world has one number, and no second measure."""
+    now. In both worlds from 22 November; with the dial off, one number and no second measure."""
     from conftest import empty_town
     from test_rtr_2 import quiet_town
     from engine.firmops import set_wage
     from engine.metrics import weekly_series
-    for town, paid, has_offer in ((quiet_town(), 75_000, True), (empty_town(), 60_000, False)):
+    for town, paid, has_offer in ((quiet_town(), 75_000, True), (empty_town(), 75_000, True),
+                                  (empty_town("staff_keep_pay=false"), 60_000, False)):
         firm, old = shop_and_staff(town, pays=80_000)
         set_wage(town, firm, 60_000, "queue")
         taken_on(town, firm)
@@ -1836,8 +1838,8 @@ def let_go(town):
 def test_the_dials_for_shedding_staff_are_on_and_are_the_rtr_worlds_own():
     from engine.config import RTR_ONLY, load_config
     cfg = load_config(None, ["world=rtr"])
-    assert cfg.loss_sheds_staff is True and "loss_sheds_staff" in RTR_ONLY
-    assert cfg.longest_serving_first is True and "longest_serving_first" in RTR_ONLY
+    assert cfg.loss_sheds_staff is True and "loss_sheds_staff" not in RTR_ONLY            # both worlds, 22/11
+    assert cfg.longest_serving_first is True and "longest_serving_first" not in RTR_ONLY
 
 
 def test_a_firm_that_lost_money_lets_its_longest_serving_go_until_their_pay_covers_the_loss():
@@ -1979,12 +1981,12 @@ def test_a_firm_with_cash_and_no_debts_that_loses_a_little_lets_nobody_go():
     assert len(firm.staff) == 3
 
 
-@pytest.mark.parametrize("dial", ["loss_sheds_staff=false", None])
-def test_with_that_dial_off_or_in_the_wef_world_a_loss_lets_nobody_go(dial):
+@pytest.mark.parametrize("world", ["rtr", "wef"])
+def test_with_that_dial_off_a_loss_lets_nobody_go(world):
     from conftest import empty_town
     from test_rtr_2 import quiet_town
     from engine.corporate import review_firm
-    town = quiet_town(dial) if dial else empty_town("loss_sheds_staff=true")  # given to the WEF world, and not read
+    town = quiet_town("loss_sheds_staff=false") if world == "rtr" else empty_town("loss_sheds_staff=false")
     firm, people = firm_in_a_quarter(town)
     review_then_next_week(town, firm)
     assert firm.staff == people and shed(town) == []
@@ -2012,11 +2014,11 @@ def test_for_want_of_work_the_longest_serving_goes_first(dial, first):
     assert let_go(town) == [(people[first].id, "laid_off")]
 
 
-def test_in_the_wef_world_the_last_hired_still_goes_first():
+def test_in_the_wef_world_with_the_dial_off_the_last_hired_goes_first():
     from conftest import empty_town
     from engine.corporate import _shed_unpaid
     from engine.labour import labour_market
-    town = empty_town("longest_serving_first=true")                          # given, and not read
+    town = empty_town("longest_serving_first=false")                         # the WEF world before 22/11/2026
     firm, people = firm_with_too_many(town)
     labour_market(town)
     assert let_go(town) == [(people[-1].id, "laid_off")]
@@ -2090,7 +2092,7 @@ def test_where_the_last_hired_goes_first_someone_put_back_is_still_added_at_the_
     from conftest import empty_town
     from test_rtr_2 import quiet_town
     from engine.labour import demote, hire, promote
-    town = quiet_town("longest_serving_first=false") if town_of == "dial off" else empty_town()
+    town = quiet_town("longest_serving_first=false") if town_of == "dial off" else empty_town("longest_serving_first=false")
     firm = town.add_firm("food")
     firm.founded = -100
     people = [town.add_agent() for _ in range(3)]
